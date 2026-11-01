@@ -8,17 +8,20 @@
     - _Files: package.json, tsconfig.json, next.config.ts, vitest.config.ts, app/layout.tsx, app/globals.css, README.md, .gitignore, tests/setup.test.ts_
     - _Verify: npm install_
     - _Verify: npm test_
+    - _Issue: #1_
   - [ ] 1.2 Add the database schema, migrations and seed script
     - Write the Prisma schema for Customer, StaffUser, Product, ProductFile, BasketItem, Order, OrderLine, Payment, OrderStatusEvent and ShopConnectionState, with the first migration.
     - Write `prisma/seed.ts` with the three test logins of `## Test logins`, run by `Dev` on an empty database and skipped when `NODE_ENV` is `production`; add `.env.example` and a `docker-compose.yml` with a top-level `name:` and a PostgreSQL service.
     - _Requirements: 2.4, 2.6, 2.8_
     - _Files: prisma/schema.prisma, prisma/migrations/**, prisma/seed.ts, .env.example, docker-compose.yml, tests/db.test.ts_
     - _Verify: npm test -- db_
+    - _Issue: #2_
   - [ ] 1.3 Add the session, health path and shop system client
     - Add the signed HTTP-only session cookie with the person and role, `GET /api/health`, `lib/shop-system.ts` with `readStock`, `createOrder` and `ping`, and the Playwright runner with an `e2e/` folder holding a `.gitkeep` that Vitest leaves out.
     - _Requirements: 10.1_
     - _Files: lib/session.ts, lib/shop-system.ts, app/api/health/route.ts, playwright.config.ts, e2e/.gitkeep, vitest.config.ts, tests/shop-system.test.ts_
     - _Verify: npm test -- shop-system_
+    - _Issue: #3_
 
 - [ ] 2. Public catalogue and product page
   - [ ] 2.1 Build the public catalogue at `/` and the public product page
@@ -27,6 +30,7 @@
     - _Requirements: 1.1, 1.2, 1.3_
     - _Files: app/page.tsx, app/page.module.css, app/products/[id]/page.tsx, app/products/[id]/page.module.css, app/api/public/catalogue/route.ts, app/api/public/catalogue/[id]/route.ts, app/api/files/[id]/route.ts, tests/public-catalogue.test.ts_
     - _Verify: npm test -- public-catalogue_
+    - _Issue: #4_
 
 - [ ] 3. Sign in and apply
   - [ ] 3.1 Build the sign-in, application and six-digit code screens
@@ -35,6 +39,7 @@
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9_
     - _Files: app/apply/page.tsx, app/apply/page.module.css, app/signin/page.tsx, app/signin/page.module.css, app/signin/verify/page.tsx, app/api/auth/apply/route.ts, app/api/auth/signin/route.ts, app/api/auth/verify-code/route.ts, app/api/auth/signout/route.ts, lib/email.ts, tests/auth.test.ts_
     - _Verify: npm test -- auth_
+    - _Issue: #5_
 
 - [ ] 4. Catalogue with prices and live stock
   - [ ] 4.1 Build the catalogue and product page for approved business customers
@@ -43,6 +48,7 @@
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8_
     - _Files: app/catalogue/page.tsx, app/catalogue/page.module.css, app/catalogue/[id]/page.tsx, app/catalogue/[id]/page.module.css, app/api/catalogue/route.ts, app/api/catalogue/[id]/route.ts, lib/stock-cache.ts, tests/catalogue.test.ts_
     - _Verify: npm test -- catalogue_
+    - _Issue: #6_
 
 - [ ] 5. Basket and checkout
   - [ ] 5.1 Build the basket, checkout and confirmation screens
@@ -51,6 +57,7 @@
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 4.10_
     - _Files: app/basket/page.tsx, app/basket/page.module.css, app/checkout/page.tsx, app/checkout/page.module.css, app/orders/[id]/confirmation/page.tsx, app/api/basket/route.ts, app/api/basket/items/route.ts, app/api/basket/items/[id]/route.ts, app/api/checkout/route.ts, app/api/payments/callback/route.ts, lib/payment.ts, lib/orders.ts, tests/checkout.test.ts_
     - _Verify: npm test -- checkout_
+    - _Issue: #7_
 
 - [ ] 6. My orders
   - [ ] 6.1 Build the My orders list and order page
@@ -59,6 +66,7 @@
     - _Requirements: 5.1, 5.2, 5.3, 5.4_
     - _Files: app/orders/page.tsx, app/orders/page.module.css, app/orders/[id]/page.tsx, app/orders/[id]/page.module.css, app/api/orders/route.ts, app/api/orders/[id]/route.ts, tests/orders.test.ts_
     - _Verify: npm test -- orders_
+    - _Issue: #8_
 
 - [ ] 7. Shop administrator dashboard and customer account
   - [ ] 7.1 Build the dashboard and the customer account page
@@ -67,6 +75,7 @@
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 11.3_
     - _Files: app/admin/page.tsx, app/admin/page.module.css, app/admin/customers/[id]/page.tsx, app/admin/customers/[id]/page.module.css, app/api/admin/customers/route.ts, app/api/admin/customers/[id]/approve/route.ts, app/api/admin/customers/[id]/reject/route.ts, app/api/admin/customers/[id]/suspend/route.ts, tests/admin-customers.test.ts_
     - _Verify: npm test -- admin-customers_
+    - _Issue: #9_
 
 - [ ] 8. Products
   - [ ] 8.1 Build the Products screen
@@ -75,6 +84,7 @@
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
     - _Files: app/admin/products/page.tsx, app/admin/products/page.module.css, app/api/admin/products/route.ts, app/api/admin/products/[id]/route.ts, app/api/admin/products/[id]/files/route.ts, lib/uploads.ts, tests/admin-products.test.ts_
     - _Verify: npm test -- admin-products_
+    - _Issue: #10_
 
 - [ ] 9. Picking queue
   - [ ] 9.1 Build the picking queue
@@ -83,6 +93,7 @@
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6_
     - _Files: app/picking/page.tsx, app/picking/page.module.css, app/api/picking/route.ts, app/api/picking/[id]/picked/route.ts, app/api/picking/[id]/packed/route.ts, app/api/picking/[id]/shipped/route.ts, app/api/picking/[id]/missing/route.ts, lib/audit.ts, tests/picking.test.ts_
     - _Verify: npm test -- picking_
+    - _Issue: #11_
 
 - [ ] 10. Reports
   - [ ] 10.1 Build the daily orders report
@@ -91,6 +102,7 @@
     - _Requirements: 9.1, 9.2, 9.3_
     - _Files: app/admin/reports/page.tsx, app/admin/reports/page.module.css, app/api/admin/reports/daily/route.ts, app/api/admin/reports/daily.csv/route.ts, tests/reports.test.ts_
     - _Verify: npm test -- reports_
+    - _Issue: #12_
 
 - [ ] 11. Shop system connection, held orders and retention
   - [ ] 11.1 Add the background job for held orders, connection alerts and retention
@@ -98,6 +110,7 @@
     - _Requirements: 10.2, 10.3, 10.4, 10.5, 10.6, 10.7, 11.1, 11.2_
     - _Files: lib/jobs.ts, lib/retention.ts, instrumentation.ts, app/api/admin/customers/[id]/delete/route.ts, tests/jobs.test.ts_
     - _Verify: npm test -- jobs_
+    - _Issue: #13_
 
 - [ ] 12. Deployment setup
   - _Mode: devops_
@@ -107,3 +120,4 @@
     - _Files: Dockerfile, .dockerignore, docker-compose.prod.yml, scripts/start.sh, .env.example_
     - _Verify: docker compose -f docker-compose.prod.yml config --quiet --no-interpolate_
     - _Verify: docker build -t ecommerce-portal:verify ._
+    - _Issue: #14_
