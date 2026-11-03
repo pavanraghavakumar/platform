@@ -36,7 +36,7 @@
     - _Issue: #17_
 
 - [ ] 3. Admin dashboard and system administration
-  - [ ] 3.1 Admin dashboard
+  - [x] 3.1 Admin dashboard
     - Build `/Dashboard/Admin` with KPI cards for total patients, doctors, staff and departments, today's appointments, pending appointments, completed consultations, total revenue and outstanding balance, each read from the database; a revenue chart of the last 6 months and an appointment trend chart of the last 7 days drawn with the local Chart.js; the 5 most recent patient registrations and 5 most recent appointments newest first; and a department list with the number of doctors in each.
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
     - _Depends: 1_
@@ -69,8 +69,8 @@
     - _Area: ui_
     - _Issue: #21_
 
-- [ ] 4. Patient management
-  - [ ] 4.1 Patient list, registration and profile
+- [x] 4. Patient management
+  - [x] 4.1 Patient list, registration and profile
     - Build the patient list (patient ID, full name, phone, gender, status, registration date, 10 per page, search by name, patient ID or phone, sort control, status filter, "No records found."), the registration form that creates the patient with the next `P-00001` ID and status Active and shows "Full name and phone number are required." when the name or phone is missing, the profile page with personal and contact details, emergency contact, medical history, allergies and status, the edit form showing "Patient details saved.", the appointment history newest first, and the deactivate action that keeps appointments, records and invoices.
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 17.4, 17.5, 17.6, 17.7_
     - _Depends: 1_
@@ -182,7 +182,7 @@
     - _Issue: #32_
 
 - [ ] 15. Notifications and responsive polish
-  - [ ] 15.1 Notification bell and panel
+  - [x] 15.1 Notification bell and panel
     - Build the bell icon showing the unread count from `GET /Notification/UnreadCount`, the panel with the 10 most recent notifications newest first and their message and time, the mark-as-read that sets the count to 0, and "You have no notifications." when empty; write `NotificationService` so no email or SMS is sent.
     - _Requirements: 15.1, 15.2, 15.3, 15.4, 15.5_
     - _Depends: 1_
