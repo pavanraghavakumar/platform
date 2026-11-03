@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test"
 
-// Issue #15 / 17.1, 17.2, 17.3, 17.9: the shared layout, design system and sidebar toggle.
+// Issues #15 and #44 / 17.1, 17.2, 17.3, 17.9, 17.10: shared layout and sidebar behaviour.
 test("signed-in page shows the shared layout and the sidebar collapses and expands", async ({ page }) => {
   await page.goto("/Account/Login")
   await page.getByLabel("User name").fill("admin@hms.local")
@@ -40,4 +40,19 @@ test("signed-in page shows the shared layout and the sidebar collapses and expan
   await expect
     .poll(async () => sidebar.evaluate((el) => el.getBoundingClientRect().width))
     .toBeGreaterThan(200)
+
+  // 17.10: at a short browser height the sidebar still fills the viewport, while its long
+  // navigation scrolls without changing the main document's vertical scroll position.
+  await page.setViewportSize({ width: 1280, height: 320 })
+  const sidebarNav = page.locator("#hmsSidebarNav")
+  const sidebarBox = await sidebar.boundingBox()
+  expect(sidebarBox?.height).toBe(320)
+  await expect
+    .poll(async () => sidebarNav.evaluate((el) => el.scrollHeight > el.clientHeight))
+    .toBe(true)
+
+  const documentScrollBefore = await page.evaluate(() => window.scrollY)
+  await sidebarNav.evaluate((el) => el.scrollTo({ top: el.scrollHeight }))
+  await expect.poll(async () => sidebarNav.evaluate((el) => el.scrollTop)).toBeGreaterThan(0)
+  expect(await page.evaluate(() => window.scrollY)).toBe(documentScrollBefore)
 })
