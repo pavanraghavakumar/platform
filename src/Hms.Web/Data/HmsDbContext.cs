@@ -110,7 +110,9 @@ public class HmsDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<Appointment>(e =>
         {
             e.Property(x => x.Status).HasMaxLength(30);
-            e.HasIndex(x => new { x.DoctorId, x.AppointmentDate, x.StartTime });
+            e.HasIndex(x => new { x.DoctorId, x.AppointmentDate, x.StartTime })
+                .IsUnique()
+                .HasFilter("\"Status\" IN ('Pending', 'Confirmed', 'Checked In', 'In Progress')");
             e.HasOne(x => x.Patient)
                 .WithMany(p => p.Appointments)
                 .HasForeignKey(x => x.PatientId)

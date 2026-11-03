@@ -57,7 +57,9 @@ partial class HmsDbContextModelSnapshot : ModelSnapshot
             b.Property<DateTime>("UpdatedAt").HasColumnType("TEXT");
             b.HasKey("Id");
             b.HasIndex("PatientId");
-            b.HasIndex("DoctorId", "AppointmentDate", "StartTime");
+            b.HasIndex("DoctorId", "AppointmentDate", "StartTime")
+                .IsUnique()
+                .HasFilter("\"Status\" IN ('Pending', 'Confirmed', 'Checked In', 'In Progress')");
             b.ToTable("Appointments");
         });
 

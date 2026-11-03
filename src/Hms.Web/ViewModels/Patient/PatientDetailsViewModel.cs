@@ -10,7 +10,7 @@ public class PatientDetailsViewModel
 {
     public Models.Entities.Patient Patient { get; set; } = new();
 
-    public IReadOnlyList<Appointment> Appointments { get; set; } = Array.Empty<Appointment>();
+    public IReadOnlyList<Models.Entities.Appointment> Appointments { get; set; } = Array.Empty<Models.Entities.Appointment>();
 
     public int MedicalRecordCount { get; set; }
 

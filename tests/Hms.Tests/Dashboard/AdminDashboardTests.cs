@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Xunit;
 
+using AppointmentEntity = Hms.Web.Models.Entities.Appointment;
+
 namespace Hms.Tests.Dashboard;
 
 /// <summary>
@@ -118,7 +120,7 @@ public class AdminDashboardTests : IClassFixture<AdminDashboardTests.DashboardFa
         await db.SaveChangesAsync();
 
         var today = DateTime.UtcNow.Date;
-        var appointment = new Appointment
+        var appointment = new AppointmentEntity
         {
             PatientId = patient.Id,
             DoctorId = doctor.Id,
@@ -220,7 +222,7 @@ public class AdminDashboardTests : IClassFixture<AdminDashboardTests.DashboardFa
         await db.SaveChangesAsync();
 
         var today = DateTime.UtcNow.Date;
-        db.Appointments.Add(new Appointment
+        db.Appointments.Add(new AppointmentEntity
         {
             PatientId = patient.Id,
             DoctorId = doctor.Id,
@@ -317,7 +319,7 @@ public class AdminDashboardTests : IClassFixture<AdminDashboardTests.DashboardFa
         var today = DateTime.UtcNow.Date;
         for (var i = 0; i < 6; i++)
         {
-            db.Appointments.Add(new Appointment
+            db.Appointments.Add(new AppointmentEntity
             {
                 PatientId = patients[i].Id,
                 DoctorId = doctor.Id,

@@ -1,9 +1,13 @@
+using System.Security.Claims;
 using Hms.Web.Data;
 using Hms.Web.Models.Entities;
 using Hms.Web.Services;
+using Hms.Web.ViewModels.Appointment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
+using AppointmentEntity = Hms.Web.Models.Entities.Appointment;
 
 namespace Hms.Web.Controllers;
 
@@ -19,53 +23,109 @@ public class AppointmentController : Controller
         _appointments = appointments;
     }
 
-    [Authorize(Roles = Roles.Receptionist + "," + Roles.Admin)]
+    [Authorize(Roles = Roles.Receptionist + "," + Roles.Admin + "," + Roles.Doctor + "," + Roles.Patient)]
     public async Task<IActionResult> Index(string? status)
     {
+        // Admin may inspect the list, but design.md reserves every status-changing
+        // appointment action for Receptionist, Patient (own cancel), or Doctor.
+        var isReceptionist = User.IsInRole(Roles.Receptionist);
+        var isDoctor = User.IsInRole(Roles.Doctor);
+        var isPatient = User.IsInRole(Roles.Patient);
+
         var query = _db.Appointments.Include(a => a.Patient).Include(a => a.Doctor).AsQueryable();
+
+        if (isDoctor && !isReceptionist)
+        {
+            var doctorId = await CurrentDoctorIdAsync();
+            query = query.Where(a => a.DoctorId == doctorId);
+        }
+        else if (isPatient && !isReceptionist)
+        {
+            var patientId = await CurrentPatientIdAsync();
+            query = query.Where(a => a.PatientId == patientId);
+        }
+
         if (!string.IsNullOrWhiteSpace(status))
         {
             query = query.Where(a => a.Status == status);
         }
 
-        ViewData["Status"] = status;
-        return View(await query.OrderByDescending(a => a.AppointmentDate).ThenBy(a => a.StartTime).ToListAsync());
+        // SQLite cannot ORDER BY a TimeSpan column, so order by date in SQL and by time in memory.
+        var appointments = await query
+            .OrderByDescending(a => a.AppointmentDate)
+            .ToListAsync();
+        appointments = appointments
+            .OrderByDescending(a => a.AppointmentDate)
+            .ThenByDescending(a => a.StartTime)
+            .ToList();
+
+        return View(new AppointmentListViewModel
+        {
+            Status = status,
+            IsReceptionist = isReceptionist,
+            IsDoctor = isDoctor,
+            IsPatient = isPatient,
+            Appointments = appointments
+        });
     }
 
     [Authorize(Roles = Roles.Receptionist + "," + Roles.Patient)]
     [HttpGet]
     public async Task<IActionResult> Book()
     {
-        ViewData["Doctors"] = await _db.Doctors.Where(d => d.Status == EntityStatus.Active).OrderBy(d => d.FullName).ToListAsync();
-        ViewData["Patients"] = await _db.Patients.Where(p => p.Status == EntityStatus.Active).OrderBy(p => p.FullName).ToListAsync();
-        return View();
+        return View(await BuildBookViewModelAsync(new BookAppointmentViewModel()));
     }
 
     [Authorize(Roles = Roles.Receptionist + "," + Roles.Patient)]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Book(int patientId, int doctorId, DateTime date, string time)
+    public async Task<IActionResult> Book(BookAppointmentViewModel model)
     {
-        if (!TimeSpan.TryParse(time, out var startTime))
+        var isReceptionist = User.IsInRole(Roles.Receptionist);
+
+        if (!TimeSpan.TryParse(model.Time, out var startTime))
         {
             ModelState.AddModelError(string.Empty, "Choose a time slot.");
-            ViewData["Doctors"] = await _db.Doctors.Where(d => d.Status == EntityStatus.Active).OrderBy(d => d.FullName).ToListAsync();
-            ViewData["Patients"] = await _db.Patients.Where(p => p.Status == EntityStatus.Active).OrderBy(p => p.FullName).ToListAsync();
-            return View();
+            return View(await BuildBookViewModelAsync(model));
+        }
+
+        if (model.DoctorId is null || model.Date is null)
+        {
+            ModelState.AddModelError(string.Empty, "Choose a doctor and a date.");
+            return View(await BuildBookViewModelAsync(model));
+        }
+
+        var patientId = model.PatientId ?? 0;
+        if (!isReceptionist)
+        {
+            var ownPatientId = await CurrentPatientIdAsync();
+            if (model.PatientId is not null && model.PatientId != ownPatientId)
+            {
+                ModelState.AddModelError(string.Empty, "You can only book appointments for yourself.");
+                return View(await BuildBookViewModelAsync(model));
+            }
+
+            patientId = ownPatientId ?? 0;
         }
 
         try
         {
-            await _appointments.BookAsync(patientId, doctorId, date, startTime, null);
+            await _appointments.BookForUserAsync(
+                CurrentUserId(),
+                isReceptionist,
+                patientId,
+                model.DoctorId.Value,
+                model.Date.Value,
+                startTime,
+                model.Notes);
+
             TempData["Message"] = "Appointment booked.";
             return RedirectToAction(nameof(Index));
         }
         catch (InvalidOperationException ex)
         {
             ModelState.AddModelError(string.Empty, ex.Message);
-            ViewData["Doctors"] = await _db.Doctors.Where(d => d.Status == EntityStatus.Active).OrderBy(d => d.FullName).ToListAsync();
-            ViewData["Patients"] = await _db.Patients.Where(p => p.Status == EntityStatus.Active).OrderBy(p => p.FullName).ToListAsync();
-            return View();
+            return View(await BuildBookViewModelAsync(model));
         }
     }
 
@@ -80,30 +140,51 @@ public class AppointmentController : Controller
     [Authorize(Roles = Roles.Receptionist)]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public Task<IActionResult> Confirm(int id) => Transition(id, EntityStatus.AppointmentPending, EntityStatus.AppointmentConfirmed);
+    public async Task<IActionResult> Confirm(int id)
+    {
+        if (await _appointments.ConfirmAsync(id))
+        {
+            TempData["Message"] = "Appointment confirmed.";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
 
     [Authorize(Roles = Roles.Receptionist)]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public Task<IActionResult> CheckIn(int id) => Transition(id, EntityStatus.AppointmentConfirmed, EntityStatus.AppointmentCheckedIn);
+    public async Task<IActionResult> CheckIn(int id)
+    {
+        if (await _appointments.CheckInAsync(id))
+        {
+            TempData["Message"] = "Appointment checked in.";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
 
     [Authorize(Roles = Roles.Receptionist)]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public Task<IActionResult> NoShow(int id) => Transition(id, EntityStatus.AppointmentConfirmed, EntityStatus.AppointmentNoShow);
+    public async Task<IActionResult> NoShow(int id)
+    {
+        if (await _appointments.MarkNoShowAsync(id))
+        {
+            TempData["Message"] = "Appointment marked as No Show.";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
 
     [Authorize(Roles = Roles.Receptionist + "," + Roles.Patient)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Cancel(int id)
     {
-        var appointment = await _db.Appointments.FindAsync(id);
-        if (appointment is not null
-            && (appointment.Status == EntityStatus.AppointmentPending || appointment.Status == EntityStatus.AppointmentConfirmed))
+        var isReceptionist = User.IsInRole(Roles.Receptionist);
+        if (await _appointments.CancelAsync(id, CurrentUserId(), isReceptionist))
         {
-            appointment.Status = EntityStatus.AppointmentCancelled;
-            appointment.UpdatedAt = DateTime.UtcNow;
-            await _db.SaveChangesAsync();
+            TempData["Message"] = "Appointment cancelled.";
         }
 
         return RedirectToAction(nameof(Index));
@@ -114,34 +195,101 @@ public class AppointmentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Start(int id)
     {
-        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        var ownsAppointment = await _db.Appointments.AnyAsync(a => a.Id == id && a.Doctor!.UserId == userId);
-        if (!ownsAppointment)
+        var doctorId = await CurrentDoctorIdAsync();
+        var ownerDoctorId = await _db.Appointments
+            .Where(a => a.Id == id)
+            .Select(a => (int?)a.DoctorId)
+            .FirstOrDefaultAsync();
+        if (ownerDoctorId is null)
         {
-            return RedirectToAction("AccessDenied", "Account");
+            return NotFound();
         }
 
-        var started = await _appointments.TryTransitionAsync(
-            id,
-            EntityStatus.AppointmentCheckedIn,
-            EntityStatus.AppointmentInProgress);
+        if (doctorId is null || ownerDoctorId != doctorId)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden);
+        }
 
-        if (!started)
+        if (!await _appointments.StartAsync(id, doctorId.Value))
         {
             return RedirectToAction("Doctor", "Dashboard");
         }
 
+        TempData["Message"] = "Consultation started.";
         return RedirectToAction("Index", "Consultation", new { appointmentId = id });
     }
 
     [Authorize(Roles = Roles.Doctor)]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public Task<IActionResult> Complete(int id) => Transition(id, EntityStatus.AppointmentInProgress, EntityStatus.AppointmentCompleted);
-
-    private async Task<IActionResult> Transition(int id, string fromStatus, string toStatus)
+    public async Task<IActionResult> Complete(int id)
     {
-        await _appointments.TryTransitionAsync(id, fromStatus, toStatus);
+        var doctorId = await CurrentDoctorIdAsync();
+        var ownerDoctorId = await _db.Appointments
+            .Where(a => a.Id == id)
+            .Select(a => (int?)a.DoctorId)
+            .FirstOrDefaultAsync();
+        if (ownerDoctorId is null)
+        {
+            return NotFound();
+        }
+
+        if (doctorId is null || ownerDoctorId != doctorId)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden);
+        }
+
+        if (await _appointments.CompleteAsync(id, doctorId.Value))
+        {
+            TempData["Message"] = "Consultation completed.";
+        }
+
         return RedirectToAction(nameof(Index));
+    }
+
+    private async Task<BookAppointmentViewModel> BuildBookViewModelAsync(BookAppointmentViewModel model)
+    {
+        var isReceptionist = User.IsInRole(Roles.Receptionist);
+        model.CanChoosePatient = isReceptionist;
+
+        model.Doctors = await _db.Doctors
+            .Where(d => d.Status == EntityStatus.Active)
+            .OrderBy(d => d.FullName)
+            .ToListAsync();
+
+        if (isReceptionist)
+        {
+            model.Patients = await _db.Patients
+                .Where(p => p.Status == EntityStatus.Active)
+                .OrderBy(p => p.FullName)
+                .ToListAsync();
+        }
+        else
+        {
+            var patientId = await CurrentPatientIdAsync();
+            model.OwnPatient = patientId is null
+                ? null
+                : await _db.Patients.FirstOrDefaultAsync(p => p.Id == patientId);
+            if (model.OwnPatient is not null)
+            {
+                model.PatientId = model.OwnPatient.Id;
+            }
+        }
+
+        return model;
+    }
+
+    private string CurrentUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+
+    private Task<int?> CurrentPatientIdAsync()
+    {
+        var userId = CurrentUserId();
+        return _db.Patients.Where(p => p.UserId == userId).Select(p => (int?)p.Id).FirstOrDefaultAsync();
+    }
+
+    private Task<int?> CurrentDoctorIdAsync()
+    {
+        var userId = CurrentUserId();
+        return _db.Doctors.Where(d => d.UserId == userId).Select(d => (int?)d.Id).FirstOrDefaultAsync();
     }
 }

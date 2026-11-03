@@ -23,6 +23,10 @@ public class PatientCreateViewModel
     [Display(Name = "Email")]
     public string? Email { get; set; }
 
+    [Display(Name = "Sign-in password")]
+    [DataType(DataType.Password)]
+    public string? Password { get; set; }
+
     [Display(Name = "Address")]
     public string? Address { get; set; }
 

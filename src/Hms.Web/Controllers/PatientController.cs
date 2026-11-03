@@ -43,6 +43,14 @@ public class PatientController : Controller
             return View(model);
         }
 
+        var hasEmail = !string.IsNullOrWhiteSpace(model.Email);
+        var hasPassword = !string.IsNullOrWhiteSpace(model.Password);
+        if (hasEmail != hasPassword)
+        {
+            ModelState.AddModelError(string.Empty, "Email and sign-in password must be provided together.");
+            return View(model);
+        }
+
         var patient = new Patient
         {
             FullName = model.FullName,
@@ -57,9 +65,19 @@ public class PatientController : Controller
             Allergies = model.Allergies
         };
 
-        var created = await _patients.RegisterAsync(patient);
-        TempData["Message"] = $"Patient {created.PatientCode} registered.";
-        return RedirectToAction(nameof(Details), new { id = created.Id });
+        try
+        {
+            var created = hasEmail
+                ? await _patients.RegisterWithAccountAsync(patient, model.Password!)
+                : await _patients.RegisterAsync(patient);
+            TempData["Message"] = $"Patient {created.PatientCode} registered.";
+            return RedirectToAction(nameof(Details), new { id = created.Id });
+        }
+        catch (InvalidOperationException exception)
+        {
+            ModelState.AddModelError(string.Empty, exception.Message);
+            return View(model);
+        }
     }
 
     [Authorize(Roles = Roles.Receptionist + "," + Roles.Admin + "," + Roles.Doctor)]
