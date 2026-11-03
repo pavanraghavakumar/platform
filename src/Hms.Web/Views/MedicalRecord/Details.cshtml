@@ -1,23 +1,35 @@
-@model Hms.Web.Models.Entities.MedicalRecord
+@model Hms.Web.ViewModels.MedicalRecord.MedicalRecordDetailsViewModel
 @{
     ViewData["Title"] = "Medical record";
 }
-<h1>Medical record</h1>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/clinical.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <div>
+        <h1>Medical record</h1>
+        <p class="hms-empty">@Model.PatientName (@Model.PatientCode) · @Model.Date.ToString("dd MMM yyyy")</p>
+    </div>
+    <a class="hms-btn hms-btn-secondary" asp-controller="MedicalRecord" asp-action="Index" asp-route-patientId="@Model.PatientId">
+        <i class="bi bi-arrow-left"></i> All records
+    </a>
+</div>
 
 <div class="hms-card">
-    <dl class="hms-table">
-        <tr><th>Patient</th><td>@Model.Patient?.FullName (@Model.Patient?.PatientCode)</td></tr>
-        <tr><th>Doctor</th><td>@Model.Doctor?.FullName</td></tr>
-        <tr><th>Date</th><td>@Model.CreatedAt.ToString("dd MMM yyyy")</td></tr>
-        <tr><th>Symptoms</th><td>@Model.Symptoms</td></tr>
-        <tr><th>Diagnosis</th><td>@Model.Diagnosis</td></tr>
-        <tr><th>Blood pressure</th><td>@Model.BloodPressure</td></tr>
-        <tr><th>Temperature</th><td>@Model.Temperature</td></tr>
-        <tr><th>Pulse</th><td>@Model.Pulse</td></tr>
-        <tr><th>Weight</th><td>@Model.Weight</td></tr>
-        <tr><th>Treatment plan</th><td>@Model.TreatmentPlan</td></tr>
-        <tr><th>Observations</th><td>@Model.Observations</td></tr>
-        <tr><th>Follow-up</th><td>@Model.FollowUpRecommendations</td></tr>
-        <tr><th>Status</th><td><partial name="_StatusBadge" model="@Model.Status" /></td></tr>
+    <dl class="clinical-details">
+        <dt>Doctor</dt><dd>@Model.DoctorName</dd>
+        <dt>Date</dt><dd>@Model.Date.ToString("dd MMM yyyy")</dd>
+        <dt>Status</dt><dd><partial name="_StatusBadge" model="@Model.Status" /></dd>
+        <dt>Symptoms</dt><dd>@Model.Symptoms</dd>
+        <dt>Diagnosis</dt><dd>@Model.Diagnosis</dd>
+        <dt>Blood pressure</dt><dd>@Model.BloodPressure</dd>
+        <dt>Temperature</dt><dd>@Model.Temperature</dd>
+        <dt>Pulse</dt><dd>@Model.Pulse</dd>
+        <dt>Weight</dt><dd>@Model.Weight</dd>
+        <dt>Treatment plan</dt><dd>@Model.TreatmentPlan</dd>
+        <dt>Observations</dt><dd>@Model.Observations</dd>
+        <dt>Follow-up</dt><dd>@Model.FollowUpRecommendations</dd>
     </dl>
 </div>
