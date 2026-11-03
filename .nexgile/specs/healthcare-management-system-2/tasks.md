@@ -35,7 +35,7 @@
     - _Area: ui_
     - _Issue: #17_
 
-- [ ] 3. Admin dashboard and system administration
+- [x] 3. Admin dashboard and system administration
   - [x] 3.1 Admin dashboard
     - Build `/Dashboard/Admin` with KPI cards for total patients, doctors, staff and departments, today's appointments, pending appointments, completed consultations, total revenue and outstanding balance, each read from the database; a revenue chart of the last 6 months and an appointment trend chart of the last 7 days drawn with the local Chart.js; the 5 most recent patient registrations and 5 most recent appointments newest first; and a department list with the number of doctors in each.
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
@@ -60,7 +60,7 @@
     - _Verify: dotnet test --filter FullyQualifiedName~DoctorManagementTests_
     - _Area: ui_
     - _Issue: #20_
-  - [ ] 3.4 Audit trail page
+  - [x] 3.4 Audit trail page
     - Build `/Audit/Index` listing audit entries newest first, 20 per page, with record type, record ID, field, previous value, new value, user name and time, and filters by record type and date range; write `AuditService.Record` so a change to a medical record, prescription, invoice or payment saves an entry and opening a record without changing it saves none.
     - _Requirements: 16.1, 16.2, 16.3, 16.4_
     - _Depends: 1_
@@ -181,7 +181,7 @@
     - _Area: ui_
     - _Issue: #32_
 
-- [ ] 15. Notifications and responsive polish
+- [x] 15. Notifications and responsive polish
   - [x] 15.1 Notification bell and panel
     - Build the bell icon showing the unread count from `GET /Notification/UnreadCount`, the panel with the 10 most recent notifications newest first and their message and time, the mark-as-read that sets the count to 0, and "You have no notifications." when empty; write `NotificationService` so no email or SMS is sent.
     - _Requirements: 15.1, 15.2, 15.3, 15.4, 15.5_
@@ -190,7 +190,7 @@
     - _Verify: dotnet test --filter FullyQualifiedName~NotificationTests_
     - _Area: ui_
     - _Issue: #33_
-  - [ ] 15.2 Responsive layout and empty states
+  - [x] 15.2 Responsive layout and empty states
     - Make every page work at 375 pixels wide without horizontal scrolling with the sidebar behind a menu button, and at 1280 pixels wide with the sidebar expanded beside the content; check the sidebar toggle collapses to icons and expands again, and that every list page shows "No records found." when empty.
     - _Requirements: 17.1, 17.3, 17.7, 17.8, 17.9_
     - _Depends: 1_
