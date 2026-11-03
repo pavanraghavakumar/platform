@@ -1,0 +1,112 @@
+@inject Hms.Web.Data.HmsDbContext Db
+@{
+    var hospitalName = Db.SystemSettings
+        .Where(s => s.Key == SystemSetting.HospitalNameKey)
+        .Select(s => s.Value)
+        .FirstOrDefault() ?? SystemSetting.DefaultHospitalName;
+
+    var isSignedIn = User.Identity?.IsAuthenticated == true;
+    var displayName = User.Identity?.Name ?? string.Empty;
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "Home";
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "Index";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - @hospitalName</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="@(isSignedIn ? "hms-signed-in" : "hms-anonymous")">
+    @if (isSignedIn)
+    {
+        <div class="hms-shell" id="hmsShell">
+            <aside class="hms-sidebar" id="hmsSidebar">
+                <div class="hms-sidebar-brand">
+                    <i class="bi bi-heart-pulse-fill"></i>
+                    <span class="hms-sidebar-label">@hospitalName</span>
+                </div>
+                <partial name="_Sidebar" />
+            </aside>
+
+            <div class="hms-main">
+                <header class="hms-topbar">
+                    <button type="button" class="hms-icon-btn" id="hmsSidebarToggle" aria-label="Toggle sidebar">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <span class="hms-topbar-title">@hospitalName</span>
+
+                    <form class="hms-search" role="search" asp-controller="Patient" asp-action="Index" method="get">
+                        <i class="bi bi-search"></i>
+                        <input type="search" name="search" placeholder="Search patients, doctors, appointments" aria-label="Search" />
+                    </form>
+
+                    <div class="hms-topbar-actions">
+                        <button type="button" class="hms-icon-btn hms-bell" id="hmsBell" aria-label="Notifications">
+                            <i class="bi bi-bell"></i>
+                            <span class="hms-bell-count" id="hmsBellCount" hidden>0</span>
+                        </button>
+
+                        <div class="hms-profile">
+                            <button type="button" class="hms-profile-btn" id="hmsProfileBtn">
+                                <i class="bi bi-person-circle"></i>
+                                <span class="hms-profile-name">@displayName</span>
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+                            <div class="hms-profile-menu" id="hmsProfileMenu" hidden>
+                                <a asp-controller="Account" asp-action="Profile">My profile</a>
+                                <a asp-controller="Account" asp-action="ChangePassword">Change password</a>
+                                <form asp-controller="Account" asp-action="Logout" method="post">
+                                    <button type="submit">Sign out</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="hms-breadcrumb">
+                    <a asp-controller="Dashboard" asp-action="Index">Home</a>
+                    <span>/</span>
+                    <span>@controller</span>
+                    <span>/</span>
+                    <span>@action</span>
+                </div>
+
+                <main class="hms-content">
+                    @if (TempData["Message"] is string message)
+                    {
+                        <div class="hms-alert hms-alert-success">@message</div>
+                    }
+                    @if (TempData["Error"] is string error)
+                    {
+                        <div class="hms-alert hms-alert-error">@error</div>
+                    }
+                    @RenderBody()
+                </main>
+
+                <footer class="hms-footer">
+                    <span>&copy; @DateTime.UtcNow.Year @hospitalName. All rights reserved.</span>
+                </footer>
+            </div>
+        </div>
+
+        <div class="hms-notification-panel" id="hmsNotificationPanel" hidden></div>
+    }
+    else
+    {
+        <main class="hms-anon-main">
+            @RenderBody()
+        </main>
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/chart.js/chart.umd.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

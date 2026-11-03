@@ -1,0 +1,30 @@
+@{
+    ViewData["Title"] = "Sign in";
+}
+<div class="hms-auth-card">
+    <div class="hms-auth-brand">
+        <i class="bi bi-heart-pulse-fill"></i>
+        <h1>Greenfield General Hospital</h1>
+        <p class="hms-empty">Sign in to continue</p>
+    </div>
+
+    <form asp-controller="Account" asp-action="Login" method="post">
+        <div asp-validation-summary="All" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
+
+        <div class="hms-field">
+            <label for="userName">User name</label>
+            <input id="userName" name="userName" type="text" autocomplete="username" required />
+        </div>
+
+        <div class="hms-field">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required />
+        </div>
+
+        <button type="submit" class="hms-btn hms-btn-primary" style="width:100%;justify-content:center;">Sign in</button>
+
+        <p style="margin-top:16px;text-align:center;">
+            <a asp-controller="Account" asp-action="ForgotPassword">Forgot password?</a>
+        </p>
+    </form>
+</div>

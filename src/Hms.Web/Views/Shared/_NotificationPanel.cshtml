@@ -1,0 +1,20 @@
+@model IReadOnlyList<Hms.Web.Models.Entities.Notification>
+<div class="hms-panel-header">
+    <strong>Notifications</strong>
+</div>
+@if (Model is null || Model.Count == 0)
+{
+    <p class="hms-empty">You have no notifications.</p>
+}
+else
+{
+    <ul class="hms-panel-list">
+        @foreach (var notification in Model)
+        {
+            <li>
+                <span>@notification.Message</span>
+                <small>@notification.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small>
+            </li>
+        }
+    </ul>
+}

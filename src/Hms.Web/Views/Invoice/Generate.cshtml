@@ -1,0 +1,24 @@
+@model Hms.Web.Models.Entities.Appointment
+@{
+    ViewData["Title"] = "Generate invoice";
+}
+<h1>Generate invoice</h1>
+
+<div class="hms-card">
+    <dl class="hms-table">
+        <tr><th>Patient</th><td>@Model.Patient?.FullName (@Model.Patient?.PatientCode)</td></tr>
+        <tr><th>Doctor</th><td>@Model.Doctor?.FullName</td></tr>
+        <tr><th>Consultation fee</th><td>₹@Model.Doctor?.ConsultationFee.ToString("0.00")</td></tr>
+    </dl>
+
+    <form asp-controller="Invoice" asp-action="Generate" asp-route-appointmentId="@Model.Id" method="post">
+        <div class="hms-form-grid">
+            <div class="hms-field"><label for="discountAmount">Discount amount</label><input id="discountAmount" name="discountAmount" type="number" step="0.01" value="0" /></div>
+            <div class="hms-field"><label for="taxRate">Tax rate (%)</label><input id="taxRate" name="taxRate" type="number" step="0.01" value="0" /></div>
+        </div>
+        <div class="hms-form-actions">
+            <a class="hms-btn hms-btn-secondary" asp-controller="Invoice" asp-action="Index">Cancel</a>
+            <button type="submit" class="hms-btn hms-btn-primary">Generate</button>
+        </div>
+    </form>
+</div>

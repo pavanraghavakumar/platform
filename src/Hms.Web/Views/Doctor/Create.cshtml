@@ -1,0 +1,34 @@
+@model Hms.Web.Models.Entities.Doctor
+@{
+    ViewData["Title"] = "New doctor";
+    var departments = ViewData["Departments"] as IReadOnlyList<Hms.Web.Models.Entities.Department> ?? new List<Hms.Web.Models.Entities.Department>();
+}
+<h1>New doctor</h1>
+
+<div class="hms-card">
+    <form asp-controller="Doctor" asp-action="Create" method="post">
+        <div asp-validation-summary="All" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
+        <div class="hms-form-grid">
+            <div class="hms-field"><label asp-for="FullName">Full name</label><input asp-for="FullName" /></div>
+            <div class="hms-field"><label asp-for="Email">Email</label><input asp-for="Email" type="email" /></div>
+            <div class="hms-field"><label asp-for="Phone">Phone</label><input asp-for="Phone" /></div>
+            <div class="hms-field"><label asp-for="Specialization">Specialization</label><input asp-for="Specialization" /></div>
+            <div class="hms-field">
+                <label asp-for="DepartmentId">Department</label>
+                <select asp-for="DepartmentId">
+                    @foreach (var department in departments)
+                    {
+                        <option value="@department.Id">@department.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="hms-field"><label asp-for="Qualifications">Qualifications</label><input asp-for="Qualifications" /></div>
+            <div class="hms-field"><label asp-for="YearsOfExperience">Years of experience</label><input asp-for="YearsOfExperience" type="number" /></div>
+            <div class="hms-field"><label asp-for="ConsultationFee">Consultation fee</label><input asp-for="ConsultationFee" type="number" step="0.01" /></div>
+        </div>
+        <div class="hms-form-actions">
+            <a class="hms-btn hms-btn-secondary" asp-controller="Doctor" asp-action="Index">Cancel</a>
+            <button type="submit" class="hms-btn hms-btn-primary">Save</button>
+        </div>
+    </form>
+</div>

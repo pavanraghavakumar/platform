@@ -1,0 +1,22 @@
+@model Hms.Web.Models.Entities.LabRequest
+@{
+    ViewData["Title"] = "Enter lab result";
+}
+<h1>Enter lab result</h1>
+
+<div class="hms-card">
+    <dl class="hms-table">
+        <tr><th>Patient</th><td>@Model.Patient?.FullName</td></tr>
+        <tr><th>Test</th><td>@Model.LaboratoryTest?.Name</td></tr>
+        <tr><th>Normal range</th><td>@Model.LaboratoryTest?.NormalRange</td></tr>
+    </dl>
+
+    <form asp-controller="LabRequest" asp-action="Complete" asp-route-id="@Model.Id" method="post">
+        <div class="hms-field"><label for="resultValue">Result value</label><input id="resultValue" name="resultValue" value="@Model.ResultValue" /></div>
+        <div class="hms-field"><label for="remarks">Remarks</label><textarea id="remarks" name="remarks">@Model.Remarks</textarea></div>
+        <div class="hms-form-actions">
+            <a class="hms-btn hms-btn-secondary" asp-controller="LabRequest" asp-action="Index">Cancel</a>
+            <button type="submit" class="hms-btn hms-btn-primary">Save result</button>
+        </div>
+    </form>
+</div>

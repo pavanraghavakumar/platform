@@ -1,0 +1,12 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+<div class="hms-card">
+    <h1>Something went wrong</h1>
+    <p>An unexpected error occurred. Please try again.</p>
+    @if (Model?.ShowRequestId == true)
+    {
+        <p class="hms-empty">Request ID: @Model.RequestId</p>
+    }
+</div>

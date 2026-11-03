@@ -1,0 +1,19 @@
+@model Hms.Web.Models.Entities.Medicine
+@{
+    ViewData["Title"] = "Stock in";
+}
+<h1>Stock in — @Model.Name</h1>
+
+<div class="hms-card">
+    <form asp-controller="Medicine" asp-action="StockIn" asp-route-id="@Model.Id" method="post">
+        <div class="hms-form-grid">
+            <div class="hms-field"><label for="batchNumber">Batch number</label><input id="batchNumber" name="batchNumber" /></div>
+            <div class="hms-field"><label for="quantity">Quantity</label><input id="quantity" name="quantity" type="number" /></div>
+            <div class="hms-field"><label for="expiryDate">Expiry date</label><input id="expiryDate" name="expiryDate" type="date" /></div>
+        </div>
+        <div class="hms-form-actions">
+            <a class="hms-btn hms-btn-secondary" asp-controller="Medicine" asp-action="Index">Cancel</a>
+            <button type="submit" class="hms-btn hms-btn-primary">Save</button>
+        </div>
+    </form>
+</div>

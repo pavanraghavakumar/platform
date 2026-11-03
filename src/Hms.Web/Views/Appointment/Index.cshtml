@@ -1,0 +1,47 @@
+@model IReadOnlyList<Hms.Web.Models.Entities.Appointment>
+@{
+    ViewData["Title"] = "Appointments";
+    var statuses = new[] { "Pending", "Confirmed", "Checked In", "In Progress", "Completed", "Cancelled", "No Show" };
+}
+<div class="hms-page-header">
+    <h1>Appointments</h1>
+    @if (User.IsInRole(Roles.Receptionist) || User.IsInRole(Roles.Patient))
+    {
+        <a class="hms-btn hms-btn-primary" asp-controller="Appointment" asp-action="Book">New appointment</a>
+    }
+</div>
+
+<div class="hms-card">
+    <form method="get" class="hms-search-box" style="max-width:260px;margin-bottom:16px;">
+        <select name="status" onchange="this.form.submit()">
+            <option value="">All statuses</option>
+            @foreach (var status in statuses)
+            {
+                <option value="@status" selected="@(ViewData["Status"]?.ToString() == status)">@status</option>
+            }
+        </select>
+    </form>
+
+    @if (Model.Count == 0)
+    {
+        <partial name="_EmptyState" model="@("No records found.")" />
+    }
+    else
+    {
+        <table class="hms-table">
+            <thead><tr><th>Date</th><th>Time</th><th>Patient</th><th>Doctor</th><th>Status</th></tr></thead>
+            <tbody>
+                @foreach (var appointment in Model)
+                {
+                    <tr>
+                        <td>@appointment.AppointmentDate.ToString("dd MMM yyyy")</td>
+                        <td>@appointment.StartTime.ToString(@"hh\:mm")</td>
+                        <td>@appointment.Patient?.FullName</td>
+                        <td>@appointment.Doctor?.FullName</td>
+                        <td><partial name="_StatusBadge" model="@appointment.Status" /></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

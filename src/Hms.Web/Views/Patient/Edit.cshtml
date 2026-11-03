@@ -1,0 +1,25 @@
+@model Hms.Web.Models.Entities.Patient
+@{
+    ViewData["Title"] = "Edit patient";
+}
+<h1>Edit patient</h1>
+
+<div class="hms-card">
+    @if (ViewData["Message"] is string message)
+    {
+        <div class="hms-alert hms-alert-success">@message</div>
+    }
+    <form asp-controller="Patient" asp-action="Edit" asp-route-id="@Model.Id" method="post">
+        <div class="hms-form-grid">
+            <div class="hms-field"><label asp-for="Phone">Phone</label><input asp-for="Phone" /></div>
+            <div class="hms-field"><label asp-for="Email">Email</label><input asp-for="Email" type="email" /></div>
+            <div class="hms-field"><label asp-for="Address">Address</label><input asp-for="Address" /></div>
+            <div class="hms-field"><label asp-for="EmergencyContactName">Emergency contact name</label><input asp-for="EmergencyContactName" /></div>
+            <div class="hms-field"><label asp-for="EmergencyContactPhone">Emergency contact phone</label><input asp-for="EmergencyContactPhone" /></div>
+        </div>
+        <div class="hms-form-actions">
+            <a class="hms-btn hms-btn-secondary" asp-controller="Patient" asp-action="Index">Cancel</a>
+            <button type="submit" class="hms-btn hms-btn-primary">Save</button>
+        </div>
+    </form>
+</div>

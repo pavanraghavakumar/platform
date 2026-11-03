@@ -1,0 +1,45 @@
+@model Hms.Web.Models.Entities.Patient
+@{
+    ViewData["Title"] = "Patient profile";
+}
+<h1>@Model.FullName</h1>
+
+<div class="hms-card">
+    <dl class="hms-table">
+        <tr><th>Patient ID</th><td>@Model.PatientCode</td></tr>
+        <tr><th>Date of birth</th><td>@Model.DateOfBirth.ToString("dd MMM yyyy")</td></tr>
+        <tr><th>Gender</th><td>@Model.Gender</td></tr>
+        <tr><th>Phone</th><td>@Model.Phone</td></tr>
+        <tr><th>Email</th><td>@Model.Email</td></tr>
+        <tr><th>Address</th><td>@Model.Address</td></tr>
+        <tr><th>Emergency contact</th><td>@Model.EmergencyContactName (@Model.EmergencyContactPhone)</td></tr>
+        <tr><th>Medical history</th><td>@Model.MedicalHistory</td></tr>
+        <tr><th>Allergies</th><td>@Model.Allergies</td></tr>
+        <tr><th>Status</th><td><partial name="_StatusBadge" model="@Model.Status" /></td></tr>
+    </dl>
+</div>
+
+<div class="hms-card">
+    <h2>Appointment history</h2>
+    @if (Model.Appointments.Count == 0)
+    {
+        <partial name="_EmptyState" model="@("No records found.")" />
+    }
+    else
+    {
+        <table class="hms-table">
+            <thead><tr><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th></tr></thead>
+            <tbody>
+                @foreach (var appointment in Model.Appointments.OrderByDescending(a => a.AppointmentDate).ThenByDescending(a => a.StartTime))
+                {
+                    <tr>
+                        <td>@appointment.Doctor?.FullName</td>
+                        <td>@appointment.AppointmentDate.ToString("dd MMM yyyy")</td>
+                        <td>@appointment.StartTime.ToString(@"hh\:mm")</td>
+                        <td><partial name="_StatusBadge" model="@appointment.Status" /></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

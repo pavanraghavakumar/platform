@@ -3,3 +3,26 @@
 .nexgile/greenfield/thread.jsonl
 .nexgile/greenfield/checkpoints/
 docs/input/
+
+# .NET build output
+bin/
+obj/
+*.user
+*.suo
+
+# Local database
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+logs/
+
+# Environment files
+.env
+.env.*
+
+# Node / Playwright
+node_modules/
+test-results/
+playwright-report/

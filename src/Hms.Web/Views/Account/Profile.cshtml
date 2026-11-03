@@ -1,0 +1,26 @@
+@model Hms.Web.Models.Entities.ApplicationUser?
+@{
+    ViewData["Title"] = "My profile";
+}
+<h1>My profile</h1>
+
+<div class="hms-card">
+    <dl class="hms-table">
+        <tr><th>User name</th><td>@Model?.UserName</td></tr>
+        <tr><th>Email</th><td>@Model?.Email</td></tr>
+        <tr><th>Phone number</th><td>@Model?.PhoneNumber</td></tr>
+    </dl>
+</div>
+
+<div class="hms-card">
+    <h2>Save a new phone number</h2>
+    <form asp-controller="Account" asp-action="Profile" method="post">
+        <div class="hms-field">
+            <label for="phoneNumber">Phone number</label>
+            <input id="phoneNumber" name="phoneNumber" type="tel" value="@Model?.PhoneNumber" />
+        </div>
+        <div class="hms-form-actions">
+            <button type="submit" class="hms-btn hms-btn-primary">Save</button>
+        </div>
+    </form>
+</div>
