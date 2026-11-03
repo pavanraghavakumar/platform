@@ -1,8 +1,27 @@
 @{
     ViewData["Title"] = "Access denied";
 }
-<div class="hms-card">
-    <h1>Access denied</h1>
-    <p>You do not have access to this page.</p>
-    <a class="hms-btn hms-btn-primary" asp-controller="Dashboard" asp-action="Index">Back to dashboard</a>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/account.css" asp-append-version="true" />
+}
+
+<div class="hms-auth-card hms-auth-denied" id="hmsAuthCard">
+    <div class="hms-auth-brand">
+        <span class="hms-auth-logo hms-auth-logo-danger" aria-hidden="true">
+            <i class="bi bi-shield-exclamation"></i>
+        </span>
+        <h1>Access denied</h1>
+    </div>
+
+    <div class="hms-alert hms-alert-error" role="alert">
+        <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+        <span>You do not have access to this page.</span>
+    </div>
+
+    <a class="hms-btn hms-btn-primary hms-auth-submit" asp-controller="Dashboard" asp-action="Index">Back to dashboard</a>
 </div>
+
+@section Scripts {
+    <script src="~/js/pages/account.js" asp-append-version="true"></script>
+}
