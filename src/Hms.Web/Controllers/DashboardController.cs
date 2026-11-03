@@ -1,4 +1,6 @@
 using Hms.Web.Data;
+using Hms.Web.Services;
+using Hms.Web.ViewModels.Dashboard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,10 +11,14 @@ namespace Hms.Web.Controllers;
 public class DashboardController : Controller
 {
     private readonly UserManager<Models.Entities.ApplicationUser> _userManager;
+    private readonly IReportService _reportService;
 
-    public DashboardController(UserManager<Models.Entities.ApplicationUser> userManager)
+    public DashboardController(
+        UserManager<Models.Entities.ApplicationUser> userManager,
+        IReportService reportService)
     {
         _userManager = userManager;
+        _reportService = reportService;
     }
 
     public async Task<IActionResult> Index()
@@ -42,7 +48,11 @@ public class DashboardController : Controller
     }
 
     [Authorize(Roles = Roles.Admin)]
-    public IActionResult Admin() => View();
+    public async Task<IActionResult> Admin()
+    {
+        var data = await _reportService.GetAdminDashboardAsync(DateTime.UtcNow);
+        return View(AdminDashboardViewModel.FromData(data));
+    }
 
     [Authorize(Roles = Roles.Doctor)]
     public IActionResult Doctor() => View();
