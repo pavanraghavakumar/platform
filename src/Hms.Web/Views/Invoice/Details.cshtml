@@ -22,15 +22,22 @@
         <div><dt>Date</dt><dd>@invoice.CreatedAt.ToString("dd MMM yyyy")</dd></div>
     </dl>
 
-    <table class="hms-table billing-table">
-        <thead><tr><th>Description</th><th class="billing-amount">Amount</th></tr></thead>
-        <tbody>
-            @foreach (var item in Model.Items)
-            {
-                <tr><td data-label="Description">@item.Description</td><td data-label="Amount" class="billing-amount">₹@item.Amount.ToString("0.00")</td></tr>
-            }
-        </tbody>
-    </table>
+    @if (Model.Items.Count == 0)
+    {
+        <partial name="_EmptyState" />
+    }
+    else
+    {
+        <table class="hms-table billing-table">
+            <thead><tr><th>Description</th><th class="billing-amount">Amount</th></tr></thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr><td data-label="Description">@item.Description</td><td data-label="Amount" class="billing-amount">₹@item.Amount.ToString("0.00")</td></tr>
+                }
+            </tbody>
+        </table>
+    }
 
     <div class="billing-totals">
         <div class="billing-total-row"><span>Lines total</span><span>₹@Model.LinesTotal.ToString("0.00")</span></div>
@@ -46,7 +53,7 @@
     <h2 class="billing-section-title">Payments</h2>
     @if (Model.Payments.Count == 0)
     {
-        <p class="hms-empty">No payments recorded.</p>
+        <partial name="_EmptyState" />
     }
     else
     {

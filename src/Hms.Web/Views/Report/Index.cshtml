@@ -22,11 +22,24 @@
     else { <div class="report-table-wrap"><table class="hms-table"><thead><tr><th>Patient</th><th>Doctor</th><th>Date</th><th>Status</th></tr></thead><tbody>@foreach (var row in Model.Appointments.Appointments) { <tr><td>@row.PatientName</td><td>@row.DoctorName</td><td>@row.Date.ToString("dd MMM yyyy")</td><td><span class="hms-status">@row.Status</span></td></tr> }</tbody></table></div> }
 </section>
 
-<section id="departments" class="report-section hms-card"><h2>Department activity</h2><div class="report-table-wrap"><table class="hms-table"><thead><tr><th>Department</th><th>Doctors</th><th>Appointments</th></tr></thead><tbody>@foreach (var row in Model.Departments.Departments) { <tr><td>@row.DepartmentName</td><td>@row.DoctorCount</td><td>@row.AppointmentCount</td></tr> }</tbody></table></div></section>
-<section id="doctors" class="report-section hms-card"><h2>Doctor performance</h2><div class="report-table-wrap"><table class="hms-table"><thead><tr><th>Doctor</th><th>Completed consultations</th><th>Invoice revenue</th></tr></thead><tbody>@foreach (var row in Model.Doctors.Doctors) { <tr><td>@row.DoctorName</td><td>@row.CompletedConsultations</td><td>₹@row.Revenue.ToString("N2")</td></tr> }</tbody></table></div></section>
+<section id="departments" class="report-section hms-card"><h2>Department activity</h2>
+    @if (Model.Departments.Departments.Count == 0) { <partial name="_EmptyState" /> }
+    else { <div class="report-table-wrap"><table class="hms-table"><thead><tr><th>Department</th><th>Doctors</th><th>Appointments</th></tr></thead><tbody>@foreach (var row in Model.Departments.Departments) { <tr><td>@row.DepartmentName</td><td>@row.DoctorCount</td><td>@row.AppointmentCount</td></tr> }</tbody></table></div> }
+</section>
+<section id="doctors" class="report-section hms-card"><h2>Doctor performance</h2>
+    @if (Model.Doctors.Doctors.Count == 0) { <partial name="_EmptyState" /> }
+    else { <div class="report-table-wrap"><table class="hms-table"><thead><tr><th>Doctor</th><th>Completed consultations</th><th>Invoice revenue</th></tr></thead><tbody>@foreach (var row in Model.Doctors.Doctors) { <tr><td>@row.DoctorName</td><td>@row.CompletedConsultations</td><td>₹@row.Revenue.ToString("N2")</td></tr> }</tbody></table></div> }
+</section>
 
-<section id="laboratory" class="report-section hms-card"><div class="report-heading"><h2>Laboratory</h2><strong>@Model.Laboratory.CompletedResults completed results</strong></div><div class="status-counts">@foreach (var item in Model.Laboratory.Statuses) { <span><b>@item.Count</b> @item.Status</span> }</div></section>
-<section id="pharmacy" class="report-section hms-card"><div class="report-heading"><h2>Pharmacy stock</h2><div class="status-counts"><span><b>@Model.Pharmacy.LowStockCount</b> Low Stock</span><span><b>@Model.Pharmacy.OutOfStockCount</b> Out of Stock</span></div></div><div class="report-table-wrap"><table class="hms-table"><thead><tr><th>Medicine</th><th>Category</th><th>Stock</th><th>Status</th><th>Earliest expiry</th></tr></thead><tbody>@foreach (var row in Model.Pharmacy.Medicines) { <tr><td>@row.MedicineName</td><td>@row.CategoryName</td><td>@row.StockQuantity</td><td><span class="hms-status">@row.Status</span></td><td>@(row.EarliestExpiryDate?.ToString("dd MMM yyyy") ?? "—")</td></tr> }</tbody></table></div></section>
+<section id="laboratory" class="report-section hms-card">
+    <div class="report-heading"><h2>Laboratory</h2><strong>@Model.Laboratory.CompletedResults completed results</strong></div>
+    @if (Model.Laboratory.Statuses.Count == 0) { <partial name="_EmptyState" /> }
+    else { <div class="status-counts">@foreach (var item in Model.Laboratory.Statuses) { <span><b>@item.Count</b> @item.Status</span> }</div> }
+</section>
+<section id="pharmacy" class="report-section hms-card"><div class="report-heading"><h2>Pharmacy stock</h2><div class="status-counts"><span><b>@Model.Pharmacy.LowStockCount</b> Low Stock</span><span><b>@Model.Pharmacy.OutOfStockCount</b> Out of Stock</span></div></div>
+    @if (Model.Pharmacy.Medicines.Count == 0) { <partial name="_EmptyState" /> }
+    else { <div class="report-table-wrap"><table class="hms-table"><thead><tr><th>Medicine</th><th>Category</th><th>Stock</th><th>Status</th><th>Earliest expiry</th></tr></thead><tbody>@foreach (var row in Model.Pharmacy.Medicines) { <tr><td>@row.MedicineName</td><td>@row.CategoryName</td><td>@row.StockQuantity</td><td><span class="hms-status">@row.Status</span></td><td>@(row.EarliestExpiryDate?.ToString("dd MMM yyyy") ?? "—")</td></tr> }</tbody></table></div> }
+</section>
 
 <section id="revenue" class="report-section hms-card"><h2>Revenue</h2><div class="report-metrics"><div><span>Payments recorded</span><strong>₹@Model.Revenue.TotalPaymentsRecorded.ToString("N2")</strong></div><div><span>Refunded</span><strong>₹@Model.Revenue.TotalRefunded.ToString("N2")</strong></div><div><span>Net revenue</span><strong>₹@Model.Revenue.NetRevenue.ToString("N2")</strong></div><div><span>Outstanding</span><strong>₹@Model.Revenue.OutstandingBalance.ToString("N2")</strong></div></div><div class="report-chart"><canvas id="revenueChart" data-labels='@System.Text.Json.JsonSerializer.Serialize(Model.Revenue.DailyRevenue.Select(p => p.Date.ToString("dd MMM")))' data-values='@System.Text.Json.JsonSerializer.Serialize(Model.Revenue.DailyRevenue.Select(p => p.NetRevenue))' aria-label="Net revenue per day"></canvas></div></section>
 

@@ -29,17 +29,22 @@
     @if (isSignedIn)
     {
         <div class="hms-shell" id="hmsShell">
-            <aside class="hms-sidebar" id="hmsSidebar">
+            <aside class="hms-sidebar" id="hmsSidebar" aria-label="Main navigation" aria-hidden="false">
                 <div class="hms-sidebar-brand">
                     <i class="bi bi-heart-pulse-fill"></i>
                     <span class="hms-sidebar-label">@hospitalName</span>
+                    <button type="button" class="hms-sidebar-close" id="hmsSidebarClose" aria-label="Close menu">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
                 </div>
                 <partial name="_Sidebar" />
             </aside>
 
+            <div class="hms-backdrop" id="hmsBackdrop" hidden></div>
+
             <div class="hms-main">
                 <header class="hms-topbar">
-                    <button type="button" class="hms-icon-btn" id="hmsSidebarToggle" aria-label="Toggle sidebar">
+                    <button type="button" class="hms-icon-btn hms-menu-btn" id="hmsSidebarToggle" aria-label="Toggle sidebar" aria-controls="hmsSidebar" aria-expanded="true">
                         <i class="bi bi-list"></i>
                     </button>
                     <span class="hms-topbar-title">@hospitalName</span>

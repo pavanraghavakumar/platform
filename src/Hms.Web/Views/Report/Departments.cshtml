@@ -2,5 +2,16 @@
 @{
     ViewData["Title"] = "Department report";
 }
-<h1>Departments</h1><partial name="_DateFilter" model="Model.Period" /><div class="hms-card report-section"><div class="report-table-wrap"><table class="hms-table"><thead><tr><th>Department</th><th>Doctors</th><th>Appointments</th></tr></thead><tbody>@foreach(var row in Model.Departments){<tr><td>@row.DepartmentName</td><td>@row.DoctorCount</td><td>@row.AppointmentCount</td></tr>}</tbody></table></div></div>
+<h1>Departments</h1>
+<partial name="_DateFilter" model="Model.Period" />
+<div class="hms-card report-section">
+    @if (Model.Departments.Count == 0)
+    {
+        <partial name="_EmptyState" />
+    }
+    else
+    {
+        <div class="report-table-wrap"><table class="hms-table"><thead><tr><th>Department</th><th>Doctors</th><th>Appointments</th></tr></thead><tbody>@foreach(var row in Model.Departments){<tr><td>@row.DepartmentName</td><td>@row.DoctorCount</td><td>@row.AppointmentCount</td></tr>}</tbody></table></div>
+    }
+</div>
 @section Styles { <link rel="stylesheet" href="~/css/pages/report.css" asp-append-version="true" /> }

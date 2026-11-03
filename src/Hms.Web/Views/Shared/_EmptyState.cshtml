@@ -1,5 +1,8 @@
 @model string?
-<div class="hms-empty-state">
-    <i class="bi bi-inbox"></i>
-    <p>@(string.IsNullOrWhiteSpace(Model) ? "No records found." : Model)</p>
+@{
+    var message = string.IsNullOrWhiteSpace(Model) ? "No records found." : Model;
+}
+<div class="hms-empty-state" role="status">
+    <i class="bi bi-inbox" aria-hidden="true"></i>
+    <p>@message</p>
 </div>
