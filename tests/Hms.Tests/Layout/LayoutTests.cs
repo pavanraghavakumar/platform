@@ -176,6 +176,20 @@ public class LayoutTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Sidebar_fills_the_viewport_and_its_navigation_scrolls_independently()
+    {
+        var html = await SignInAndGetAsync("/Dashboard/Admin");
+        var css = await ReadAssetAsync("/css/site.css");
+
+        // 17.10: the sidebar is constrained to the browser height while only its navigation
+        // becomes a vertical scroll container, so scrolling a long menu does not scroll content.
+        Assert.Contains("id=\"hmsSidebarNav\"", html);
+        Assert.Contains("aria-label=\"Sidebar navigation\"", html);
+        Assert.Matches(@"(?s)\.hms-sidebar\s*\{[^}]*height:\s*100vh;[^}]*position:\s*sticky;[^}]*overflow:\s*hidden;", css);
+        Assert.Matches(@"(?s)\.hms-nav\s*\{[^}]*flex:\s*1 1 auto;[^}]*min-height:\s*0;[^}]*overflow-y:\s*auto;[^}]*overscroll-behavior-y:\s*contain;", css);
+    }
+
+    [Fact]
     public async Task Empty_state_partial_renders_no_records_found()
     {
         // 17.7: the shared empty state partial renders "No records found." when a list has no rows.

@@ -4,7 +4,7 @@
     var isReceptionist = User.IsInRole(Roles.Receptionist);
     var isPatient = User.IsInRole(Roles.Patient);
 }
-<nav class="hms-nav">
+<nav class="hms-nav" id="hmsSidebarNav" aria-label="Sidebar navigation">
     <ul>
         @if (isAdmin)
         {

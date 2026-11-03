@@ -80,13 +80,15 @@ h1 {
 .hms-sidebar {
     width: var(--hms-sidebar-width);
     flex: 0 0 var(--hms-sidebar-width);
+    height: 100vh;
+    position: sticky;
+    top: 0;
     background: var(--hms-primary);
     color: #fff;
     display: flex;
     flex-direction: column;
     transition: width .18s ease, flex-basis .18s ease;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
 }
 
 .hms-sidebar-close {
@@ -120,6 +122,15 @@ h1 {
     font-size: 22px;
     color: var(--hms-accent);
     flex: 0 0 auto;
+}
+
+.hms-nav {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
 }
 
 .hms-nav ul {
@@ -769,6 +780,7 @@ h1 {
         top: 0;
         left: 0;
         bottom: 0;
+        height: 100vh;
         z-index: 70;
         width: var(--hms-sidebar-width);
         max-width: 82vw;
