@@ -44,7 +44,7 @@
     - _Verify: dotnet test --filter FullyQualifiedName~AdminDashboardTests_
     - _Area: ui_
     - _Issue: #18_
-  - [ ] 3.2 Departments and staff
+  - [x] 3.2 Departments and staff
     - Build the department list and create form (status Active, duplicate name shows "A department with this name already exists.") and the deactivate action that sets Inactive and keeps doctors and appointments; build the staff list and create form (full name, email, phone, role, designation, department) that saves the staff member Active with a sign-in account, and the deactivate action that sets Inactive and blocks that person's sign-in with "Your account is deactivated.".
     - _Requirements: 2.6, 2.7, 2.8, 2.9, 2.10, 17.4, 17.5, 17.7_
     - _Depends: 1_
@@ -101,8 +101,8 @@
     - _Area: ui_
     - _Issue: #24_
 
-- [ ] 7. Prescriptions
-  - [ ] 7.1 Prescription creation and printable page
+- [x] 7. Prescriptions
+  - [x] 7.1 Prescription creation and printable page
     - Build the prescription form that adds a medicine line with dosage, frequency, duration in days and instructions, saves the prescription Active linked to the patient, the Doctor and the consultation, and shows "Add at least one medicine." when empty; build the prescription history newest first, the status change to Completed or Cancelled with its audit entry, and the printable page with the hospital name, patient name and patient ID, Doctor name, date, each medicine and a Print button.
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6_
     - _Depends: 1_
@@ -141,8 +141,8 @@
     - _Area: ui_
     - _Issue: #28_
 
-- [ ] 11. Reports and analytics
-  - [ ] 11.1 Reports page
+- [x] 11. Reports and analytics
+  - [x] 11.1 Reports page
     - Build `/Report/Index` with a start and end date picker and the patient registration, appointment, department, doctor performance, laboratory, pharmacy stock and revenue reports, each showing the figures and tables `requirements.md` names, the revenue chart of net revenue per day drawn with the local Chart.js, and the access check for a person who is not an Admin.
     - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8_
     - _Depends: 1_
@@ -151,8 +151,8 @@
     - _Area: ui_
     - _Issue: #29_
 
-- [ ] 12. Doctor dashboard
-  - [ ] 12.1 Doctor dashboard and patient list
+- [x] 12. Doctor dashboard
+  - [x] 12.1 Doctor dashboard and patient list
     - Build `/Dashboard/Doctor` with KPI cards for today's appointments, Checked In appointments waiting, completed consultations today and lab results completed today; today's appointments with time, patient name, patient ID and status earliest first; the next 5 upcoming appointments; the 5 most recent notifications newest first; the patient list of only that Doctor's patients with patient ID, name, last appointment date and status; and the Start consultation button that opens the consultation page.
     - _Requirements: 12.1, 12.2, 12.3, 12.4, 12.5, 12.6_
     - _Depends: 1_
