@@ -17,7 +17,7 @@
     - _Issue: #15_
 
 - [ ] 2. Sign-in, password and profile pages
-  - [ ] 2.1 Sign-in, forgot and reset password pages
+  - [x] 2.1 Sign-in, forgot and reset password pages
     - Build the sign-in page at `/` and `/Account/Login` as a centred card on the navy-to-teal gradient with the hospital name and logo, user name and password fields, a Sign in button, a Forgot password link and the red alert "Invalid user name or password."; sign in redirects to `/Dashboard/Admin`, `/Dashboard/Doctor`, `/Dashboard/Receptionist` or `/Dashboard/Patient` by role, and a deactivated account is blocked with "Your account is deactivated.".
     - Build the forgot-password page that shows the reset link on the page itself, and the reset-password page the link opens; build the sign-out action that ends the session and returns to `/`, and the access-denied page showing "You do not have access to this page.".
     - _Requirements: 1.2, 1.3, 1.4, 1.5, 1.6, 1.10_
@@ -90,8 +90,8 @@
     - _Area: ui_
     - _Issue: #23_
 
-- [ ] 6. Consultation and medical records
-  - [ ] 6.1 Consultation page and medical records
+- [x] 6. Consultation and medical records
+  - [x] 6.1 Consultation page and medical records
     - Build the consultation page for a Checked In or In Progress appointment showing the patient's details, allergies, medical history and the last 5 consultations with diagnosis and date, and the form for symptoms, diagnosis, blood pressure, temperature, pulse, weight, treatment plan, observations and follow-up recommendations that saves a Draft record, shows "Diagnosis is required." without a diagnosis, and finalizes with "Medical record finalized.".
     - Build the patient's medical record list newest first with date, doctor, diagnosis and status, the record page, the ownership check showing "You do not have access to this page." for a Doctor with no appointment with that patient, and the audit entry when a Final record is edited.
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7_
