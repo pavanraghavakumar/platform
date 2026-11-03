@@ -171,8 +171,8 @@
     - _Area: ui_
     - _Issue: #31_
 
-- [ ] 14. Patient dashboard and patient portal
-  - [ ] 14.1 Patient dashboard and portal pages
+- [x] 14. Patient dashboard and patient portal
+  - [x] 14.1 Patient dashboard and portal pages
     - Build `/Dashboard/Patient` with the next appointment, the number of upcoming appointments, the number of unpaid invoices and the outstanding balance, and the 5 most recent notifications; build the Book appointment page listing Active doctors with specialization, department and consultation fee and the free slots; My appointments newest first with a Cancel button on Pending and Confirmed appointments behind a confirmation dialog; My records with the Final records; and My prescriptions, My lab reports and My invoices, each opening its printable page, with "You do not have access to this page." for another patient's record.
     - _Requirements: 14.1, 14.2, 14.3, 14.4, 14.5, 14.6, 14.7, 14.8, 14.9_
     - _Depends: 1_
