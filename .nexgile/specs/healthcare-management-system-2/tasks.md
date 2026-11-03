@@ -199,7 +199,7 @@
     - _Area: ui_
     - _Issue: #34_
 
-- [ ] 16. Full-height independently scrolling sidebar
+- [x] 16. Full-height independently scrolling sidebar
   - Make the signed-in sidebar fill the browser height and keep its navigation independently vertically scrollable when the menu is taller than the browser window, without making the main content scroll with it.
   - Update `LayoutTests.cs` and the saved `e2e/layout.spec.ts` journey to check the full-height sidebar and independent sidebar navigation scrolling at a short browser height.
   - _Requirements: 17.10_
