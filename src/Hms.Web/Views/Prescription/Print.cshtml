@@ -1,27 +1,65 @@
-@model Hms.Web.Models.Entities.Prescription
+@model Hms.Web.ViewModels.Prescription.PrescriptionPrintViewModel
 @{
     ViewData["Title"] = "Prescription";
     Layout = "_PrintLayout";
 }
-<h2>Prescription</h2>
-<dl class="hms-table">
-    <tr><th>Patient</th><td>@Model.Patient?.FullName (@Model.Patient?.PatientCode)</td></tr>
-    <tr><th>Doctor</th><td>@Model.Doctor?.FullName</td></tr>
-    <tr><th>Date</th><td>@Model.CreatedAt.ToString("dd MMM yyyy")</td></tr>
-</dl>
 
-<table class="hms-table">
+<link rel="stylesheet" href="~/css/pages/clinical.css" asp-append-version="true" />
+
+<div class="prescription-print-title">
+    <div>
+        <h2>Prescription</h2>
+        <p>Prescription #@Model.Id</p>
+    </div>
+    <span class="hms-status-badge">@Model.Status</span>
+</div>
+
+@if (TempData["Error"] is string error)
+{
+    <div class="hms-alert hms-alert-error">@error</div>
+}
+
+<table class="hms-table prescription-print-details">
+    <tbody>
+        <tr><th>Patient name</th><td>@Model.PatientName</td><th>Patient ID</th><td>@Model.PatientCode</td></tr>
+        <tr><th>Doctor</th><td>@Model.DoctorName</td><th>Date</th><td>@Model.Date.ToString("dd MMM yyyy")</td></tr>
+    </tbody>
+</table>
+
+<table class="hms-table prescription-medicine-table">
     <thead><tr><th>Medicine</th><th>Dosage</th><th>Frequency</th><th>Duration</th><th>Instructions</th></tr></thead>
     <tbody>
         @foreach (var item in Model.Items)
         {
             <tr>
-                <td>@item.Medicine?.Name</td>
-                <td>@item.Dosage</td>
-                <td>@item.Frequency</td>
-                <td>@item.DurationDays days</td>
-                <td>@item.Instructions</td>
+                <td data-label="Medicine">@item.MedicineName</td>
+                <td data-label="Dosage">@item.Dosage</td>
+                <td data-label="Frequency">@item.Frequency</td>
+                <td data-label="Duration">@item.DurationDays days</td>
+                <td data-label="Instructions">@(string.IsNullOrWhiteSpace(item.Instructions) ? "—" : item.Instructions)</td>
             </tr>
         }
     </tbody>
 </table>
+
+@if (!string.IsNullOrWhiteSpace(Model.Notes))
+{
+    <section class="prescription-print-notes">
+        <h3>Notes</h3>
+        <p>@Model.Notes</p>
+    </section>
+}
+
+@if (User.IsInRole(Roles.Doctor) && Model.Status == EntityStatus.PrescriptionActive)
+{
+    <div class="prescription-status-actions hms-print-actions">
+        <form asp-action="SetStatus" asp-route-id="@Model.Id" method="post">
+            <input type="hidden" name="status" value="@EntityStatus.PrescriptionCompleted" />
+            <button class="hms-btn hms-btn-primary" type="submit">Mark completed</button>
+        </form>
+        <form asp-action="SetStatus" asp-route-id="@Model.Id" method="post">
+            <input type="hidden" name="status" value="@EntityStatus.PrescriptionCancelled" />
+            <button class="hms-btn hms-btn-danger" type="submit">Cancel prescription</button>
+        </form>
+    </div>
+}

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Clinical pages — consultation and medical records
+   Clinical pages — consultations, medical records and prescriptions
    ========================================================================== */
 
 .clinical-grid {
@@ -94,8 +94,164 @@
     border-top: 1px solid var(--hms-border);
 }
 
+.prescription-context {
+    margin-bottom: var(--hms-space-6);
+}
+
+.prescription-notes {
+    margin-top: var(--hms-space-5);
+}
+
+.prescription-section-head,
+.prescription-print-title,
+.prescription-status-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--hms-space-4);
+}
+
+.prescription-section-head p,
+.prescription-print-title p {
+    margin: 0;
+    color: var(--hms-text-muted);
+}
+
+.prescription-lines {
+    display: grid;
+    gap: var(--hms-space-4);
+    margin-top: var(--hms-space-5);
+}
+
+.prescription-line {
+    display: grid;
+    grid-template-columns: minmax(150px, 1.4fr) repeat(3, minmax(120px, 1fr)) minmax(180px, 1.5fr) auto;
+    gap: var(--hms-space-3);
+    align-items: end;
+    padding: var(--hms-space-4);
+    border: 1px solid var(--hms-border);
+    border-radius: var(--hms-radius-card);
+    background: var(--hms-bg);
+}
+
+.prescription-remove {
+    margin-bottom: 1px;
+}
+
+.prescription-line-error:empty {
+    display: none;
+}
+
+.prescription-print-title {
+    margin-bottom: var(--hms-space-5);
+}
+
+.prescription-print-details {
+    margin-bottom: var(--hms-space-5);
+}
+
+.prescription-print-details th {
+    width: 18%;
+}
+
+.prescription-medicine-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.prescription-medicine-table th,
+.prescription-medicine-table td {
+    overflow-wrap: anywhere;
+}
+
+.prescription-print-notes {
+    margin-top: var(--hms-space-5);
+    padding: var(--hms-space-4);
+    border: 1px solid var(--hms-border);
+}
+
+.prescription-status-actions {
+    justify-content: flex-end;
+}
+
 @media (max-width: 1024px) {
     .clinical-grid {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    .prescription-line {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .prescription-instructions {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 640px) {
+    .prescription-section-head,
+    .prescription-print-title,
+    .prescription-status-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .prescription-line {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .prescription-instructions {
+        grid-column: auto;
+    }
+
+    .prescription-medicine-table,
+    .prescription-medicine-table tbody,
+    .prescription-medicine-table tr,
+    .prescription-medicine-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .prescription-medicine-table {
+        border: 0;
+    }
+
+    .prescription-medicine-table thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    .prescription-medicine-table tr {
+        margin-bottom: var(--hms-space-4);
+        overflow: hidden;
+        border: 1px solid var(--hms-border);
+        border-radius: var(--hms-radius-card);
+    }
+
+    .prescription-medicine-table td {
+        display: grid;
+        grid-template-columns: minmax(88px, 35%) minmax(0, 1fr);
+        gap: var(--hms-space-3);
+        border: 0;
+        border-bottom: 1px solid var(--hms-border);
+    }
+
+    .prescription-medicine-table td:last-child {
+        border-bottom: 0;
+    }
+
+    .prescription-medicine-table td::before {
+        content: attr(data-label);
+        color: var(--hms-text-muted);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
     }
 }

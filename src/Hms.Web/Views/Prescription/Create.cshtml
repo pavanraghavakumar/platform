@@ -1,40 +1,118 @@
-@model Hms.Web.Models.Entities.Prescription
+@model Hms.Web.ViewModels.Prescription.PrescriptionCreateViewModel
 @{
     ViewData["Title"] = "New prescription";
-    var medicines = ViewData["Medicines"] as IReadOnlyList<Hms.Web.Models.Entities.Medicine> ?? new List<Hms.Web.Models.Entities.Medicine>();
 }
-<h1>New prescription</h1>
 
-<div class="hms-card">
-    <form asp-controller="Prescription" asp-action="Create" method="post">
-        <div asp-validation-summary="All" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
-        <div class="hms-form-grid">
-            <div class="hms-field"><label asp-for="PatientId">Patient ID</label><input asp-for="PatientId" type="number" /></div>
-            <div class="hms-field"><label asp-for="DoctorId">Doctor ID</label><input asp-for="DoctorId" type="number" /></div>
-            <div class="hms-field"><label asp-for="MedicalRecordId">Medical record ID</label><input asp-for="MedicalRecordId" type="number" /></div>
-            <div class="hms-field"><label asp-for="Notes">Notes</label><input asp-for="Notes" /></div>
-        </div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/clinical.css" asp-append-version="true" />
+}
 
-        <h2>Medicine line</h2>
-        <div class="hms-form-grid">
-            <div class="hms-field">
-                <label for="medicineId">Medicine</label>
-                <select id="medicineId" name="Items[0].MedicineId">
-                    @foreach (var medicine in medicines)
-                    {
-                        <option value="@medicine.Id">@medicine.Name</option>
-                    }
-                </select>
-            </div>
-            <div class="hms-field"><label for="dosage">Dosage</label><input id="dosage" name="Items[0].Dosage" /></div>
-            <div class="hms-field"><label for="frequency">Frequency</label><input id="frequency" name="Items[0].Frequency" /></div>
-            <div class="hms-field"><label for="durationDays">Duration (days)</label><input id="durationDays" name="Items[0].DurationDays" type="number" /></div>
-            <div class="hms-field"><label for="instructions">Instructions</label><input id="instructions" name="Items[0].Instructions" /></div>
-        </div>
-
-        <div class="hms-form-actions">
-            <a class="hms-btn hms-btn-secondary" asp-controller="Dashboard" asp-action="Doctor">Cancel</a>
-            <button type="submit" class="hms-btn hms-btn-primary">Save prescription</button>
-        </div>
-    </form>
+<div class="hms-page-header">
+    <div>
+        <h1>New prescription</h1>
+        <p class="hms-page-subtitle">Add one or more medicines for this consultation.</p>
+    </div>
 </div>
+
+<form asp-controller="Prescription" asp-action="Create" method="post" id="prescription-form">
+    <input asp-for="AppointmentId" type="hidden" />
+
+    <div asp-validation-summary="ModelOnly" class="hms-alert hms-alert-error"></div>
+    <span asp-validation-for="Items" class="hms-alert hms-alert-error prescription-line-error"></span>
+
+    <section class="hms-card prescription-context" aria-labelledby="prescription-context-heading">
+        <h2 id="prescription-context-heading">Consultation</h2>
+        <dl class="clinical-details">
+            <dt>Patient</dt><dd>@Model.PatientName</dd>
+            <dt>Patient ID</dt><dd>@Model.PatientCode</dd>
+            <dt>Doctor</dt><dd>@Model.DoctorName</dd>
+            <dt>Medical record</dt><dd>#@Model.MedicalRecordId</dd>
+        </dl>
+        <div class="hms-field prescription-notes">
+            <label asp-for="Notes">Notes</label>
+            <textarea asp-for="Notes" rows="3"></textarea>
+        </div>
+    </section>
+
+    <section class="hms-card" aria-labelledby="medicine-lines-heading">
+        <div class="prescription-section-head">
+            <div>
+                <h2 id="medicine-lines-heading">Medicines</h2>
+                <p>Include dosage, frequency, duration and any instructions for each medicine.</p>
+            </div>
+            <button type="button" class="hms-btn hms-btn-secondary" id="add-medicine-line">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i> Add medicine
+            </button>
+        </div>
+
+        <div id="medicine-lines" class="prescription-lines">
+            @for (var i = 0; i < Model.Items.Count; i++)
+            {
+                <div class="prescription-line" data-prescription-line>
+                    <div class="hms-field">
+                        <label asp-for="Items[i].MedicineId">Medicine</label>
+                        <select asp-for="Items[i].MedicineId" data-field="MedicineId">
+                            <option value="">Select medicine</option>
+                            @foreach (var medicine in Model.Medicines)
+                            {
+                                <option value="@medicine.Id">@medicine.Name</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Items[i].MedicineId"></span>
+                    </div>
+                    <div class="hms-field">
+                        <label asp-for="Items[i].Dosage">Dosage</label>
+                        <input asp-for="Items[i].Dosage" data-field="Dosage" placeholder="e.g. 500 mg" />
+                        <span asp-validation-for="Items[i].Dosage"></span>
+                    </div>
+                    <div class="hms-field">
+                        <label asp-for="Items[i].Frequency">Frequency</label>
+                        <input asp-for="Items[i].Frequency" data-field="Frequency" placeholder="e.g. Twice daily" />
+                        <span asp-validation-for="Items[i].Frequency"></span>
+                    </div>
+                    <div class="hms-field">
+                        <label asp-for="Items[i].DurationDays">Duration (days)</label>
+                        <input asp-for="Items[i].DurationDays" data-field="DurationDays" type="number" min="1" />
+                        <span asp-validation-for="Items[i].DurationDays"></span>
+                    </div>
+                    <div class="hms-field prescription-instructions">
+                        <label asp-for="Items[i].Instructions">Instructions</label>
+                        <input asp-for="Items[i].Instructions" data-field="Instructions" placeholder="e.g. Take after food" />
+                    </div>
+                    <button type="button" class="hms-btn hms-btn-danger prescription-remove" data-remove-line aria-label="Remove medicine line">
+                        <i class="bi bi-trash" aria-hidden="true"></i>
+                    </button>
+                </div>
+            }
+        </div>
+
+        <template id="medicine-line-template">
+            <div class="prescription-line" data-prescription-line>
+                <div class="hms-field">
+                    <label>Medicine</label>
+                    <select data-field="MedicineId">
+                        <option value="">Select medicine</option>
+                        @foreach (var medicine in Model.Medicines)
+                        {
+                            <option value="@medicine.Id">@medicine.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="hms-field"><label>Dosage</label><input data-field="Dosage" placeholder="e.g. 500 mg" /></div>
+                <div class="hms-field"><label>Frequency</label><input data-field="Frequency" placeholder="e.g. Twice daily" /></div>
+                <div class="hms-field"><label>Duration (days)</label><input data-field="DurationDays" type="number" min="1" /></div>
+                <div class="hms-field prescription-instructions"><label>Instructions</label><input data-field="Instructions" placeholder="e.g. Take after food" /></div>
+                <button type="button" class="hms-btn hms-btn-danger prescription-remove" data-remove-line aria-label="Remove medicine line"><i class="bi bi-trash" aria-hidden="true"></i></button>
+            </div>
+        </template>
+    </section>
+
+    <div class="hms-form-actions">
+        <a class="hms-btn hms-btn-secondary" asp-controller="Consultation" asp-action="Index" asp-route-appointmentId="@Model.AppointmentId">Cancel</a>
+        <button type="submit" class="hms-btn hms-btn-primary">Save prescription</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/js/pages/prescription.js" asp-append-version="true"></script>
+}
