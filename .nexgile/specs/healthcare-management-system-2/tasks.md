@@ -208,3 +208,12 @@
   - _Verify: dotnet test --filter FullyQualifiedName~LayoutTests_
   - _Area: ui_
   - _Issue: #44_
+
+- [ ] 17. Independently scrolling main content
+  - Make the signed-in main content fill the remaining browser height and scroll vertically in its own region when its content is taller than the browser window, while the sidebar navigation remains independently scrollable without either area moving the other.
+  - Update `LayoutTests.cs` and the saved `e2e/layout.spec.ts` journey from the built layout task to check independent scrolling of both the main content and sidebar navigation at a short browser height.
+  - _Requirements: 17.10_
+  - _Depends: 16_
+  - _Files: src/Hms.Web/Views/Shared/_Layout.cshtml, src/Hms.Web/wwwroot/css/site.css, tests/Hms.Tests/Layout/LayoutTests.cs, e2e/layout.spec.ts_
+  - _Verify: dotnet test --filter FullyQualifiedName~LayoutTests_
+  - _Area: ui_
