@@ -1,0 +1,32 @@
+@model Hms.Web.ViewModels.Dashboard.PatientBookingViewModel
+@{
+    ViewData["Title"] = "Book appointment";
+}
+@section Styles { <link rel="stylesheet" href="~/css/pages/portal.css" asp-append-version="true" /> }
+
+<div class="hms-page-header"><div><h1>Book appointment</h1><p>Choose an Active doctor, date and free time slot.</p></div></div>
+<div asp-validation-summary="ModelOnly" class="hms-alert hms-alert-error"></div>
+
+<form method="post" class="hms-card portal-book-form" data-portal-booking data-slots-url="@Url.Action("PortalSlots", "Dashboard")">
+    <div class="portal-doctor-grid">
+        @foreach (var doctor in Model.Doctors)
+        {
+            <label class="portal-doctor-card">
+                <input asp-for="DoctorId" type="radio" value="@doctor.Id" />
+                <span class="portal-doctor-icon"><i class="bi bi-person-badge"></i></span>
+                <strong>@doctor.FullName</strong>
+                <span>@doctor.Specialization</span>
+                <small>@doctor.DepartmentName</small>
+                <b>₹@doctor.ConsultationFee.ToString("N2")</b>
+            </label>
+        }
+    </div>
+    <span asp-validation-for="DoctorId" class="hms-field-error"></span>
+    <div class="portal-book-controls">
+        <div class="hms-field"><label asp-for="Date">Appointment date</label><input asp-for="Date" min="@DateTime.UtcNow.Date.ToString("yyyy-MM-dd")" data-portal-date /><span asp-validation-for="Date"></span></div>
+        <div class="hms-field"><label asp-for="Time">Free time slot</label><select asp-for="Time" data-portal-slots><option value="">Choose a doctor and date</option></select><span asp-validation-for="Time"></span></div>
+    </div>
+    <div class="hms-form-actions"><a class="hms-btn hms-btn-secondary" asp-action="Patient">Cancel</a><button class="hms-btn hms-btn-primary" type="submit">Book appointment</button></div>
+</form>
+@section Scripts { <script src="~/js/pages/portal.js" asp-append-version="true"></script> }
+

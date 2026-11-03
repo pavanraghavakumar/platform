@@ -1,0 +1,8 @@
+@model IReadOnlyList<Hms.Web.ViewModels.Dashboard.PatientInvoiceRow>
+@{ ViewData["Title"] = "My invoices"; }
+@section Styles { <link rel="stylesheet" href="~/css/pages/portal.css" asp-append-version="true" /> }
+<div class="hms-page-header"><h1>My invoices</h1></div><div class="hms-card portal-table-card">
+@if (Model.Count == 0) { <partial name="_EmptyState" /> } else {
+<table class="hms-table"><thead><tr><th>Invoice</th><th>Date</th><th>Total</th><th>Outstanding</th><th>Status</th><th></th></tr></thead><tbody>
+@foreach (var item in Model) { <tr><td data-label="Invoice">@item.InvoiceNumber</td><td data-label="Date">@item.Date.ToString("dd MMM yyyy")</td><td data-label="Total">₹@item.Total.ToString("N2")</td><td data-label="Outstanding">₹@item.Outstanding.ToString("N2")</td><td data-label="Status"><partial name="_StatusBadge" model="@item.Status" /></td><td><a class="hms-btn hms-btn-secondary" asp-controller="Invoice" asp-action="Print" asp-route-id="@item.Id">Open printable invoice</a></td></tr> }
+</tbody></table> }</div>
