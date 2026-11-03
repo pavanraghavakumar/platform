@@ -1,0 +1,12 @@
+@model Hms.Web.ViewModels.Report.ReportPeriod
+<form method="get" class="report-filter hms-card" aria-label="Report date range">
+    <div class="hms-field">
+        <label for="from">Start date</label>
+        <input id="from" name="from" type="date" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="hms-field">
+        <label for="to">End date</label>
+        <input id="to" name="to" type="date" value="@Model.EndDate.ToString("yyyy-MM-dd")" />
+    </div>
+    <button type="submit" class="hms-btn hms-btn-primary"><i class="bi bi-funnel"></i> Apply dates</button>
+</form>

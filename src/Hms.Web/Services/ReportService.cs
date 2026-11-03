@@ -1,5 +1,6 @@
 using Hms.Web.Data;
 using Hms.Web.Models.Entities;
+using Hms.Web.ViewModels.Report;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hms.Web.Services;
@@ -51,6 +52,15 @@ public interface IReportService
     Task<decimal> GetRevenueAsync(DateTime from, DateTime to);
 
     Task<AdminDashboardData> GetAdminDashboardAsync(DateTime today);
+
+    Task<ReportsIndexViewModel> GetReportsAsync(DateTime? from, DateTime? to);
+    Task<PatientReportViewModel> GetPatientReportAsync(ReportPeriod period);
+    Task<AppointmentReportViewModel> GetAppointmentReportAsync(ReportPeriod period);
+    Task<DepartmentReportViewModel> GetDepartmentReportAsync(ReportPeriod period);
+    Task<DoctorReportViewModel> GetDoctorReportAsync(ReportPeriod period);
+    Task<LaboratoryReportViewModel> GetLaboratoryReportAsync(ReportPeriod period);
+    Task<PharmacyReportViewModel> GetPharmacyReportAsync();
+    Task<RevenueReportViewModel> GetRevenueReportAsync(ReportPeriod period);
 }
 
 public class ReportService : IReportService
@@ -205,5 +215,138 @@ public class ReportService : IReportService
             recentPatients,
             recentAppointments,
             departments);
+    }
+
+    public async Task<ReportsIndexViewModel> GetReportsAsync(DateTime? from, DateTime? to)
+    {
+        var period = ReportPeriod.Create(from, to);
+        var patients = await GetPatientReportAsync(period);
+        var appointments = await GetAppointmentReportAsync(period);
+        var departments = await GetDepartmentReportAsync(period);
+        var doctors = await GetDoctorReportAsync(period);
+        var laboratory = await GetLaboratoryReportAsync(period);
+        var pharmacy = await GetPharmacyReportAsync();
+        var revenue = await GetRevenueReportAsync(period);
+        return new(period, patients, appointments, departments, doctors, laboratory, pharmacy, revenue);
+    }
+
+    public async Task<PatientReportViewModel> GetPatientReportAsync(ReportPeriod period)
+    {
+        var endExclusive = period.EndDate.AddDays(1);
+        var rows = await _db.Patients.AsNoTracking()
+            .Where(p => p.CreatedAt >= period.StartDate && p.CreatedAt < endExclusive)
+            .OrderByDescending(p => p.CreatedAt)
+            .ThenByDescending(p => p.Id)
+            .Select(p => new PatientRegistrationRow(p.PatientCode, p.FullName, p.CreatedAt))
+            .ToListAsync();
+        return new(period, rows);
+    }
+
+    public async Task<AppointmentReportViewModel> GetAppointmentReportAsync(ReportPeriod period)
+    {
+        var endExclusive = period.EndDate.AddDays(1);
+        var rows = await _db.Appointments.AsNoTracking()
+            .Where(a => a.AppointmentDate >= period.StartDate && a.AppointmentDate < endExclusive)
+            .Select(a => new AppointmentReportRow(
+                a.Patient != null ? a.Patient.FullName : string.Empty,
+                a.Doctor != null ? a.Doctor.FullName : string.Empty,
+                a.AppointmentDate,
+                a.Status))
+            .ToListAsync();
+        rows = rows.OrderByDescending(a => a.Date).ThenBy(a => a.PatientName).ToList();
+        var statuses = rows.GroupBy(a => a.Status).OrderBy(g => g.Key).Select(g => new StatusCount(g.Key, g.Count())).ToList();
+        return new(period, statuses, rows);
+    }
+
+    public async Task<DepartmentReportViewModel> GetDepartmentReportAsync(ReportPeriod period)
+    {
+        var endExclusive = period.EndDate.AddDays(1);
+        var rows = await _db.Departments.AsNoTracking().OrderBy(d => d.Name)
+            .Select(d => new DepartmentReportRow(
+                d.Name,
+                d.Doctors.Count,
+                d.Doctors.SelectMany(doctor => doctor.Appointments)
+                    .Count(a => a.AppointmentDate >= period.StartDate && a.AppointmentDate < endExclusive)))
+            .ToListAsync();
+        return new(period, rows);
+    }
+
+    public async Task<DoctorReportViewModel> GetDoctorReportAsync(ReportPeriod period)
+    {
+        var endExclusive = period.EndDate.AddDays(1);
+        var doctors = await _db.Doctors.AsNoTracking().OrderBy(d => d.FullName)
+            .Select(d => new
+            {
+                d.Id,
+                d.FullName,
+                Completed = _db.MedicalRecords.Count(r => r.DoctorId == d.Id && r.Status == EntityStatus.RecordFinal
+                    && r.UpdatedAt >= period.StartDate && r.UpdatedAt < endExclusive)
+            }).ToListAsync();
+        var invoiceRows = await _db.Invoices.AsNoTracking()
+            .Where(i => i.CreatedAt >= period.StartDate && i.CreatedAt < endExclusive && i.Status != EntityStatus.InvoiceCancelled && i.AppointmentId != null)
+            .Select(i => new { DoctorId = i.Appointment!.DoctorId, i.PaidAmount })
+            .ToListAsync();
+        var revenueByDoctor = invoiceRows.GroupBy(i => i.DoctorId).ToDictionary(g => g.Key, g => g.Sum(i => i.PaidAmount));
+        return new(period, doctors.Select(d => new DoctorPerformanceRow(d.FullName, d.Completed, revenueByDoctor.GetValueOrDefault(d.Id))).ToList());
+    }
+
+    public async Task<LaboratoryReportViewModel> GetLaboratoryReportAsync(ReportPeriod period)
+    {
+        var endExclusive = period.EndDate.AddDays(1);
+        var statusValues = await _db.LabRequests.AsNoTracking()
+            .Where(r => r.CreatedAt >= period.StartDate && r.CreatedAt < endExclusive)
+            .Select(r => r.Status)
+            .ToListAsync();
+        var statuses = statusValues.GroupBy(status => status)
+            .OrderBy(group => group.Key)
+            .Select(group => new StatusCount(group.Key, group.Count()))
+            .ToList();
+        return new(period, statuses, statuses.Where(s => s.Status == EntityStatus.LabCompleted).Sum(s => s.Count));
+    }
+
+    public async Task<PharmacyReportViewModel> GetPharmacyReportAsync()
+    {
+        var today = DateTime.UtcNow.Date;
+        var medicines = await _db.Medicines.AsNoTracking().Include(m => m.Category).Include(m => m.Batches).OrderBy(m => m.Name).ToListAsync();
+        var rows = medicines.Select(m =>
+        {
+            var expiry = m.Batches.Count == 0 ? (DateTime?)null : m.Batches.Min(b => b.ExpiryDate);
+            var status = expiry?.Date < today ? EntityStatus.MedicineExpired
+                : m.StockQuantity == 0 ? EntityStatus.MedicineOutOfStock
+                : m.StockQuantity <= m.ReorderLevel ? EntityStatus.MedicineLowStock
+                : EntityStatus.MedicineInStock;
+            return new PharmacyStockRow(m.Name, m.Category?.Name ?? "—", m.StockQuantity, status, expiry);
+        }).ToList();
+        return new(rows, rows.Count(m => m.Status == EntityStatus.MedicineLowStock), rows.Count(m => m.Status == EntityStatus.MedicineOutOfStock));
+    }
+
+    public async Task<RevenueReportViewModel> GetRevenueReportAsync(ReportPeriod period)
+    {
+        var endExclusive = period.EndDate.AddDays(1);
+        var payments = await _db.Payments.AsNoTracking()
+            .Where(p => (p.PaidAt >= period.StartDate && p.PaidAt < endExclusive)
+                || (p.Status == EntityStatus.PaymentRefunded
+                    && p.UpdatedAt >= period.StartDate
+                    && p.UpdatedAt < endExclusive))
+            .Select(p => new { p.PaidAt, p.UpdatedAt, p.Amount, p.Status })
+            .ToListAsync();
+        var recorded = payments
+            .Where(p => p.PaidAt >= period.StartDate && p.PaidAt < endExclusive)
+            .Sum(p => p.Amount);
+        var refunded = payments
+            .Where(p => p.Status == EntityStatus.PaymentRefunded
+                && p.UpdatedAt >= period.StartDate
+                && p.UpdatedAt < endExclusive)
+            .Sum(p => p.Amount);
+        var invoices = await _db.Invoices.AsNoTracking()
+            .Where(i => i.CreatedAt >= period.StartDate && i.CreatedAt < endExclusive && i.Status != EntityStatus.InvoiceCancelled)
+            .Select(i => new { i.Total, i.PaidAmount }).ToListAsync();
+        var daily = Enumerable.Range(0, (period.EndDate - period.StartDate).Days + 1)
+            .Select(offset => period.StartDate.AddDays(offset))
+            .Select(day => new RevenueDay(day,
+                payments.Where(p => p.PaidAt.Date == day).Sum(p => p.Amount)
+                - payments.Where(p => p.Status == EntityStatus.PaymentRefunded && p.UpdatedAt.Date == day).Sum(p => p.Amount)))
+            .ToList();
+        return new(period, recorded, refunded, recorded - refunded, invoices.Sum(i => i.Total - i.PaidAmount), daily);
     }
 }

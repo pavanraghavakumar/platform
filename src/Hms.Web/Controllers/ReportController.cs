@@ -1,5 +1,6 @@
 using Hms.Web.Data;
 using Hms.Web.Services;
+using Hms.Web.ViewModels.Report;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,19 +16,19 @@ public class ReportController : Controller
         _reports = reports;
     }
 
-    public IActionResult Index() => View();
+    public async Task<IActionResult> Index(DateTime? from, DateTime? to) => View(await _reports.GetReportsAsync(from, to));
 
-    public IActionResult Patients() => View();
+    public async Task<IActionResult> Patients(DateTime? from, DateTime? to) => View(await _reports.GetPatientReportAsync(ReportPeriod.Create(from, to)));
 
-    public IActionResult Appointments() => View();
+    public async Task<IActionResult> Appointments(DateTime? from, DateTime? to) => View(await _reports.GetAppointmentReportAsync(ReportPeriod.Create(from, to)));
 
-    public IActionResult Departments() => View();
+    public async Task<IActionResult> Departments(DateTime? from, DateTime? to) => View(await _reports.GetDepartmentReportAsync(ReportPeriod.Create(from, to)));
 
-    public IActionResult Doctors() => View();
+    public async Task<IActionResult> Doctors(DateTime? from, DateTime? to) => View(await _reports.GetDoctorReportAsync(ReportPeriod.Create(from, to)));
 
-    public IActionResult Laboratory() => View();
+    public async Task<IActionResult> Laboratory(DateTime? from, DateTime? to) => View(await _reports.GetLaboratoryReportAsync(ReportPeriod.Create(from, to)));
 
-    public IActionResult Pharmacy() => View();
+    public async Task<IActionResult> Pharmacy() => View(await _reports.GetPharmacyReportAsync());
 
-    public IActionResult Revenue() => View();
+    public async Task<IActionResult> Revenue(DateTime? from, DateTime? to) => View(await _reports.GetRevenueReportAsync(ReportPeriod.Create(from, to)));
 }
