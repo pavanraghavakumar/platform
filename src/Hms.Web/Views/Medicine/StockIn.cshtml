@@ -1,15 +1,34 @@
-@model Hms.Web.Models.Entities.Medicine
+@model Hms.Web.ViewModels.Pharmacy.StockInViewModel
 @{
     ViewData["Title"] = "Stock in";
 }
-<h1>Stock in — @Model.Name</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/pharmacy.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <h1>Stock in — @Model.MedicineName</h1>
+</div>
 
 <div class="hms-card">
-    <form asp-controller="Medicine" asp-action="StockIn" asp-route-id="@Model.Id" method="post">
+    <form asp-controller="Medicine" asp-action="StockIn" asp-route-id="@Model.MedicineId" method="post">
+        <div asp-validation-summary="All" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
         <div class="hms-form-grid">
-            <div class="hms-field"><label for="batchNumber">Batch number</label><input id="batchNumber" name="batchNumber" /></div>
-            <div class="hms-field"><label for="quantity">Quantity</label><input id="quantity" name="quantity" type="number" /></div>
-            <div class="hms-field"><label for="expiryDate">Expiry date</label><input id="expiryDate" name="expiryDate" type="date" /></div>
+            <div class="hms-field">
+                <label asp-for="BatchNumber">Batch number</label>
+                <input asp-for="BatchNumber" />
+                <span asp-validation-for="BatchNumber" class="field-validation-error"></span>
+            </div>
+            <div class="hms-field">
+                <label asp-for="Quantity">Quantity</label>
+                <input asp-for="Quantity" type="number" min="1" />
+                <span asp-validation-for="Quantity" class="field-validation-error"></span>
+            </div>
+            <div class="hms-field">
+                <label asp-for="ExpiryDate">Expiry date</label>
+                <input asp-for="ExpiryDate" type="date" />
+                <span asp-validation-for="ExpiryDate" class="field-validation-error"></span>
+            </div>
         </div>
         <div class="hms-form-actions">
             <a class="hms-btn hms-btn-secondary" asp-controller="Medicine" asp-action="Index">Cancel</a>

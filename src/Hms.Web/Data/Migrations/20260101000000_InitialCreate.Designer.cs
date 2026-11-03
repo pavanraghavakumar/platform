@@ -234,7 +234,12 @@ partial class InitialCreate
             b.HasKey("Id");
             b.HasIndex("CategoryId");
             b.HasIndex("SupplierId");
-            b.ToTable("Medicines");
+            b.ToTable("Medicines", t =>
+            {
+                t.HasCheckConstraint(
+                    "CK_Medicines_StockQuantity_NonNegative",
+                    "StockQuantity >= 0");
+            });
         });
 
         modelBuilder.Entity("Hms.Web.Models.Entities.MedicineBatch", b =>

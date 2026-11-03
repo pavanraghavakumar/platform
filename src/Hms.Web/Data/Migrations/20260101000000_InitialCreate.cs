@@ -382,6 +382,9 @@ public partial class InitialCreate : Migration
             constraints: table =>
             {
                 table.PrimaryKey("PK_Medicines", x => x.Id);
+                table.CheckConstraint(
+                    "CK_Medicines_StockQuantity_NonNegative",
+                    "StockQuantity >= 0");
                 table.ForeignKey(
                     name: "FK_Medicines_MedicineCategories_CategoryId",
                     column: x => x.CategoryId,

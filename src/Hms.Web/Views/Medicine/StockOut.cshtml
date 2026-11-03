@@ -1,15 +1,29 @@
-@model Hms.Web.Models.Entities.Medicine
+@model Hms.Web.ViewModels.Pharmacy.StockOutViewModel
 @{
     ViewData["Title"] = "Stock out";
 }
-<h1>Stock out — @Model.Name</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/pharmacy.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <h1>Stock out — @Model.MedicineName</h1>
+</div>
 
 <div class="hms-card">
-    <form asp-controller="Medicine" asp-action="StockOut" asp-route-id="@Model.Id" method="post">
+    <p class="pharmacy-stock-note">Stock on hand: <strong>@Model.StockQuantity</strong></p>
+    <form asp-controller="Medicine" asp-action="StockOut" asp-route-id="@Model.MedicineId" method="post">
         <div asp-validation-summary="All" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
         <div class="hms-form-grid">
-            <div class="hms-field"><label for="quantity">Quantity</label><input id="quantity" name="quantity" type="number" /></div>
-            <div class="hms-field"><label for="reason">Reason</label><input id="reason" name="reason" /></div>
+            <div class="hms-field">
+                <label asp-for="Quantity">Quantity</label>
+                <input asp-for="Quantity" type="number" min="1" />
+                <span asp-validation-for="Quantity" class="field-validation-error"></span>
+            </div>
+            <div class="hms-field">
+                <label asp-for="Reason">Reason</label>
+                <input asp-for="Reason" />
+            </div>
         </div>
         <div class="hms-form-actions">
             <a class="hms-btn hms-btn-secondary" asp-controller="Medicine" asp-action="Index">Cancel</a>

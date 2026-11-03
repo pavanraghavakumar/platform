@@ -1,0 +1,41 @@
+/* Pharmacy: medicine catalog, stock forms and inventory report. */
+
+.pharmacy-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--hms-space-2);
+}
+
+.pharmacy-kpis {
+    margin-bottom: var(--hms-space-6);
+}
+
+.pharmacy-table td {
+    vertical-align: middle;
+}
+
+.pharmacy-row-actions {
+    display: flex;
+    gap: var(--hms-space-2);
+    white-space: nowrap;
+}
+
+.pharmacy-stock-note {
+    color: var(--hms-text-muted);
+    margin-bottom: var(--hms-space-4);
+}
+
+@media (max-width: 768px) {
+    .pharmacy-actions {
+        width: 100%;
+    }
+
+    .pharmacy-actions .hms-btn {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+
+    .pharmacy-row-actions {
+        flex-wrap: wrap;
+    }
+}

@@ -1,30 +1,85 @@
-@model IReadOnlyList<Hms.Web.Models.Entities.Medicine>
+@model Hms.Web.ViewModels.Pharmacy.MedicineIndexViewModel
 @{
     ViewData["Title"] = "Pharmacy";
 }
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/pharmacy.css" asp-append-version="true" />
+}
+
 <div class="hms-page-header">
     <h1>Pharmacy</h1>
-    <a class="hms-btn hms-btn-primary" asp-controller="Medicine" asp-action="Create">New medicine</a>
+    <div class="pharmacy-actions">
+        <a class="hms-btn hms-btn-secondary" asp-controller="Medicine" asp-action="Category">Categories</a>
+        <a class="hms-btn hms-btn-secondary" asp-controller="Medicine" asp-action="Supplier">Suppliers</a>
+        <a class="hms-btn hms-btn-primary" asp-controller="Medicine" asp-action="Create">New medicine</a>
+    </div>
+</div>
+
+<div class="hms-kpi-grid pharmacy-kpis">
+    <div class="hms-kpi-card">
+        <span class="hms-kpi-icon"><i class="bi bi-capsule"></i></span>
+        <div>
+            <div class="hms-kpi-value">@Model.Medicines.Count</div>
+            <div class="hms-kpi-label">Medicines</div>
+        </div>
+    </div>
+    <div class="hms-kpi-card">
+        <span class="hms-kpi-icon"><i class="bi bi-exclamation-triangle"></i></span>
+        <div>
+            <div class="hms-kpi-value" id="lowStockCount">@Model.LowStockCount</div>
+            <div class="hms-kpi-label">Low Stock</div>
+        </div>
+    </div>
+    <div class="hms-kpi-card">
+        <span class="hms-kpi-icon"><i class="bi bi-x-octagon"></i></span>
+        <div>
+            <div class="hms-kpi-value" id="outOfStockCount">@Model.OutOfStockCount</div>
+            <div class="hms-kpi-label">Out of Stock</div>
+        </div>
+    </div>
+    <div class="hms-kpi-card">
+        <span class="hms-kpi-icon"><i class="bi bi-calendar-x"></i></span>
+        <div>
+            <div class="hms-kpi-value" id="expiredCount">@Model.ExpiredCount</div>
+            <div class="hms-kpi-label">Expired</div>
+        </div>
+    </div>
 </div>
 
 <div class="hms-card">
-    @if (Model.Count == 0)
+    @if (Model.Medicines.Count == 0)
     {
         <partial name="_EmptyState" model="@("No records found.")" />
     }
     else
     {
-        <table class="hms-table">
-            <thead><tr><th>Name</th><th>Category</th><th>Stock</th><th>Status</th><th></th></tr></thead>
+        <table class="hms-table pharmacy-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Supplier</th>
+                    <th>Unit price</th>
+                    <th>Stock</th>
+                    <th>Reorder level</th>
+                    <th>Earliest expiry</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
             <tbody>
-                @foreach (var medicine in Model)
+                @foreach (var medicine in Model.Medicines)
                 {
                     <tr>
                         <td>@medicine.Name</td>
-                        <td>@medicine.Category?.Name</td>
+                        <td>@medicine.Category</td>
+                        <td>@medicine.Supplier</td>
+                        <td>₹@medicine.UnitPrice.ToString("0.00")</td>
                         <td>@medicine.StockQuantity</td>
+                        <td>@medicine.ReorderLevel</td>
+                        <td>@(medicine.EarliestExpiryDate?.ToString("dd MMM yyyy") ?? "—")</td>
                         <td><partial name="_StatusBadge" model="@medicine.Status" /></td>
-                        <td>
+                        <td class="pharmacy-row-actions">
                             <a class="hms-btn hms-btn-secondary" asp-controller="Medicine" asp-action="StockIn" asp-route-id="@medicine.Id">Stock in</a>
                             <a class="hms-btn hms-btn-secondary" asp-controller="Medicine" asp-action="StockOut" asp-route-id="@medicine.Id">Stock out</a>
                         </td>

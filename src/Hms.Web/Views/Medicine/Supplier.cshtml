@@ -1,12 +1,19 @@
-@model IReadOnlyList<Hms.Web.Models.Entities.Supplier>
+@model IReadOnlyList<Supplier>
 @{
     ViewData["Title"] = "Suppliers";
 }
-<h1>Suppliers</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/pharmacy.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <h1>Suppliers</h1>
+    <a class="hms-btn hms-btn-secondary" asp-controller="Medicine" asp-action="Index">Back to pharmacy</a>
+</div>
 
 <div class="hms-card">
     <form asp-controller="Medicine" asp-action="Supplier" method="post" class="hms-form-grid">
-        <div class="hms-field"><label for="name">Name</label><input id="name" name="name" /></div>
+        <div class="hms-field"><label for="name">Name</label><input id="name" name="name" required /></div>
         <div class="hms-field"><label for="phone">Phone</label><input id="phone" name="phone" /></div>
         <div class="hms-field"><label for="email">Email</label><input id="email" name="email" type="email" /></div>
         <div class="hms-form-actions"><button type="submit" class="hms-btn hms-btn-primary">Add supplier</button></div>
