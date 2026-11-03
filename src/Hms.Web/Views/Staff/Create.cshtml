@@ -1,50 +1,72 @@
-@model Hms.Web.Models.Entities.Staff
+@model Hms.Web.ViewModels.Staff.StaffCreateViewModel
 @{
     ViewData["Title"] = "New staff member";
     var departments = ViewData["Departments"] as IReadOnlyList<Hms.Web.Models.Entities.Department> ?? new List<Hms.Web.Models.Entities.Department>();
 }
-<h1>New staff member</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/admin.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <h1>New staff member</h1>
+</div>
 
 <div class="hms-card">
     <form asp-controller="Staff" asp-action="Create" method="post">
-        <div asp-validation-summary="All" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
+        <div asp-validation-summary="ModelOnly" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
         <div class="hms-form-grid">
             <div class="hms-field">
                 <label asp-for="FullName">Full name</label>
-                <input asp-for="FullName" />
+                <input asp-for="FullName" autofocus />
+                <span asp-validation-for="FullName" class="text-danger"></span>
             </div>
             <div class="hms-field">
                 <label asp-for="Email">Email</label>
                 <input asp-for="Email" type="email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="hms-field">
                 <label asp-for="Phone">Phone</label>
                 <input asp-for="Phone" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
             </div>
             <div class="hms-field">
                 <label asp-for="Role">Role</label>
                 <select asp-for="Role">
+                    <option value="">Select a role</option>
                     <option value="Receptionist">Receptionist</option>
                     <option value="Admin">Admin</option>
                 </select>
+                <span asp-validation-for="Role" class="text-danger"></span>
             </div>
             <div class="hms-field">
                 <label asp-for="Designation">Designation</label>
                 <input asp-for="Designation" />
+                <span asp-validation-for="Designation" class="text-danger"></span>
             </div>
             <div class="hms-field">
                 <label asp-for="DepartmentId">Department</label>
                 <select asp-for="DepartmentId">
+                    <option value="">Select a department</option>
                     @foreach (var department in departments)
                     {
                         <option value="@department.Id">@department.Name</option>
                     }
                 </select>
+                <span asp-validation-for="DepartmentId" class="text-danger"></span>
+            </div>
+            <div class="hms-field">
+                <label asp-for="Password">Password</label>
+                <input asp-for="Password" type="password" autocomplete="new-password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+                <small class="hms-field-hint">At least 8 characters, with a digit. The staff member signs in with their email.</small>
             </div>
         </div>
         <div class="hms-form-actions">
-            <a class="hms-btn hms-btn-secondary" asp-controller="Staff" asp-action="Index">Cancel</a>
+            <a class="hms-btn hms-btn-secondary" asp-controller="Staff" asp-action="Index" data-confirm>Cancel</a>
             <button type="submit" class="hms-btn hms-btn-primary">Save</button>
         </div>
     </form>
 </div>
+
+<partial name="_ConfirmDialog" model='"Discard the staff details you entered?"' />

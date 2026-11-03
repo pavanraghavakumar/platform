@@ -1,20 +1,30 @@
-@model Hms.Web.Models.Entities.Department
+@model Hms.Web.ViewModels.Department.DepartmentCreateViewModel
 @{
     ViewData["Title"] = "New department";
 }
-<h1>New department</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/admin.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <h1>New department</h1>
+</div>
 
 <div class="hms-card">
     <form asp-controller="Department" asp-action="Create" method="post">
-        <div asp-validation-summary="All" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
-        <div class="hms-field">
-            <label asp-for="Name">Name</label>
-            <input asp-for="Name" />
-            <span asp-validation-for="Name" class="text-danger"></span>
+        <div asp-validation-summary="ModelOnly" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
+        <div class="hms-form-grid">
+            <div class="hms-field">
+                <label asp-for="Name">Name</label>
+                <input asp-for="Name" autofocus />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
         </div>
         <div class="hms-form-actions">
-            <a class="hms-btn hms-btn-secondary" asp-controller="Department" asp-action="Index">Cancel</a>
+            <a class="hms-btn hms-btn-secondary" asp-controller="Department" asp-action="Index" data-confirm>Cancel</a>
             <button type="submit" class="hms-btn hms-btn-primary">Save</button>
         </div>
     </form>
 </div>
+
+<partial name="_ConfirmDialog" model='"Discard the department details you entered?"' />

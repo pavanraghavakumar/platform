@@ -1,0 +1,121 @@
+/* Admin pages: department and staff lists and forms. */
+
+.hms-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--hms-space-3);
+    margin-bottom: var(--hms-space-4);
+}
+
+.hms-toolbar .hms-search-box {
+    flex: 1 1 240px;
+    max-width: 360px;
+    margin: 0;
+}
+
+.hms-toolbar select {
+    min-width: 150px;
+    padding: 9px 12px;
+    border: 1px solid var(--hms-border);
+    border-radius: var(--hms-radius-control);
+    background: var(--hms-surface);
+    color: var(--hms-text);
+    font: inherit;
+}
+
+.hms-toolbar select:focus {
+    outline: none;
+    border-color: var(--hms-accent);
+    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+}
+
+.hms-inline-form {
+    display: inline;
+    margin: 0;
+}
+
+.hms-list-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--hms-space-3);
+    margin-top: var(--hms-space-4);
+}
+
+.hms-list-count {
+    color: var(--hms-text-muted);
+    font-size: 0.875rem;
+}
+
+.hms-pagination,
+.hms-pagination-pages {
+    display: flex;
+    align-items: center;
+    gap: var(--hms-space-2);
+}
+
+.hms-pagination .hms-btn[aria-disabled="true"] {
+    opacity: .5;
+    pointer-events: none;
+}
+
+.hms-pagination-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 8px;
+    border: 1px solid var(--hms-border);
+    border-radius: var(--hms-radius-control);
+    background: var(--hms-surface);
+    color: var(--hms-primary);
+    text-decoration: none;
+}
+
+.hms-pagination-number:hover,
+.hms-pagination-number:focus-visible {
+    border-color: var(--hms-accent);
+    outline: none;
+}
+
+.hms-pagination-number.is-current {
+    border-color: var(--hms-accent);
+    background: var(--hms-accent);
+    color: #fff;
+    font-weight: 600;
+}
+
+.hms-field-hint {
+    display: block;
+    margin-top: 4px;
+    color: var(--hms-text-muted);
+    font-size: 0.8125rem;
+}
+
+@media (max-width: 640px) {
+    .hms-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .hms-toolbar .hms-search-box,
+    .hms-toolbar select {
+        max-width: none;
+        width: 100%;
+    }
+
+    .hms-list-footer,
+    .hms-pagination {
+        align-items: stretch;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .hms-pagination-pages {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}

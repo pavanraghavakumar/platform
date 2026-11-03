@@ -28,25 +28,33 @@
         var confirmDialog = document.getElementById('hmsConfirmDialog');
         if (confirmDialog) {
             var pendingForm = null;
+            var pendingUrl = null;
             document.querySelectorAll('[data-confirm]').forEach(function (element) {
                 element.addEventListener('click', function (event) {
                     var form = element.closest('form');
-                    if (!form) {
+                    var url = element.getAttribute('href');
+                    if (!form && !url) {
                         return;
                     }
                     event.preventDefault();
                     pendingForm = form;
+                    pendingUrl = form ? null : url;
                     confirmDialog.hidden = false;
                 });
             });
             confirmDialog.querySelector('[data-confirm-cancel]').addEventListener('click', function () {
                 pendingForm = null;
+                pendingUrl = null;
                 confirmDialog.hidden = true;
             });
             confirmDialog.querySelector('[data-confirm-ok]').addEventListener('click', function () {
                 if (pendingForm) {
                     pendingForm.submit();
+                } else if (pendingUrl) {
+                    window.location.assign(pendingUrl);
                 }
+                pendingForm = null;
+                pendingUrl = null;
                 confirmDialog.hidden = true;
             });
         }
