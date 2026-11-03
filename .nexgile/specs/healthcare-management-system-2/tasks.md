@@ -217,3 +217,4 @@
   - _Files: src/Hms.Web/Views/Shared/_Layout.cshtml, src/Hms.Web/wwwroot/css/site.css, tests/Hms.Tests/Layout/LayoutTests.cs, e2e/layout.spec.ts_
   - _Verify: dotnet test --filter FullyQualifiedName~LayoutTests_
   - _Area: ui_
+  - _Issue: #46_
