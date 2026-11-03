@@ -1,0 +1,46 @@
+@model Hms.Web.ViewModels.Lab.LabRequestCreateViewModel
+@{
+    ViewData["Title"] = "Request laboratory tests";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/lab.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <h1>Request laboratory tests</h1>
+</div>
+
+<div class="hms-card">
+    <p class="hms-lab-patient">Patient: <strong>@Model.PatientName</strong></p>
+
+    <form asp-controller="LabRequest" asp-action="Create" method="post">
+        <input type="hidden" name="patientId" value="@Model.PatientId" />
+        <input type="hidden" name="appointmentId" value="@Model.AppointmentId" />
+        <div asp-validation-summary="ModelOnly" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
+
+        @if (Model.AvailableTests.Count == 0)
+        {
+            <partial name="_EmptyState" model="@("No laboratory tests are in the catalog yet.")" />
+        }
+        else
+        {
+            <ul class="hms-lab-test-picker">
+                @foreach (var test in Model.AvailableTests)
+                {
+                    <li>
+                        <label>
+                            <input type="checkbox" name="testIds" value="@test.Id" checked="@Model.SelectedTestIds.Contains(test.Id)" />
+                            <span class="hms-lab-test-name">@test.Name</span>
+                            <span class="hms-lab-test-meta">@test.Category · ₹@test.Price.ToString("0.00") · @test.NormalRange</span>
+                        </label>
+                    </li>
+                }
+            </ul>
+        }
+
+        <div class="hms-form-actions">
+            <a class="hms-btn hms-btn-secondary" asp-controller="Patient" asp-action="Details" asp-route-id="@Model.PatientId">Cancel</a>
+            <button type="submit" class="hms-btn hms-btn-primary">Request tests</button>
+        </div>
+    </form>
+</div>

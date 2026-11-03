@@ -1,17 +1,33 @@
 @model Hms.Web.Models.Entities.LabRequest
 @{
     ViewData["Title"] = "Lab request";
+    var isCompleted = Model.Status == Hms.Web.Models.Entities.EntityStatus.LabCompleted;
 }
-<h1>Lab request</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/lab.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <h1>Lab request</h1>
+    @if (isCompleted)
+    {
+        <a class="hms-btn hms-btn-primary" asp-controller="LabRequest" asp-action="Print" asp-route-id="@Model.Id"><i class="bi bi-printer"></i>Printable report</a>
+    }
+</div>
 
 <div class="hms-card">
-    <dl class="hms-table">
-        <tr><th>Patient</th><td>@Model.Patient?.FullName (@Model.Patient?.PatientCode)</td></tr>
-        <tr><th>Test</th><td>@Model.LaboratoryTest?.Name</td></tr>
-        <tr><th>Normal range</th><td>@Model.LaboratoryTest?.NormalRange</td></tr>
-        <tr><th>Result value</th><td>@Model.ResultValue</td></tr>
-        <tr><th>Remarks</th><td>@Model.Remarks</td></tr>
-        <tr><th>Result entered</th><td>@Model.ResultEnteredAt?.ToString("dd MMM yyyy HH:mm")</td></tr>
-        <tr><th>Status</th><td><partial name="_StatusBadge" model="@Model.Status" /></td></tr>
+    <dl class="hms-lab-details">
+        <dt>Patient</dt><dd>@Model.Patient?.FullName (@Model.Patient?.PatientCode)</dd>
+        <dt>Test</dt><dd>@Model.LaboratoryTest?.Name</dd>
+        <dt>Normal range</dt><dd>@Model.LaboratoryTest?.NormalRange</dd>
+        <dt>Requesting doctor</dt><dd>@Model.Doctor?.FullName</dd>
+        <dt>Requested on</dt><dd>@Model.CreatedAt.ToString("dd MMM yyyy")</dd>
+        <dt>Status</dt><dd><partial name="_StatusBadge" model="@Model.Status" /></dd>
+        @if (isCompleted)
+        {
+            <dt>Result value</dt><dd>@Model.ResultValue</dd>
+            <dt>Remarks</dt><dd>@Model.Remarks</dd>
+            <dt>Result entered</dt><dd>@Model.ResultEnteredAt?.ToString("dd MMM yyyy HH:mm")</dd>
+        }
     </dl>
 </div>

@@ -1,19 +1,38 @@
-@model Hms.Web.Models.Entities.LabRequest
+@model Hms.Web.ViewModels.Lab.LabResultViewModel
 @{
     ViewData["Title"] = "Enter lab result";
+    var request = Model.Request;
 }
-<h1>Enter lab result</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/lab.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <h1>Enter lab result</h1>
+</div>
 
 <div class="hms-card">
-    <dl class="hms-table">
-        <tr><th>Patient</th><td>@Model.Patient?.FullName</td></tr>
-        <tr><th>Test</th><td>@Model.LaboratoryTest?.Name</td></tr>
-        <tr><th>Normal range</th><td>@Model.LaboratoryTest?.NormalRange</td></tr>
+    <dl class="hms-lab-details">
+        <dt>Patient</dt><dd>@request.Patient?.FullName (@request.Patient?.PatientCode)</dd>
+        <dt>Test</dt><dd>@request.LaboratoryTest?.Name</dd>
+        <dt>Normal range</dt><dd>@request.LaboratoryTest?.NormalRange</dd>
+        <dt>Requesting doctor</dt><dd>@request.Doctor?.FullName</dd>
     </dl>
 
-    <form asp-controller="LabRequest" asp-action="Complete" asp-route-id="@Model.Id" method="post">
-        <div class="hms-field"><label for="resultValue">Result value</label><input id="resultValue" name="resultValue" value="@Model.ResultValue" /></div>
-        <div class="hms-field"><label for="remarks">Remarks</label><textarea id="remarks" name="remarks">@Model.Remarks</textarea></div>
+    <form asp-controller="LabRequest" asp-action="Complete" asp-route-id="@request.Id" method="post">
+        <div asp-validation-summary="ModelOnly" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
+        <div class="hms-form-grid">
+            <div class="hms-field">
+                <label asp-for="ResultValue">Result value</label>
+                <input asp-for="ResultValue" />
+                <span asp-validation-for="ResultValue" class="field-validation-error"></span>
+            </div>
+            <div class="hms-field">
+                <label asp-for="Remarks">Remarks</label>
+                <textarea asp-for="Remarks" rows="3"></textarea>
+                <span asp-validation-for="Remarks" class="field-validation-error"></span>
+            </div>
+        </div>
         <div class="hms-form-actions">
             <a class="hms-btn hms-btn-secondary" asp-controller="LabRequest" asp-action="Index">Cancel</a>
             <button type="submit" class="hms-btn hms-btn-primary">Save result</button>
