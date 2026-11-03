@@ -14,6 +14,7 @@
     - _Verify: dotnet build --no-restore_
     - _Verify: dotnet test --filter FullyQualifiedName~ProjectSetup_
     - _Area: setup_
+    - _Issue: #15_
 
 - [ ] 2. Sign-in, password and profile pages
   - [ ] 2.1 Sign-in, forgot and reset password pages
@@ -24,6 +25,7 @@
     - _Files: src/Hms.Web/Controllers/AccountController.cs, src/Hms.Web/ViewModels/Account/**, src/Hms.Web/Views/Account/**, src/Hms.Web/wwwroot/css/pages/account.css, src/Hms.Web/wwwroot/js/pages/account.js, tests/Hms.Tests/Account/**, tests/Hms.Tests/AccountPagesTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~AccountPages_
     - _Area: ui_
+    - _Issue: #16_
   - [ ] 2.2 Profile and change password pages
     - Build the profile page showing user name, email, role and phone with a form that saves a new phone number, and the change-password page that saves a new password of at least 8 characters and shows "Your password has been changed." or "Password must be at least 8 characters." beside the field with the typed values kept.
     - _Requirements: 1.7, 1.8, 1.9, 17.6_
@@ -31,6 +33,7 @@
     - _Files: src/Hms.Web/Controllers/AccountController.cs, src/Hms.Web/ViewModels/Account/ProfileViewModel.cs, src/Hms.Web/ViewModels/Account/ChangePasswordViewModel.cs, src/Hms.Web/Views/Account/Profile.cshtml, src/Hms.Web/Views/Account/ChangePassword.cshtml, src/Hms.Web/wwwroot/css/pages/account.css, tests/Hms.Tests/Account/ProfileTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~ProfileTests_
     - _Area: ui_
+    - _Issue: #17_
 
 - [ ] 3. Admin dashboard and system administration
   - [ ] 3.1 Admin dashboard
@@ -40,6 +43,7 @@
     - _Files: src/Hms.Web/Controllers/DashboardController.cs, src/Hms.Web/ViewModels/Dashboard/AdminDashboardViewModel.cs, src/Hms.Web/Views/Dashboard/Admin.cshtml, src/Hms.Web/Services/ReportService.cs, src/Hms.Web/wwwroot/css/pages/dashboard.css, src/Hms.Web/wwwroot/js/pages/dashboard.js, tests/Hms.Tests/Dashboard/AdminDashboardTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~AdminDashboardTests_
     - _Area: ui_
+    - _Issue: #18_
   - [ ] 3.2 Departments and staff
     - Build the department list and create form (status Active, duplicate name shows "A department with this name already exists.") and the deactivate action that sets Inactive and keeps doctors and appointments; build the staff list and create form (full name, email, phone, role, designation, department) that saves the staff member Active with a sign-in account, and the deactivate action that sets Inactive and blocks that person's sign-in with "Your account is deactivated.".
     - _Requirements: 2.6, 2.7, 2.8, 2.9, 2.10, 17.4, 17.5, 17.7_
@@ -47,6 +51,7 @@
     - _Files: src/Hms.Web/Controllers/DepartmentController.cs, src/Hms.Web/Controllers/StaffController.cs, src/Hms.Web/ViewModels/Department/**, src/Hms.Web/ViewModels/Staff/**, src/Hms.Web/Views/Department/**, src/Hms.Web/Views/Staff/**, src/Hms.Web/Services/StaffService.cs, src/Hms.Web/wwwroot/css/pages/admin.css, tests/Hms.Tests/Admin/DepartmentStaffTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~DepartmentStaffTests_
     - _Area: ui_
+    - _Issue: #19_
   - [ ] 3.3 Doctor management
     - Build the doctor list with department filter, the create form (full name, email, phone, specialization, department, qualifications, years of experience, consultation fee) that creates the doctor Active with a Doctor sign-in account, the edit page for details, fee and the weekly working schedule with "End time must be after start time." when the end is not after the start, the profile page with schedule and appointment history newest first, and the deactivate action that stops new bookings.
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7_
@@ -54,6 +59,7 @@
     - _Files: src/Hms.Web/Controllers/DoctorController.cs, src/Hms.Web/ViewModels/Doctor/**, src/Hms.Web/Views/Doctor/**, src/Hms.Web/Services/DoctorService.cs, src/Hms.Web/wwwroot/css/pages/admin.css, tests/Hms.Tests/Admin/DoctorManagementTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~DoctorManagementTests_
     - _Area: ui_
+    - _Issue: #20_
   - [ ] 3.4 Audit trail page
     - Build `/Audit/Index` listing audit entries newest first, 20 per page, with record type, record ID, field, previous value, new value, user name and time, and filters by record type and date range; write `AuditService.Record` so a change to a medical record, prescription, invoice or payment saves an entry and opening a record without changing it saves none.
     - _Requirements: 16.1, 16.2, 16.3, 16.4_
@@ -61,6 +67,7 @@
     - _Files: src/Hms.Web/Controllers/AuditController.cs, src/Hms.Web/ViewModels/Audit/**, src/Hms.Web/Views/Audit/**, src/Hms.Web/Services/AuditService.cs, src/Hms.Web/wwwroot/css/pages/admin.css, tests/Hms.Tests/Admin/AuditTrailTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~AuditTrailTests_
     - _Area: ui_
+    - _Issue: #21_
 
 - [ ] 4. Patient management
   - [ ] 4.1 Patient list, registration and profile
@@ -70,6 +77,7 @@
     - _Files: src/Hms.Web/Controllers/PatientController.cs, src/Hms.Web/ViewModels/Patient/**, src/Hms.Web/Views/Patient/**, src/Hms.Web/Services/PatientService.cs, src/Hms.Web/wwwroot/css/pages/patient.css, tests/Hms.Tests/Patient/PatientManagementTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~PatientManagementTests_
     - _Area: ui_
+    - _Issue: #22_
 
 - [ ] 5. Appointments
   - [ ] 5.1 Appointment booking and status workflow
@@ -80,6 +88,7 @@
     - _Files: src/Hms.Web/Controllers/AppointmentController.cs, src/Hms.Web/ViewModels/Appointment/**, src/Hms.Web/Views/Appointment/**, src/Hms.Web/Services/AppointmentService.cs, src/Hms.Web/wwwroot/css/pages/appointment.css, src/Hms.Web/wwwroot/js/pages/appointment.js, tests/Hms.Tests/Appointment/AppointmentWorkflowTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~AppointmentWorkflowTests_
     - _Area: ui_
+    - _Issue: #23_
 
 - [ ] 6. Consultation and medical records
   - [ ] 6.1 Consultation page and medical records
@@ -90,6 +99,7 @@
     - _Files: src/Hms.Web/Controllers/ConsultationController.cs, src/Hms.Web/Controllers/MedicalRecordController.cs, src/Hms.Web/ViewModels/Consultation/**, src/Hms.Web/ViewModels/MedicalRecord/**, src/Hms.Web/Views/Consultation/**, src/Hms.Web/Views/MedicalRecord/**, src/Hms.Web/Services/ConsultationService.cs, src/Hms.Web/wwwroot/css/pages/clinical.css, tests/Hms.Tests/Clinical/ConsultationTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~ConsultationTests_
     - _Area: ui_
+    - _Issue: #24_
 
 - [ ] 7. Prescriptions
   - [ ] 7.1 Prescription creation and printable page
@@ -99,6 +109,7 @@
     - _Files: src/Hms.Web/Controllers/PrescriptionController.cs, src/Hms.Web/ViewModels/Prescription/**, src/Hms.Web/Views/Prescription/**, src/Hms.Web/Services/PrescriptionService.cs, src/Hms.Web/wwwroot/css/pages/clinical.css, src/Hms.Web/wwwroot/js/pages/prescription.js, tests/Hms.Tests/Clinical/PrescriptionTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~PrescriptionTests_
     - _Area: ui_
+    - _Issue: #25_
 
 - [ ] 8. Laboratory
   - [ ] 8.1 Laboratory test catalog and lab requests
@@ -108,6 +119,7 @@
     - _Files: src/Hms.Web/Controllers/LabTestController.cs, src/Hms.Web/Controllers/LabRequestController.cs, src/Hms.Web/ViewModels/Lab/**, src/Hms.Web/Views/LabTest/**, src/Hms.Web/Views/LabRequest/**, src/Hms.Web/Services/LabService.cs, src/Hms.Web/wwwroot/css/pages/lab.css, tests/Hms.Tests/Lab/LabRequestTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~LabRequestTests_
     - _Area: ui_
+    - _Issue: #26_
 
 - [ ] 9. Pharmacy
   - [ ] 9.1 Medicine catalog, stock and inventory report
@@ -117,6 +129,7 @@
     - _Files: src/Hms.Web/Controllers/MedicineController.cs, src/Hms.Web/ViewModels/Pharmacy/**, src/Hms.Web/Views/Medicine/**, src/Hms.Web/Services/PharmacyService.cs, src/Hms.Web/wwwroot/css/pages/pharmacy.css, tests/Hms.Tests/Pharmacy/PharmacyTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~PharmacyTests_
     - _Area: ui_
+    - _Issue: #27_
 
 - [ ] 10. Billing and payments
   - [ ] 10.1 Invoices, payments and printable invoice
@@ -126,6 +139,7 @@
     - _Files: src/Hms.Web/Controllers/InvoiceController.cs, src/Hms.Web/ViewModels/Billing/**, src/Hms.Web/Views/Invoice/**, src/Hms.Web/Services/BillingService.cs, src/Hms.Web/wwwroot/css/pages/billing.css, src/Hms.Web/wwwroot/js/pages/billing.js, tests/Hms.Tests/Billing/InvoiceTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~InvoiceTests_
     - _Area: ui_
+    - _Issue: #28_
 
 - [ ] 11. Reports and analytics
   - [ ] 11.1 Reports page
@@ -135,6 +149,7 @@
     - _Files: src/Hms.Web/Controllers/ReportController.cs, src/Hms.Web/ViewModels/Report/**, src/Hms.Web/Views/Report/**, src/Hms.Web/Services/ReportService.cs, src/Hms.Web/wwwroot/css/pages/report.css, src/Hms.Web/wwwroot/js/pages/report.js, tests/Hms.Tests/Report/ReportTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~ReportTests_
     - _Area: ui_
+    - _Issue: #29_
 
 - [ ] 12. Doctor dashboard
   - [ ] 12.1 Doctor dashboard and patient list
@@ -144,6 +159,7 @@
     - _Files: src/Hms.Web/Controllers/DashboardController.cs, src/Hms.Web/ViewModels/Dashboard/DoctorDashboardViewModel.cs, src/Hms.Web/Views/Dashboard/Doctor.cshtml, src/Hms.Web/Views/Patient/DoctorPatients.cshtml, src/Hms.Web/wwwroot/css/pages/dashboard.css, src/Hms.Web/wwwroot/js/pages/dashboard.js, tests/Hms.Tests/Dashboard/DoctorDashboardTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~DoctorDashboardTests_
     - _Area: ui_
+    - _Issue: #30_
 
 - [ ] 13. Receptionist dashboard
   - [ ] 13.1 Receptionist dashboard
@@ -153,6 +169,7 @@
     - _Files: src/Hms.Web/Controllers/DashboardController.cs, src/Hms.Web/ViewModels/Dashboard/ReceptionistDashboardViewModel.cs, src/Hms.Web/Views/Dashboard/Receptionist.cshtml, src/Hms.Web/wwwroot/css/pages/dashboard.css, src/Hms.Web/wwwroot/js/pages/dashboard.js, tests/Hms.Tests/Dashboard/ReceptionistDashboardTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~ReceptionistDashboardTests_
     - _Area: ui_
+    - _Issue: #31_
 
 - [ ] 14. Patient dashboard and patient portal
   - [ ] 14.1 Patient dashboard and portal pages
@@ -162,6 +179,7 @@
     - _Files: src/Hms.Web/Controllers/DashboardController.cs, src/Hms.Web/ViewModels/Dashboard/PatientDashboardViewModel.cs, src/Hms.Web/Views/Dashboard/Patient.cshtml, src/Hms.Web/Views/Portal/**, src/Hms.Web/wwwroot/css/pages/portal.css, src/Hms.Web/wwwroot/js/pages/portal.js, tests/Hms.Tests/Portal/PatientPortalTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~PatientPortalTests_
     - _Area: ui_
+    - _Issue: #32_
 
 - [ ] 15. Notifications and responsive polish
   - [ ] 15.1 Notification bell and panel
@@ -171,6 +189,7 @@
     - _Files: src/Hms.Web/Controllers/NotificationController.cs, src/Hms.Web/Views/Shared/_NotificationPanel.cshtml, src/Hms.Web/Services/NotificationService.cs, src/Hms.Web/wwwroot/css/pages/notification.css, src/Hms.Web/wwwroot/js/pages/notification.js, tests/Hms.Tests/Notification/NotificationTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~NotificationTests_
     - _Area: ui_
+    - _Issue: #33_
   - [ ] 15.2 Responsive layout and empty states
     - Make every page work at 375 pixels wide without horizontal scrolling with the sidebar behind a menu button, and at 1280 pixels wide with the sidebar expanded beside the content; check the sidebar toggle collapses to icons and expands again, and that every list page shows "No records found." when empty.
     - _Requirements: 17.1, 17.3, 17.7, 17.8, 17.9_
@@ -178,3 +197,4 @@
     - _Files: src/Hms.Web/Views/Shared/_Layout.cshtml, src/Hms.Web/Views/Shared/_Sidebar.cshtml, src/Hms.Web/Views/Shared/_EmptyState.cshtml, src/Hms.Web/wwwroot/css/site.css, src/Hms.Web/wwwroot/js/site.js, tests/Hms.Tests/Layout/LayoutTests.cs_
     - _Verify: dotnet test --filter FullyQualifiedName~LayoutTests_
     - _Area: ui_
+    - _Issue: #34_
