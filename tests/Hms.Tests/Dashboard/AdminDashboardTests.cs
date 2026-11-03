@@ -297,7 +297,9 @@ public class AdminDashboardTests : IClassFixture<AdminDashboardTests.DashboardFa
         db.Doctors.Add(doctor);
         await db.SaveChangesAsync();
 
-        var baseTime = DateTime.UtcNow.AddMinutes(-30);
+        // Keep this test independent of the seeded records and of whichever class test ran first.
+        // All six marker rows must be newer than every patient already in the shared fixture.
+        var baseTime = (await db.Patients.MaxAsync(p => p.CreatedAt)).AddMinutes(1);
         for (var i = 0; i < 6; i++)
         {
             db.Patients.Add(new Patient
@@ -316,14 +318,16 @@ public class AdminDashboardTests : IClassFixture<AdminDashboardTests.DashboardFa
             .OrderBy(p => p.CreatedAt)
             .ToListAsync();
 
-        var today = DateTime.UtcNow.Date;
+        // Likewise, place these six appointments on dates after every existing appointment so
+        // the dashboard's global five-row limit exercises this test's ordering deterministically.
+        var newestAppointmentDate = (await db.Appointments.MaxAsync(a => a.AppointmentDate)).Date.AddDays(6);
         for (var i = 0; i < 6; i++)
         {
             db.Appointments.Add(new AppointmentEntity
             {
                 PatientId = patients[i].Id,
                 DoctorId = doctor.Id,
-                AppointmentDate = today.AddDays(-i),
+                AppointmentDate = newestAppointmentDate.AddDays(-i),
                 StartTime = new TimeSpan(9, 0, 0),
                 Status = EntityStatus.AppointmentConfirmed
             });
@@ -331,23 +335,25 @@ public class AdminDashboardTests : IClassFixture<AdminDashboardTests.DashboardFa
         await db.SaveChangesAsync();
 
         var html = await GetAdminDashboardAsync();
+        var recentPatientsHtml = DashboardSection(html, "Recent patient registrations");
+        var recentAppointmentsHtml = DashboardSection(html, "Recent appointments");
 
         Assert.Contains("Recent patient registrations", html);
         Assert.Contains("Recent appointments", html);
 
         // The newest patient is shown, the oldest of the six is not.
-        Assert.Contains($"Recent Patient {marker} 5", html);
-        Assert.DoesNotContain($"Recent Patient {marker} 0", html);
+        Assert.Contains($"Recent Patient {marker} 5", recentPatientsHtml);
+        Assert.DoesNotContain($"Recent Patient {marker} 0", recentPatientsHtml);
 
         // Newest first: the newest patient appears before the second newest.
         Assert.True(
-            html.IndexOf($"Recent Patient {marker} 5", StringComparison.Ordinal)
-            < html.IndexOf($"Recent Patient {marker} 4", StringComparison.Ordinal),
+            recentPatientsHtml.IndexOf($"Recent Patient {marker} 5", StringComparison.Ordinal)
+            < recentPatientsHtml.IndexOf($"Recent Patient {marker} 4", StringComparison.Ordinal),
             "Recent patients should be newest first.");
 
-        // The newest appointment (today) is shown, the oldest (five days ago) is not.
-        Assert.Contains(today.ToString("dd MMM yyyy"), html);
-        Assert.DoesNotContain(today.AddDays(-5).ToString("dd MMM yyyy"), html);
+        // The newest appointment is shown, the oldest of the six is not.
+        Assert.Contains(newestAppointmentDate.ToString("dd MMM yyyy"), recentAppointmentsHtml);
+        Assert.DoesNotContain(newestAppointmentDate.AddDays(-5).ToString("dd MMM yyyy"), recentAppointmentsHtml);
     }
 
     [Fact]
@@ -421,6 +427,16 @@ public class AdminDashboardTests : IClassFixture<AdminDashboardTests.DashboardFa
             RegexOptions.Singleline);
         Assert.True(match.Success, $"The {canvasId} canvas should carry {attribute}.");
         return WebUtility.HtmlDecode(match.Groups[1].Value);
+    }
+
+    private static string DashboardSection(string html, string heading)
+    {
+        var match = Regex.Match(
+            html,
+            $"<section[^>]*>\\s*<h2[^>]*>{Regex.Escape(heading)}</h2>(.*?)</section>",
+            RegexOptions.Singleline);
+        Assert.True(match.Success, $"The dashboard should contain the {heading} section.");
+        return match.Groups[1].Value;
     }
 
     private static async Task<string> SignInAsync(HttpClient client, string email, string password)

@@ -48,18 +48,29 @@ test("signed-in page shows the shared layout and the sidebar collapses and expan
       .toBeGreaterThan(200)
   }
 
-  // 17.10: at a short browser height the sidebar still fills the viewport, while its long
-  // navigation scrolls without changing the main document's vertical scroll position.
+  // 17.10: at a short browser height the sidebar and remaining main area are independently
+  // scrollable, and neither changes the other region or the locked document scroll position.
   await page.setViewportSize({ width: startsAtPhoneWidth ? 412 : 1280, height: 320 })
   const sidebarNav = page.locator("#hmsSidebarNav")
+  const mainScroll = page.locator("#hmsMainScroll")
   const sidebarBox = await sidebar.boundingBox()
   expect(sidebarBox?.height).toBe(320)
   await expect
     .poll(async () => sidebarNav.evaluate((el) => el.scrollHeight > el.clientHeight))
     .toBe(true)
+  await expect
+    .poll(async () => mainScroll.evaluate((el) => el.scrollHeight > el.clientHeight))
+    .toBe(true)
 
-  const documentScrollBefore = await page.evaluate(() => window.scrollY)
+  const mainScrollBefore = await mainScroll.evaluate((el) => el.scrollTop)
   await sidebarNav.evaluate((el) => el.scrollTo({ top: el.scrollHeight }))
   await expect.poll(async () => sidebarNav.evaluate((el) => el.scrollTop)).toBeGreaterThan(0)
-  expect(await page.evaluate(() => window.scrollY)).toBe(documentScrollBefore)
+  expect(await mainScroll.evaluate((el) => el.scrollTop)).toBe(mainScrollBefore)
+  expect(await page.evaluate(() => window.scrollY)).toBe(0)
+
+  const sidebarScrollBefore = await sidebarNav.evaluate((el) => el.scrollTop)
+  await mainScroll.evaluate((el) => el.scrollTo({ top: el.scrollHeight }))
+  await expect.poll(async () => mainScroll.evaluate((el) => el.scrollTop)).toBeGreaterThan(0)
+  expect(await sidebarNav.evaluate((el) => el.scrollTop)).toBe(sidebarScrollBefore)
+  expect(await page.evaluate(() => window.scrollY)).toBe(0)
 })

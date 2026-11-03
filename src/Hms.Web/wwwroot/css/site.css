@@ -50,6 +50,11 @@ body {
     background: var(--hms-bg);
 }
 
+body.hms-signed-in {
+    height: 100vh;
+    overflow: hidden;
+}
+
 a {
     color: var(--hms-accent);
     text-decoration: none;
@@ -72,9 +77,9 @@ h1 {
 
 .hms-shell {
     display: flex;
-    min-height: 100vh;
+    height: 100vh;
     max-width: 100%;
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 .hms-sidebar {
@@ -173,8 +178,11 @@ h1 {
 .hms-main {
     flex: 1 1 auto;
     min-width: 0;
+    min-height: 0;
+    height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 /* ---------- Top bar ---------- */
@@ -315,6 +323,15 @@ h1 {
 }
 
 /* ---------- Breadcrumb, content, footer ---------- */
+
+.hms-main-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
+}
 
 .hms-breadcrumb {
     display: flex;
