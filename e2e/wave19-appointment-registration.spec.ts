@@ -10,8 +10,8 @@ test("receptionist books a uniquely identified available appointment", async ({ 
   await page.getByRole("button", { name: "Sign in" }).click()
 
   await page.goto("/Appointment/Book")
-  await page.getByLabel("Patient").selectOption({ label: /P-00001 - Ravi Kumar/ })
-  await page.getByLabel("Doctor").selectOption({ label: /Dr\. Arjun Mehta/ })
+  await page.getByLabel("Patient").selectOption({ label: "P-00001 - Ravi Kumar" })
+  await page.getByLabel("Doctor").selectOption({ label: "Dr. Arjun Mehta - Cardiology" })
 
   const appointmentDate = nextWorkingDate()
   await page.getByLabel("Date").fill(appointmentDate)
