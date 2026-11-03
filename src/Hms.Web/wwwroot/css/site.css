@@ -73,6 +73,8 @@ h1 {
 .hms-shell {
     display: flex;
     min-height: 100vh;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 .hms-sidebar {
@@ -84,6 +86,23 @@ h1 {
     flex-direction: column;
     transition: width .18s ease, flex-basis .18s ease;
     overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.hms-sidebar-close {
+    display: none;
+    margin-left: auto;
+    padding: 4px 6px;
+    border: 0;
+    border-radius: var(--hms-radius-control);
+    background: transparent;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.hms-backdrop {
+    display: none;
 }
 
 .hms-sidebar-brand {
@@ -707,25 +726,103 @@ h1 {
 
 /* ---------- Responsive ---------- */
 
+/* Nothing may push the page wider than the window: tables and long words wrap or scroll
+   inside their own card instead of stretching the document. */
+.hms-main,
+.hms-content,
+.hms-card {
+    max-width: 100%;
+}
+
+.hms-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.hms-table td,
+.hms-table th {
+    overflow-wrap: break-word;
+}
+
+.hms-card img,
+.hms-card canvas {
+    max-width: 100%;
+    height: auto;
+}
+
 @media (max-width: 1024px) {
     .hms-kpi-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
-@media (max-width: 768px) {
+/* Tablet and phone: the sidebar leaves the flow and becomes a drawer behind the menu button. */
+@media (max-width: 900px) {
     .hms-shell {
-        flex-direction: column;
+        display: block;
     }
 
     .hms-sidebar {
-        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 70;
+        width: var(--hms-sidebar-width);
+        max-width: 82vw;
+        flex-basis: auto;
+        transform: translateX(-100%);
+        visibility: hidden;
+        pointer-events: none;
+        transition: transform .2s ease, visibility 0s linear .2s;
+        box-shadow: var(--hms-shadow);
+    }
+
+    .hms-shell.hms-sidebar-open .hms-sidebar {
+        transform: translateX(0);
+        visibility: visible;
+        pointer-events: auto;
+        transition-delay: 0s;
+    }
+
+    .hms-sidebar[aria-hidden="true"] {
+        transform: translateX(-100%);
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    /* The collapse-to-icons state is a desktop affordance; the drawer is always full width. */
+    .hms-shell.hms-collapsed .hms-sidebar {
+        width: var(--hms-sidebar-width);
         flex-basis: auto;
     }
 
-    .hms-shell.hms-collapsed .hms-sidebar {
+    .hms-shell.hms-collapsed .hms-sidebar-label {
+        display: inline;
+    }
+
+    .hms-sidebar-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hms-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 65;
+        background: rgba(16, 24, 40, .45);
+    }
+
+    .hms-backdrop[hidden] {
+        display: none;
+    }
+
+    .hms-main {
         width: 100%;
-        flex-basis: auto;
     }
 
     .hms-topbar {
@@ -754,9 +851,81 @@ h1 {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .hms-table {
+    .hms-page-header {
+        flex-wrap: wrap;
+    }
+
+    .hms-card {
+        padding: var(--hms-space-4);
+    }
+
+    .hms-table-wrap {
+        overflow: visible;
+    }
+
+    .hms-table,
+    .hms-table tbody,
+    .hms-table tr,
+    .hms-table td {
         display: block;
-        overflow-x: auto;
+        width: 100%;
+    }
+
+    .hms-table thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    .hms-table tbody {
+        display: grid;
+        gap: var(--hms-space-4);
+    }
+
+    .hms-table tbody tr {
+        padding: var(--hms-space-3);
+        border: 1px solid var(--hms-border);
+        border-radius: var(--hms-radius-control);
+        background: var(--hms-surface);
+    }
+
+    .hms-table td {
+        display: grid;
+        grid-template-columns: minmax(88px, 36%) minmax(0, 1fr);
+        gap: var(--hms-space-3);
+        align-items: start;
+        padding: 8px 0;
+        border-top: 1px solid var(--hms-border);
+        overflow-wrap: break-word;
+        word-break: normal;
+    }
+
+    .hms-table td:first-child {
+        border-top: 0;
+    }
+
+    .hms-table td::before {
+        content: attr(data-label);
+        color: var(--hms-text-muted);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .03em;
+        text-transform: uppercase;
+    }
+
+    .hms-table td[colspan] {
+        display: block;
+    }
+
+    .hms-table td[colspan]::before,
+    .hms-table td[data-label=""]::before {
+        content: none;
     }
 }
 
@@ -767,5 +936,29 @@ h1 {
 
     .hms-profile-name {
         display: none;
+    }
+
+    .hms-topbar-title {
+        font-size: 14px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .hms-breadcrumb {
+        flex-wrap: wrap;
+    }
+
+    .hms-form-actions,
+    .hms-confirm-actions {
+        flex-wrap: wrap;
+    }
+
+    .hms-print-body {
+        padding: var(--hms-space-2);
+    }
+
+    .hms-print-sheet {
+        padding: var(--hms-space-4);
     }
 }

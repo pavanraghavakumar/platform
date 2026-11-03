@@ -8,37 +8,38 @@
     <ul>
         @if (isAdmin)
         {
-            <li><a asp-controller="Dashboard" asp-action="Admin"><i class="bi bi-speedometer2"></i><span class="hms-sidebar-label">Dashboard</span></a></li>
-            <li><a asp-controller="Department" asp-action="Index"><i class="bi bi-diagram-3"></i><span class="hms-sidebar-label">Departments</span></a></li>
-            <li><a asp-controller="Staff" asp-action="Index"><i class="bi bi-people"></i><span class="hms-sidebar-label">Staff</span></a></li>
-            <li><a asp-controller="Doctor" asp-action="Index"><i class="bi bi-person-badge"></i><span class="hms-sidebar-label">Doctors</span></a></li>
-            <li><a asp-controller="Patient" asp-action="Index"><i class="bi bi-person-vcard"></i><span class="hms-sidebar-label">Patients</span></a></li>
-            <li><a asp-controller="Appointment" asp-action="Index"><i class="bi bi-calendar-check"></i><span class="hms-sidebar-label">Appointments</span></a></li>
-            <li><a asp-controller="LabTest" asp-action="Index"><i class="bi bi-clipboard2-pulse"></i><span class="hms-sidebar-label">Lab tests</span></a></li>
-            <li><a asp-controller="LabRequest" asp-action="Index"><i class="bi bi-droplet"></i><span class="hms-sidebar-label">Lab requests</span></a></li>
-            <li><a asp-controller="Medicine" asp-action="Index"><i class="bi bi-capsule"></i><span class="hms-sidebar-label">Pharmacy</span></a></li>
-            <li><a asp-controller="Invoice" asp-action="Index"><i class="bi bi-receipt"></i><span class="hms-sidebar-label">Invoices</span></a></li>
-            <li><a asp-controller="Report" asp-action="Index"><i class="bi bi-graph-up"></i><span class="hms-sidebar-label">Reports</span></a></li>
-            <li><a asp-controller="Audit" asp-action="Index"><i class="bi bi-shield-check"></i><span class="hms-sidebar-label">Audit trail</span></a></li>
+            <li><a asp-controller="Dashboard" asp-action="Admin" title="Dashboard"><i class="bi bi-speedometer2"></i><span class="hms-sidebar-label">Dashboard</span></a></li>
+            <li><a asp-controller="Department" asp-action="Index" title="Departments"><i class="bi bi-diagram-3"></i><span class="hms-sidebar-label">Departments</span></a></li>
+            <li><a asp-controller="Staff" asp-action="Index" title="Staff"><i class="bi bi-people"></i><span class="hms-sidebar-label">Staff</span></a></li>
+            <li><a asp-controller="Doctor" asp-action="Index" title="Doctors"><i class="bi bi-person-badge"></i><span class="hms-sidebar-label">Doctors</span></a></li>
+            <li><a asp-controller="Patient" asp-action="Index" title="Patients"><i class="bi bi-person-vcard"></i><span class="hms-sidebar-label">Patients</span></a></li>
+            <li><a asp-controller="Appointment" asp-action="Index" title="Appointments"><i class="bi bi-calendar-check"></i><span class="hms-sidebar-label">Appointments</span></a></li>
+            <li><a asp-controller="LabTest" asp-action="Index" title="Lab tests"><i class="bi bi-clipboard2-pulse"></i><span class="hms-sidebar-label">Lab tests</span></a></li>
+            <li><a asp-controller="LabRequest" asp-action="Index" title="Lab requests"><i class="bi bi-droplet"></i><span class="hms-sidebar-label">Lab requests</span></a></li>
+            <li><a asp-controller="Medicine" asp-action="Index" title="Pharmacy"><i class="bi bi-capsule"></i><span class="hms-sidebar-label">Pharmacy</span></a></li>
+            <li><a asp-controller="Invoice" asp-action="Index" title="Invoices"><i class="bi bi-receipt"></i><span class="hms-sidebar-label">Invoices</span></a></li>
+            <li><a asp-controller="Report" asp-action="Index" title="Reports"><i class="bi bi-graph-up"></i><span class="hms-sidebar-label">Reports</span></a></li>
+            <li><a asp-controller="Audit" asp-action="Index" title="Audit trail"><i class="bi bi-shield-check"></i><span class="hms-sidebar-label">Audit trail</span></a></li>
         }
         @if (isDoctor)
         {
-            <li><a asp-controller="Dashboard" asp-action="Doctor"><i class="bi bi-speedometer2"></i><span class="hms-sidebar-label">Dashboard</span></a></li>
-            <li><a asp-controller="Patient" asp-action="DoctorPatients"><i class="bi bi-person-vcard"></i><span class="hms-sidebar-label">My patients</span></a></li>
-            <li><a asp-controller="Appointment" asp-action="Index"><i class="bi bi-calendar-check"></i><span class="hms-sidebar-label">Appointments</span></a></li>
+            <li><a asp-controller="Dashboard" asp-action="Doctor" title="Dashboard"><i class="bi bi-speedometer2"></i><span class="hms-sidebar-label">Dashboard</span></a></li>
+            <li><a asp-controller="Patient" asp-action="DoctorPatients" title="My patients"><i class="bi bi-person-vcard"></i><span class="hms-sidebar-label">My patients</span></a></li>
+            <li><a asp-controller="Appointment" asp-action="Index" title="Appointments"><i class="bi bi-calendar-check"></i><span class="hms-sidebar-label">Appointments</span></a></li>
+            <li><a asp-controller="LabRequest" asp-action="Index" title="Lab requests"><i class="bi bi-droplet"></i><span class="hms-sidebar-label">Lab requests</span></a></li>
         }
         @if (isReceptionist)
         {
-            <li><a asp-controller="Dashboard" asp-action="Receptionist"><i class="bi bi-speedometer2"></i><span class="hms-sidebar-label">Dashboard</span></a></li>
-            <li><a asp-controller="Patient" asp-action="Index"><i class="bi bi-person-vcard"></i><span class="hms-sidebar-label">Patients</span></a></li>
-            <li><a asp-controller="Appointment" asp-action="Index"><i class="bi bi-calendar-check"></i><span class="hms-sidebar-label">Appointments</span></a></li>
-            <li><a asp-controller="LabRequest" asp-action="Index"><i class="bi bi-droplet"></i><span class="hms-sidebar-label">Lab requests</span></a></li>
-            <li><a asp-controller="Invoice" asp-action="Index"><i class="bi bi-receipt"></i><span class="hms-sidebar-label">Invoices</span></a></li>
+            <li><a asp-controller="Dashboard" asp-action="Receptionist" title="Dashboard"><i class="bi bi-speedometer2"></i><span class="hms-sidebar-label">Dashboard</span></a></li>
+            <li><a asp-controller="Patient" asp-action="Index" title="Patients"><i class="bi bi-person-vcard"></i><span class="hms-sidebar-label">Patients</span></a></li>
+            <li><a asp-controller="Appointment" asp-action="Index" title="Appointments"><i class="bi bi-calendar-check"></i><span class="hms-sidebar-label">Appointments</span></a></li>
+            <li><a asp-controller="LabRequest" asp-action="Index" title="Lab requests"><i class="bi bi-droplet"></i><span class="hms-sidebar-label">Lab requests</span></a></li>
+            <li><a asp-controller="Invoice" asp-action="Index" title="Invoices"><i class="bi bi-receipt"></i><span class="hms-sidebar-label">Invoices</span></a></li>
         }
         @if (isPatient)
         {
-            <li><a asp-controller="Dashboard" asp-action="Patient"><i class="bi bi-speedometer2"></i><span class="hms-sidebar-label">Dashboard</span></a></li>
-            <li><a asp-controller="Appointment" asp-action="Book"><i class="bi bi-calendar-plus"></i><span class="hms-sidebar-label">Book appointment</span></a></li>
+            <li><a asp-controller="Dashboard" asp-action="Patient" title="Dashboard"><i class="bi bi-speedometer2"></i><span class="hms-sidebar-label">Dashboard</span></a></li>
+            <li><a asp-controller="Appointment" asp-action="Book" title="Book appointment"><i class="bi bi-calendar-plus"></i><span class="hms-sidebar-label">Book appointment</span></a></li>
         }
     </ul>
 </nav>

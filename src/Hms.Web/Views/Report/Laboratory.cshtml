@@ -2,5 +2,17 @@
 @{
     ViewData["Title"] = "Laboratory report";
 }
-<h1>Laboratory</h1><partial name="_DateFilter" model="Model.Period" /><div class="hms-card report-section"><div class="report-metrics"><div><span>Total requests</span><strong>@Model.TotalRequests</strong></div><div><span>Completed results</span><strong>@Model.CompletedResults</strong></div></div><div class="status-counts">@foreach(var item in Model.Statuses){<span><b>@item.Count</b> @item.Status</span>}</div></div>
+<h1>Laboratory</h1>
+<partial name="_DateFilter" model="Model.Period" />
+<div class="hms-card report-section">
+    <div class="report-metrics"><div><span>Total requests</span><strong>@Model.TotalRequests</strong></div><div><span>Completed results</span><strong>@Model.CompletedResults</strong></div></div>
+    @if (Model.Statuses.Count == 0)
+    {
+        <partial name="_EmptyState" />
+    }
+    else
+    {
+        <div class="status-counts">@foreach(var item in Model.Statuses){<span><b>@item.Count</b> @item.Status</span>}</div>
+    }
+</div>
 @section Styles { <link rel="stylesheet" href="~/css/pages/report.css" asp-append-version="true" /> }
