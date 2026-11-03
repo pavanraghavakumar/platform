@@ -77,29 +77,31 @@
                     </div>
                 </header>
 
-                <div class="hms-breadcrumb">
-                    <a asp-controller="Dashboard" asp-action="Index">Home</a>
-                    <span>/</span>
-                    <span>@controller</span>
-                    <span>/</span>
-                    <span>@action</span>
+                <div class="hms-main-scroll" id="hmsMainScroll" tabindex="0">
+                    <div class="hms-breadcrumb">
+                        <a asp-controller="Dashboard" asp-action="Index">Home</a>
+                        <span>/</span>
+                        <span>@controller</span>
+                        <span>/</span>
+                        <span>@action</span>
+                    </div>
+
+                    <main class="hms-content">
+                        @if (TempData["Message"] is string message)
+                        {
+                            <div class="hms-alert hms-alert-success">@message</div>
+                        }
+                        @if (TempData["Error"] is string error)
+                        {
+                            <div class="hms-alert hms-alert-error">@error</div>
+                        }
+                        @RenderBody()
+                    </main>
+
+                    <footer class="hms-footer">
+                        <span>&copy; @DateTime.UtcNow.Year @hospitalName. All rights reserved.</span>
+                    </footer>
                 </div>
-
-                <main class="hms-content">
-                    @if (TempData["Message"] is string message)
-                    {
-                        <div class="hms-alert hms-alert-success">@message</div>
-                    }
-                    @if (TempData["Error"] is string error)
-                    {
-                        <div class="hms-alert hms-alert-error">@error</div>
-                    }
-                    @RenderBody()
-                </main>
-
-                <footer class="hms-footer">
-                    <span>&copy; @DateTime.UtcNow.Year @hospitalName. All rights reserved.</span>
-                </footer>
             </div>
         </div>
 
