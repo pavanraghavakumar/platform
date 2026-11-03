@@ -1,7 +1,7 @@
+@model Hms.Web.ViewModels.Report.AppointmentReportViewModel
 @{
     ViewData["Title"] = "Appointment report";
 }
-<h1>Appointments</h1>
-<div class="hms-card">
-    <partial name="_EmptyState" model="@("No records found.")" />
-</div>
+<h1>Appointments</h1><partial name="_DateFilter" model="Model.Period" />
+<div class="hms-card report-section"><div class="status-counts">@foreach(var item in Model.Statuses){<span><b>@item.Count</b> @item.Status</span>}</div>@if(Model.Appointments.Count==0){<partial name="_EmptyState" model="@("No records found.")" />}else{<div class="report-table-wrap"><table class="hms-table"><thead><tr><th>Patient</th><th>Doctor</th><th>Date</th><th>Status</th></tr></thead><tbody>@foreach(var row in Model.Appointments){<tr><td>@row.PatientName</td><td>@row.DoctorName</td><td>@row.Date.ToString("dd MMM yyyy")</td><td>@row.Status</td></tr>}</tbody></table></div>}</div>
+@section Styles { <link rel="stylesheet" href="~/css/pages/report.css" asp-append-version="true" /> }

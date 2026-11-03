@@ -1,21 +1,35 @@
+@model Hms.Web.ViewModels.Report.ReportsIndexViewModel
 @{
     ViewData["Title"] = "Reports";
 }
-<h1>Reports</h1>
+<div class="hms-page-header"><div><h1>Reports</h1><p>Hospital performance from @Model.Period.StartDate.ToString("dd MMM yyyy") to @Model.Period.EndDate.ToString("dd MMM yyyy")</p></div></div>
+<partial name="_DateFilter" model="Model.Period" />
 
-<div class="hms-card">
-    <form method="get" class="hms-form-grid">
-        <div class="hms-field"><label for="from">Start date</label><input id="from" name="from" type="date" /></div>
-        <div class="hms-field"><label for="to">End date</label><input id="to" name="to" type="date" /></div>
-    </form>
+<nav class="report-nav" aria-label="Report sections">
+    <a href="#patients"><i class="bi bi-people"></i> Patients</a><a href="#appointments"><i class="bi bi-calendar3"></i> Appointments</a>
+    <a href="#departments"><i class="bi bi-building"></i> Departments</a><a href="#doctors"><i class="bi bi-person-badge"></i> Doctors</a>
+    <a href="#laboratory"><i class="bi bi-droplet"></i> Laboratory</a><a href="#pharmacy"><i class="bi bi-capsule"></i> Pharmacy</a>
+    <a href="#revenue"><i class="bi bi-graph-up"></i> Revenue</a>
+</nav>
 
-    <ul>
-        <li><a asp-controller="Report" asp-action="Patients">Patient registrations</a></li>
-        <li><a asp-controller="Report" asp-action="Appointments">Appointments</a></li>
-        <li><a asp-controller="Report" asp-action="Departments">Departments</a></li>
-        <li><a asp-controller="Report" asp-action="Doctors">Doctor performance</a></li>
-        <li><a asp-controller="Report" asp-action="Laboratory">Laboratory</a></li>
-        <li><a asp-controller="Report" asp-action="Pharmacy">Pharmacy stock</a></li>
-        <li><a asp-controller="Report" asp-action="Revenue">Revenue</a></li>
-    </ul>
+<section id="patients" class="report-section hms-card"><div class="report-heading"><h2>Patient registrations</h2><strong>@Model.Patients.Total</strong></div>
+    @if (Model.Patients.Patients.Count == 0) { <partial name="_EmptyState" model="@("No records found.")" /> }
+    else { <div class="report-table-wrap"><table class="hms-table"><thead><tr><th>Patient ID</th><th>Name</th><th>Registration date</th></tr></thead><tbody>@foreach (var row in Model.Patients.Patients) { <tr><td>@row.PatientCode</td><td>@row.Name</td><td>@row.RegisteredAt.ToString("dd MMM yyyy")</td></tr> }</tbody></table></div> }
+</section>
+
+<section id="appointments" class="report-section hms-card"><div class="report-heading"><h2>Appointments</h2><div class="status-counts">@foreach (var item in Model.Appointments.Statuses) { <span><b>@item.Count</b> @item.Status</span> }</div></div>
+    @if (Model.Appointments.Appointments.Count == 0) { <partial name="_EmptyState" model="@("No records found.")" /> }
+    else { <div class="report-table-wrap"><table class="hms-table"><thead><tr><th>Patient</th><th>Doctor</th><th>Date</th><th>Status</th></tr></thead><tbody>@foreach (var row in Model.Appointments.Appointments) { <tr><td>@row.PatientName</td><td>@row.DoctorName</td><td>@row.Date.ToString("dd MMM yyyy")</td><td><span class="hms-status">@row.Status</span></td></tr> }</tbody></table></div> }
+</section>
+
+<section id="departments" class="report-section hms-card"><h2>Department activity</h2><div class="report-table-wrap"><table class="hms-table"><thead><tr><th>Department</th><th>Doctors</th><th>Appointments</th></tr></thead><tbody>@foreach (var row in Model.Departments.Departments) { <tr><td>@row.DepartmentName</td><td>@row.DoctorCount</td><td>@row.AppointmentCount</td></tr> }</tbody></table></div></section>
+<section id="doctors" class="report-section hms-card"><h2>Doctor performance</h2><div class="report-table-wrap"><table class="hms-table"><thead><tr><th>Doctor</th><th>Completed consultations</th><th>Invoice revenue</th></tr></thead><tbody>@foreach (var row in Model.Doctors.Doctors) { <tr><td>@row.DoctorName</td><td>@row.CompletedConsultations</td><td>₹@row.Revenue.ToString("N2")</td></tr> }</tbody></table></div></section>
+
+<section id="laboratory" class="report-section hms-card"><div class="report-heading"><h2>Laboratory</h2><strong>@Model.Laboratory.CompletedResults completed results</strong></div><div class="status-counts">@foreach (var item in Model.Laboratory.Statuses) { <span><b>@item.Count</b> @item.Status</span> }</div></section>
+<section id="pharmacy" class="report-section hms-card"><div class="report-heading"><h2>Pharmacy stock</h2><div class="status-counts"><span><b>@Model.Pharmacy.LowStockCount</b> Low Stock</span><span><b>@Model.Pharmacy.OutOfStockCount</b> Out of Stock</span></div></div><div class="report-table-wrap"><table class="hms-table"><thead><tr><th>Medicine</th><th>Category</th><th>Stock</th><th>Status</th><th>Earliest expiry</th></tr></thead><tbody>@foreach (var row in Model.Pharmacy.Medicines) { <tr><td>@row.MedicineName</td><td>@row.CategoryName</td><td>@row.StockQuantity</td><td><span class="hms-status">@row.Status</span></td><td>@(row.EarliestExpiryDate?.ToString("dd MMM yyyy") ?? "—")</td></tr> }</tbody></table></div></section>
+
+<section id="revenue" class="report-section hms-card"><h2>Revenue</h2><div class="report-metrics"><div><span>Payments recorded</span><strong>₹@Model.Revenue.TotalPaymentsRecorded.ToString("N2")</strong></div><div><span>Refunded</span><strong>₹@Model.Revenue.TotalRefunded.ToString("N2")</strong></div><div><span>Net revenue</span><strong>₹@Model.Revenue.NetRevenue.ToString("N2")</strong></div><div><span>Outstanding</span><strong>₹@Model.Revenue.OutstandingBalance.ToString("N2")</strong></div></div><div class="report-chart"><canvas id="revenueChart" data-labels='@System.Text.Json.JsonSerializer.Serialize(Model.Revenue.DailyRevenue.Select(p => p.Date.ToString("dd MMM")))' data-values='@System.Text.Json.JsonSerializer.Serialize(Model.Revenue.DailyRevenue.Select(p => p.NetRevenue))' aria-label="Net revenue per day"></canvas></div></section>
+
+@section Styles { <link rel="stylesheet" href="~/css/pages/report.css" asp-append-version="true" /> }
+@section Scripts { <script src="~/js/pages/report.js" asp-append-version="true"></script> }
 </div>

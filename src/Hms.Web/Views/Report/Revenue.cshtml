@@ -1,7 +1,7 @@
+@model Hms.Web.ViewModels.Report.RevenueReportViewModel
 @{
     ViewData["Title"] = "Revenue report";
 }
-<h1>Revenue</h1>
-<div class="hms-card">
-    <partial name="_EmptyState" model="@("No records found.")" />
-</div>
+<h1>Revenue</h1><partial name="_DateFilter" model="Model.Period" /><div class="report-metrics"><div><span>Payments recorded</span><strong>₹@Model.TotalPaymentsRecorded.ToString("N2")</strong></div><div><span>Refunded</span><strong>₹@Model.TotalRefunded.ToString("N2")</strong></div><div><span>Net revenue</span><strong>₹@Model.NetRevenue.ToString("N2")</strong></div><div><span>Outstanding balance</span><strong>₹@Model.OutstandingBalance.ToString("N2")</strong></div></div><div class="hms-card report-section"><h2>Net revenue per day</h2><div class="report-chart"><canvas id="revenueChart" data-labels='@System.Text.Json.JsonSerializer.Serialize(Model.DailyRevenue.Select(p => p.Date.ToString("dd MMM")))' data-values='@System.Text.Json.JsonSerializer.Serialize(Model.DailyRevenue.Select(p => p.NetRevenue))'></canvas></div></div>
+@section Styles { <link rel="stylesheet" href="~/css/pages/report.css" asp-append-version="true" /> }
+@section Scripts { <script src="~/js/pages/report.js" asp-append-version="true"></script> }

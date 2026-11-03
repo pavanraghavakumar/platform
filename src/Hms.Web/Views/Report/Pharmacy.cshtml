@@ -1,7 +1,6 @@
+@model Hms.Web.ViewModels.Report.PharmacyReportViewModel
 @{
     ViewData["Title"] = "Pharmacy stock report";
 }
-<h1>Pharmacy stock</h1>
-<div class="hms-card">
-    <partial name="_EmptyState" model="@("No records found.")" />
-</div>
+<h1>Pharmacy stock</h1><div class="report-metrics"><div><span>Low Stock</span><strong>@Model.LowStockCount</strong></div><div><span>Out of Stock</span><strong>@Model.OutOfStockCount</strong></div></div><div class="hms-card report-section"><div class="report-table-wrap"><table class="hms-table"><thead><tr><th>Medicine</th><th>Category</th><th>Stock</th><th>Status</th><th>Earliest expiry</th></tr></thead><tbody>@foreach(var row in Model.Medicines){<tr><td>@row.MedicineName</td><td>@row.CategoryName</td><td>@row.StockQuantity</td><td>@row.Status</td><td>@(row.EarliestExpiryDate?.ToString("dd MMM yyyy") ?? "—")</td></tr>}</tbody></table></div></div>
+@section Styles { <link rel="stylesheet" href="~/css/pages/report.css" asp-append-version="true" /> }

@@ -1,7 +1,6 @@
+@model Hms.Web.ViewModels.Report.DoctorReportViewModel
 @{
     ViewData["Title"] = "Doctor performance report";
 }
-<h1>Doctor performance</h1>
-<div class="hms-card">
-    <partial name="_EmptyState" model="@("No records found.")" />
-</div>
+<h1>Doctor performance</h1><partial name="_DateFilter" model="Model.Period" /><div class="hms-card report-section"><div class="report-table-wrap"><table class="hms-table"><thead><tr><th>Doctor</th><th>Completed consultations</th><th>Invoice revenue</th></tr></thead><tbody>@foreach(var row in Model.Doctors){<tr><td>@row.DoctorName</td><td>@row.CompletedConsultations</td><td>₹@row.Revenue.ToString("N2")</td></tr>}</tbody></table></div></div>
+@section Styles { <link rel="stylesheet" href="~/css/pages/report.css" asp-append-version="true" /> }
