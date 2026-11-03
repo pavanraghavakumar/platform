@@ -21,6 +21,9 @@ public interface INotificationService
 /// </summary>
 public class NotificationService : INotificationService
 {
+    /// <summary>The number of notifications the bell panel shows (acceptance criterion 15.2).</summary>
+    public const int RecentTake = 10;
+
     private readonly HmsDbContext _db;
 
     public NotificationService(HmsDbContext db)
@@ -41,11 +44,18 @@ public class NotificationService : INotificationService
         await _db.SaveChangesAsync();
     }
 
-    public async Task<IReadOnlyList<Notification>> GetRecentAsync(string userId, int take = 10)
+    public async Task<IReadOnlyList<Notification>> GetRecentAsync(string userId, int take = RecentTake)
     {
+        if (take <= 0)
+        {
+            return Array.Empty<Notification>();
+        }
+
         return await _db.Notifications
+            .AsNoTracking()
             .Where(n => n.UserId == userId)
             .OrderByDescending(n => n.CreatedAt)
+            .ThenByDescending(n => n.Id)
             .Take(take)
             .ToListAsync();
     }
@@ -61,10 +71,16 @@ public class NotificationService : INotificationService
             .Where(n => n.UserId == userId && !n.IsRead)
             .ToListAsync();
 
+        if (unread.Count == 0)
+        {
+            return;
+        }
+
+        var now = DateTime.UtcNow;
         foreach (var notification in unread)
         {
             notification.IsRead = true;
-            notification.UpdatedAt = DateTime.UtcNow;
+            notification.UpdatedAt = now;
         }
 
         await _db.SaveChangesAsync();
