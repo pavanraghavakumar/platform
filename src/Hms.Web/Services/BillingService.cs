@@ -236,7 +236,8 @@ public class BillingService : IBillingService
         }
 
         var invoice = payment.Invoice;
-        var oldStatus = invoice.Status;
+        var oldInvoiceStatus = invoice.Status;
+        var oldPaymentStatus = payment.Status;
 
         payment.Status = EntityStatus.PaymentRefunded;
         payment.UpdatedAt = DateTime.UtcNow;
@@ -250,7 +251,8 @@ public class BillingService : IBillingService
         invoice.UpdatedAt = DateTime.UtcNow;
 
         await _db.SaveChangesAsync();
-        await _audit.RecordAsync("Invoice", invoice.Id, "Status", oldStatus, invoice.Status, userName);
+        await _audit.RecordAsync("Payment", payment.Id, "Status", oldPaymentStatus, payment.Status, userName);
+        await _audit.RecordAsync("Invoice", invoice.Id, "Status", oldInvoiceStatus, invoice.Status, userName);
 
         var patient = await _db.Patients.FindAsync(invoice.PatientId);
         if (patient?.UserId is not null)

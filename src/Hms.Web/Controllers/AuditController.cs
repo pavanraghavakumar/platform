@@ -1,4 +1,5 @@
 using Hms.Web.Data;
+using Hms.Web.ViewModels.Audit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,10 @@ public class AuditController : Controller
     public async Task<IActionResult> Index(string? recordType, DateTime? from, DateTime? to, int page = 1)
     {
         const int pageSize = 20;
-        var query = _db.AuditEntries.AsQueryable();
+        page = Math.Max(page, 1);
+        recordType = string.IsNullOrWhiteSpace(recordType) ? null : recordType.Trim();
+
+        var query = _db.AuditEntries.AsNoTracking().AsQueryable();
         if (!string.IsNullOrWhiteSpace(recordType))
         {
             query = query.Where(a => a.RecordType == recordType);
@@ -34,10 +38,26 @@ public class AuditController : Controller
             query = query.Where(a => a.ChangedAt < to.Value.Date.AddDays(1));
         }
 
-        ViewData["RecordType"] = recordType;
-        ViewData["From"] = from;
-        ViewData["To"] = to;
-        ViewData["Page"] = page;
-        return View(await query.OrderByDescending(a => a.ChangedAt).Skip((Math.Max(page, 1) - 1) * pageSize).Take(pageSize).ToListAsync());
+        var totalCount = await query.CountAsync();
+        var totalPages = Math.Max(1, (int)Math.Ceiling(totalCount / (double)pageSize));
+        page = Math.Min(page, totalPages);
+
+        var entries = await query
+            .OrderByDescending(a => a.ChangedAt)
+            .ThenByDescending(a => a.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return View(new AuditListViewModel
+        {
+            Entries = entries,
+            RecordType = recordType,
+            From = from,
+            To = to,
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount
+        });
     }
 }
