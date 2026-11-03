@@ -1,0 +1,22 @@
+import { test, expect } from "@playwright/test"
+
+test("doctor opens prescription history and printable prescription", async ({ page }) => {
+  await page.goto("/")
+  await page.getByRole("textbox", { name: "User name" }).fill(process.env.E2E_DOCTOR_EMAIL ?? "dr.arjun@hms.local")
+  await page.getByRole("textbox", { name: "Password" }).fill(process.env.E2E_DOCTOR_PASSWORD ?? "Doctor@123")
+  await page.getByRole("button", { name: "Sign in" }).click()
+  await page.goto("/Prescription?patientId=1")
+  await expect(page.getByRole("heading", { name: "Prescription history" })).toBeVisible()
+  await expect(page.getByText("Ravi Kumar · P-00001")).toBeVisible()
+  await expect(page.locator("tbody tr").first()).toContainText("Dr. Arjun Mehta")
+  await page.getByRole("link", { name: "Open" }).first().click()
+  await expect(page.getByRole("heading", { name: "Greenfield General Hospital" })).toBeVisible()
+  await expect(page.getByRole("cell", { name: "Ravi Kumar" })).toBeVisible()
+  await expect(page.getByRole("cell", { name: "P-00001" })).toBeVisible()
+  await expect(page.getByRole("cell", { name: "Paracetamol 500mg" })).toBeVisible()
+  await expect(page.getByRole("cell", { name: "1 tablet" })).toBeVisible()
+  await expect(page.getByRole("cell", { name: "Twice a day" })).toBeVisible()
+  await expect(page.getByRole("cell", { name: "5 days" })).toBeVisible()
+  await expect(page.getByRole("cell", { name: "After food" })).toBeVisible()
+  await expect(page.getByRole("button", { name: "Print" })).toBeVisible()
+})
