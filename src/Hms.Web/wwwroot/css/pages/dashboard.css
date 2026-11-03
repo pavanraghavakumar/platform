@@ -1,4 +1,4 @@
-/* Admin dashboard — charts, recent activity and department list. */
+/* Dashboard charts, activity tables and Doctor notification list. */
 
 .hms-dashboard-actions {
     display: flex;
@@ -38,6 +38,43 @@
     font-size: 12px;
 }
 
+.hms-table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.hms-dashboard-notifications {
+    margin-top: var(--hms-space-6);
+}
+
+.hms-dashboard-notification-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.hms-dashboard-notification-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--hms-space-4);
+    padding: var(--hms-space-3) 0;
+    border-bottom: 1px solid var(--hms-border);
+}
+
+.hms-dashboard-notification-list li:last-child {
+    border-bottom: 0;
+}
+
+.hms-dashboard-notification-list time {
+    flex: 0 0 auto;
+    color: var(--hms-text-muted);
+    font-size: 12px;
+}
+
+.hms-dashboard-notification-list .hms-notification-unread span {
+    font-weight: 600;
+}
+
 @media (max-width: 1024px) {
     .hms-dashboard-grid {
         grid-template-columns: minmax(0, 1fr);
@@ -56,5 +93,10 @@
 
     .hms-chart-wrap {
         height: 220px;
+    }
+
+    .hms-dashboard-notification-list li {
+        flex-direction: column;
+        gap: var(--hms-space-1);
     }
 }

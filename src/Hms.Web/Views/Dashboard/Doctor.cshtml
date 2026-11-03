@@ -1,18 +1,112 @@
+@model Hms.Web.ViewModels.Dashboard.DoctorDashboardViewModel
 @{
     ViewData["Title"] = "Doctor dashboard";
 }
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/dashboard.css" asp-append-version="true" />
+}
+
 <div class="hms-page-header">
     <h1>Doctor dashboard</h1>
+    <div class="hms-dashboard-actions">
+        <a class="hms-btn hms-btn-secondary" asp-controller="Patient" asp-action="DoctorPatients">
+            <i class="bi bi-people"></i> My patients
+        </a>
+    </div>
 </div>
 
 <div class="hms-kpi-grid">
-    <partial name="_KpiCard" model="@(new KpiCardModel("bi-calendar-check", "—", "Appointments today"))" />
-    <partial name="_KpiCard" model="@(new KpiCardModel("bi-hourglass-split", "—", "Checked in waiting"))" />
-    <partial name="_KpiCard" model="@(new KpiCardModel("bi-clipboard-check", "—", "Completed today"))" />
-    <partial name="_KpiCard" model="@(new KpiCardModel("bi-droplet", "—", "Lab results today"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-calendar-check", Model.TodaysAppointments.ToString(), "Today's appointments"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-hourglass-split", Model.CheckedInWaiting.ToString(), "Checked In waiting"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-clipboard-check", Model.CompletedConsultationsToday.ToString(), "Completed consultations today"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-droplet", Model.LabResultsCompletedToday.ToString(), "Lab results completed today"))" />
 </div>
 
-<div class="hms-card">
-    <h2>Welcome</h2>
-    <p class="hms-empty">The dashboard figures are filled in by the Doctor dashboard task.</p>
+<div class="hms-dashboard-grid hms-doctor-dashboard-grid">
+    <section class="hms-card">
+        <h2 class="hms-card-title">Today's appointments</h2>
+        @if (Model.Today.Count == 0)
+        {
+            <partial name="_EmptyState" model="@("No records found.")" />
+        }
+        else
+        {
+            <div class="hms-table-scroll">
+                <table class="hms-table">
+                    <thead>
+                        <tr><th>Time</th><th>Patient</th><th>Patient ID</th><th>Status</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var appointment in Model.Today)
+                        {
+                            <tr>
+                                <td>@appointment.StartTime.ToString(@"hh\:mm")</td>
+                                <td>@appointment.PatientName</td>
+                                <td>@appointment.PatientCode</td>
+                                <td><partial name="_StatusBadge" model="@appointment.Status" /></td>
+                                <td>
+                                    @if (appointment.Status == Hms.Web.Models.Entities.EntityStatus.AppointmentCheckedIn)
+                                    {
+                                        <form asp-controller="Appointment" asp-action="Start" asp-route-id="@appointment.Id" method="post">
+                                            <button class="hms-btn hms-btn-primary" type="submit">Start consultation</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+
+    <section class="hms-card">
+        <h2 class="hms-card-title">Next 5 upcoming appointments</h2>
+        @if (Model.Upcoming.Count == 0)
+        {
+            <partial name="_EmptyState" model="@("No records found.")" />
+        }
+        else
+        {
+            <div class="hms-table-scroll">
+                <table class="hms-table">
+                    <thead>
+                        <tr><th>Date</th><th>Time</th><th>Patient</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var appointment in Model.Upcoming)
+                        {
+                            <tr>
+                                <td>@appointment.AppointmentDate.ToString("dd MMM yyyy")</td>
+                                <td>@appointment.StartTime.ToString(@"hh\:mm")</td>
+                                <td>@appointment.PatientName</td>
+                                <td><partial name="_StatusBadge" model="@appointment.Status" /></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
 </div>
+
+<section class="hms-card hms-dashboard-notifications">
+    <h2 class="hms-card-title">Recent notifications</h2>
+    @if (Model.RecentNotifications.Count == 0)
+    {
+        <partial name="_EmptyState" model="@("No records found.")" />
+    }
+    else
+    {
+        <ul class="hms-dashboard-notification-list">
+            @foreach (var notification in Model.RecentNotifications)
+            {
+                <li class="@(notification.IsRead ? "" : "hms-notification-unread")">
+                    <span>@notification.Message</span>
+                    <time datetime="@notification.CreatedAt.ToString("O")">@notification.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")</time>
+                </li>
+            }
+        </ul>
+    }
+</section>

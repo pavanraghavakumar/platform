@@ -1,6 +1,7 @@
 using Hms.Web.Data;
 using Hms.Web.Models.Entities;
 using Hms.Web.Services;
+using Hms.Web.ViewModels.Dashboard;
 using Hms.Web.ViewModels.Patient;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -64,6 +65,19 @@ public class PatientController : Controller
     [Authorize(Roles = Roles.Receptionist + "," + Roles.Admin + "," + Roles.Doctor)]
     public async Task<IActionResult> Details(int id)
     {
+        if (User.IsInRole(Roles.Doctor))
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var hasAppointment = await _db.Appointments
+                .AsNoTracking()
+                .AnyAsync(a => a.PatientId == id && a.Doctor!.UserId == userId);
+
+            if (!hasAppointment)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
         var model = await _patients.GetProfileAsync(id);
         if (model is null)
         {
@@ -124,7 +138,32 @@ public class PatientController : Controller
     [Authorize(Roles = Roles.Doctor)]
     public async Task<IActionResult> DoctorPatients()
     {
-        var patients = await _db.Patients.OrderBy(p => p.FullName).ToListAsync();
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var doctorId = await _db.Doctors
+            .Where(d => d.UserId == userId)
+            .Select(d => (int?)d.Id)
+            .SingleOrDefaultAsync();
+
+        if (doctorId is null)
+        {
+            return RedirectToAction("AccessDenied", "Account");
+        }
+
+        var patients = await _db.Appointments
+            .AsNoTracking()
+            .Where(a => a.DoctorId == doctorId.Value)
+            .GroupBy(a => new { a.PatientId, a.Patient!.PatientCode, a.Patient.FullName, a.Patient.Status })
+            .Select(group => new DoctorPatientRow
+            {
+                Id = group.Key.PatientId,
+                PatientCode = group.Key.PatientCode,
+                FullName = group.Key.FullName,
+                LastAppointmentDate = group.Max(a => a.AppointmentDate),
+                Status = group.Key.Status
+            })
+            .OrderBy(p => p.FullName)
+            .ToListAsync();
+
         return View(patients);
     }
 
