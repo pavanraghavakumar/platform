@@ -48,6 +48,7 @@ builder.Services.AddScoped<IPharmacyService, PharmacyService>();
 builder.Services.AddScoped<IBillingService, BillingService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IStaffService, StaffService>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<DemoDataSeeder>();
