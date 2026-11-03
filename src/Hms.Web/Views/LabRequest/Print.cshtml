@@ -4,11 +4,15 @@
     Layout = "_PrintLayout";
 }
 <h2>Laboratory report</h2>
-<dl class="hms-table">
-    <tr><th>Patient</th><td>@Model.Patient?.FullName (@Model.Patient?.PatientCode)</td></tr>
-    <tr><th>Test</th><td>@Model.LaboratoryTest?.Name</td></tr>
-    <tr><th>Normal range</th><td>@Model.LaboratoryTest?.NormalRange</td></tr>
-    <tr><th>Result value</th><td>@Model.ResultValue</td></tr>
-    <tr><th>Remarks</th><td>@Model.Remarks</td></tr>
-    <tr><th>Date</th><td>@Model.ResultEnteredAt?.ToString("dd MMM yyyy")</td></tr>
-</dl>
+<table class="hms-table hms-lab-report">
+    <tbody>
+        <tr><th>Patient name</th><td>@Model.Patient?.FullName</td></tr>
+        <tr><th>Patient ID</th><td>@Model.Patient?.PatientCode</td></tr>
+        <tr><th>Test name</th><td>@Model.LaboratoryTest?.Name</td></tr>
+        <tr><th>Normal range</th><td>@Model.LaboratoryTest?.NormalRange</td></tr>
+        <tr><th>Result value</th><td>@Model.ResultValue</td></tr>
+        <tr><th>Remarks</th><td>@Model.Remarks</td></tr>
+        <tr><th>Date</th><td>@Model.ResultEnteredAt?.ToString("dd MMM yyyy")</td></tr>
+        <tr><th>Requesting doctor</th><td>@Model.Doctor?.FullName</td></tr>
+    </tbody>
+</table>

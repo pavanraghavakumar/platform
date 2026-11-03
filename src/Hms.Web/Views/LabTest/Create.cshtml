@@ -1,17 +1,39 @@
-@model Hms.Web.Models.Entities.LaboratoryTest
+@model Hms.Web.ViewModels.Lab.LabTestFormViewModel
 @{
     ViewData["Title"] = "New laboratory test";
 }
-<h1>New laboratory test</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/lab.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <h1>New laboratory test</h1>
+</div>
 
 <div class="hms-card">
     <form asp-controller="LabTest" asp-action="Create" method="post">
-        <div asp-validation-summary="All" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
+        <div asp-validation-summary="ModelOnly" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
         <div class="hms-form-grid">
-            <div class="hms-field"><label asp-for="Name">Name</label><input asp-for="Name" /></div>
-            <div class="hms-field"><label asp-for="Category">Category</label><input asp-for="Category" /></div>
-            <div class="hms-field"><label asp-for="Price">Price</label><input asp-for="Price" type="number" step="0.01" /></div>
-            <div class="hms-field"><label asp-for="NormalRange">Normal range</label><input asp-for="NormalRange" /></div>
+            <div class="hms-field">
+                <label asp-for="Name">Name</label>
+                <input asp-for="Name" />
+                <span asp-validation-for="Name" class="field-validation-error"></span>
+            </div>
+            <div class="hms-field">
+                <label asp-for="Category">Category</label>
+                <input asp-for="Category" />
+                <span asp-validation-for="Category" class="field-validation-error"></span>
+            </div>
+            <div class="hms-field">
+                <label asp-for="Price">Price</label>
+                <input asp-for="Price" type="number" step="0.01" min="0" />
+                <span asp-validation-for="Price" class="field-validation-error"></span>
+            </div>
+            <div class="hms-field">
+                <label asp-for="NormalRange">Normal range</label>
+                <input asp-for="NormalRange" />
+                <span asp-validation-for="NormalRange" class="field-validation-error"></span>
+            </div>
         </div>
         <div class="hms-form-actions">
             <a class="hms-btn hms-btn-secondary" asp-controller="LabTest" asp-action="Index">Cancel</a>

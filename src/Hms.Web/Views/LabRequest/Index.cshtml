@@ -1,31 +1,42 @@
-@model IReadOnlyList<Hms.Web.Models.Entities.LabRequest>
+@model Hms.Web.ViewModels.Lab.LabRequestListViewModel
 @{
     ViewData["Title"] = "Lab requests";
-    var statuses = new[] { "Requested", "In Progress", "Completed", "Cancelled" };
 }
-<h1>Lab requests</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/lab.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <h1>Lab requests</h1>
+</div>
 
 <div class="hms-card">
-    <form method="get" class="hms-search-box" style="max-width:260px;margin-bottom:16px;">
-        <select name="status" onchange="this.form.submit()">
-            <option value="">All statuses</option>
-            @foreach (var status in statuses)
-            {
-                <option value="@status" selected="@(ViewData["Status"]?.ToString() == status)">@status</option>
-            }
-        </select>
+    <form method="get" asp-controller="LabRequest" asp-action="Index" class="hms-lab-toolbar">
+        <div class="hms-field hms-lab-filter">
+            <label for="status">Status</label>
+            <select id="status" name="status" onchange="this.form.submit()">
+                <option value="">All statuses</option>
+                @foreach (var status in Hms.Web.ViewModels.Lab.LabRequestListViewModel.Statuses)
+                {
+                    <option value="@status" selected="@(Model.Status == status)">@status</option>
+                }
+            </select>
+        </div>
+        <noscript><button type="submit" class="hms-btn hms-btn-secondary">Filter</button></noscript>
     </form>
 
-    @if (Model.Count == 0)
+    @if (Model.Requests.Count == 0)
     {
         <partial name="_EmptyState" model="@("No records found.")" />
     }
     else
     {
-        <table class="hms-table">
-            <thead><tr><th>Patient</th><th>Test</th><th>Doctor</th><th>Date</th><th>Status</th><th></th></tr></thead>
+        <table class="hms-table hms-lab-table">
+            <thead>
+                <tr><th>Patient</th><th>Test</th><th>Requesting doctor</th><th>Date</th><th>Status</th><th></th></tr>
+            </thead>
             <tbody>
-                @foreach (var request in Model)
+                @foreach (var request in Model.Requests)
                 {
                     <tr>
                         <td>@request.Patient?.FullName</td>
@@ -33,7 +44,19 @@
                         <td>@request.Doctor?.FullName</td>
                         <td>@request.CreatedAt.ToString("dd MMM yyyy")</td>
                         <td><partial name="_StatusBadge" model="@request.Status" /></td>
-                        <td><a class="hms-btn hms-btn-secondary" asp-controller="LabRequest" asp-action="Details" asp-route-id="@request.Id">View</a></td>
+                        <td class="hms-lab-actions">
+                            @if (request.Status == Hms.Web.Models.Entities.EntityStatus.LabRequested)
+                            {
+                                <form asp-controller="LabRequest" asp-action="Start" asp-route-id="@request.Id" method="post" class="hms-inline-form">
+                                    <button type="submit" class="hms-btn hms-btn-secondary">Start</button>
+                                </form>
+                            }
+                            @if (request.Status == Hms.Web.Models.Entities.EntityStatus.LabInProgress)
+                            {
+                                <a class="hms-btn hms-btn-primary" asp-controller="LabRequest" asp-action="Complete" asp-route-id="@request.Id">Enter result</a>
+                            }
+                            <a class="hms-btn hms-btn-secondary" asp-controller="LabRequest" asp-action="Details" asp-route-id="@request.Id">View</a>
+                        </td>
                     </tr>
                 }
             </tbody>

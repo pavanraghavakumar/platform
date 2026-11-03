@@ -4,7 +4,6 @@
     var form = Model.Form;
     var isFinal = form.IsFinal;
 }
-
 @section Styles {
     <link rel="stylesheet" href="~/css/pages/clinical.css" asp-append-version="true" />
 }
@@ -17,9 +16,18 @@
             · <partial name="_StatusBadge" model="@Model.AppointmentStatus" />
         </p>
     </div>
-    <a class="hms-btn hms-btn-secondary" asp-controller="MedicalRecord" asp-action="Index" asp-route-patientId="@Model.PatientId">
-        <i class="bi bi-folder2-open"></i> Medical records
-    </a>
+    <div class="hms-form-actions">
+        <a class="hms-btn hms-btn-secondary"
+           asp-controller="LabRequest"
+           asp-action="Create"
+           asp-route-patientId="@Model.PatientId"
+           asp-route-appointmentId="@Model.AppointmentId">
+            <i class="bi bi-droplet"></i> Request laboratory tests
+        </a>
+        <a class="hms-btn hms-btn-secondary" asp-controller="MedicalRecord" asp-action="Index" asp-route-patientId="@Model.PatientId">
+            <i class="bi bi-folder2-open"></i> Medical records
+        </a>
+    </div>
 </div>
 
 <div class="clinical-grid">

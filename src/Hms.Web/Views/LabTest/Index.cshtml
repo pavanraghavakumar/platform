@@ -2,9 +2,13 @@
 @{
     ViewData["Title"] = "Laboratory tests";
 }
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/lab.css" asp-append-version="true" />
+}
+
 <div class="hms-page-header">
     <h1>Laboratory tests</h1>
-    <a class="hms-btn hms-btn-primary" asp-controller="LabTest" asp-action="Create">New test</a>
+    <a class="hms-btn hms-btn-primary" asp-controller="LabTest" asp-action="Create"><i class="bi bi-plus-lg"></i>New test</a>
 </div>
 
 <div class="hms-card">
@@ -14,7 +18,7 @@
     }
     else
     {
-        <table class="hms-table">
+        <table class="hms-table hms-lab-table">
             <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Normal range</th></tr></thead>
             <tbody>
                 @foreach (var test in Model)
