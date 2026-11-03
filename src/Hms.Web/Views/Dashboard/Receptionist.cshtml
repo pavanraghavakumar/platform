@@ -1,18 +1,133 @@
+@model Hms.Web.ViewModels.Dashboard.ReceptionistDashboardViewModel
 @{
     ViewData["Title"] = "Receptionist dashboard";
 }
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/dashboard.css" asp-append-version="true" />
+}
+
 <div class="hms-page-header">
     <h1>Receptionist dashboard</h1>
+    <div class="hms-dashboard-actions">
+        <a class="hms-btn hms-btn-primary" asp-controller="Appointment" asp-action="Book">
+            <i class="bi bi-calendar-plus"></i> New appointment
+        </a>
+        <a class="hms-btn hms-btn-secondary" asp-controller="Patient" asp-action="Create">
+            <i class="bi bi-person-plus"></i> Register patient
+        </a>
+    </div>
 </div>
 
 <div class="hms-kpi-grid">
-    <partial name="_KpiCard" model="@(new KpiCardModel("bi-calendar-check", "—", "Appointments today"))" />
-    <partial name="_KpiCard" model="@(new KpiCardModel("bi-hourglass-split", "—", "Pending appointments"))" />
-    <partial name="_KpiCard" model="@(new KpiCardModel("bi-person-check", "—", "Checked in"))" />
-    <partial name="_KpiCard" model="@(new KpiCardModel("bi-cash-coin", "—", "Payments today"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-calendar-check", Model.TodaysAppointments.ToString(), "Appointments today"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-hourglass-split", Model.PendingAppointments.ToString(), "Pending appointments"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-person-check", Model.CheckedInAppointments.ToString(), "Checked In appointments"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-cash-coin", Model.PaymentsRecordedToday.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-IN")), "Payments recorded today"))" />
 </div>
 
-<div class="hms-card">
-    <h2>Welcome</h2>
-    <p class="hms-empty">The dashboard figures are filled in by the Receptionist dashboard task.</p>
+<div class="hms-dashboard-grid hms-receptionist-tools">
+    <section class="hms-card">
+        <h2 class="hms-card-title">Find a patient</h2>
+        <p class="hms-muted">Search by patient name, patient ID or phone number.</p>
+        <label for="receptionistPatientSearch">Patient</label>
+        <div class="hms-patient-picker">
+            <input id="receptionistPatientSearch"
+                   class="hms-input"
+                   type="search"
+                   list="receptionistPatients"
+                   placeholder="Start typing to open a patient profile"
+                   autocomplete="off" />
+            <datalist id="receptionistPatients">
+                @foreach (var patient in Model.Patients)
+                {
+                    <option value="@patient.FullName — @patient.PatientCode — @patient.Phone" data-url="@Url.Action("Details", "Patient", new { id = patient.Id })"></option>
+                }
+            </datalist>
+            <button id="openPatientProfile" class="hms-btn hms-btn-secondary" type="button">Open profile</button>
+        </div>
+        <p id="patientSearchHelp" class="hms-field-help" aria-live="polite"></p>
+    </section>
+
+    <section class="hms-card">
+        <h2 class="hms-card-title">New invoice</h2>
+        <p class="hms-muted">Pick a patient with an appointment that has not been invoiced.</p>
+        <label for="invoicePatient">Patient</label>
+        <div class="hms-patient-picker">
+            <select id="invoicePatient" class="hms-select">
+                <option value="">Select a patient</option>
+                @foreach (var patient in Model.Patients.Where(p => p.InvoiceAppointmentId.HasValue))
+                {
+                    <option value="@patient.InvoiceAppointmentId" data-url="@Url.Action("Generate", "Invoice", new { appointmentId = patient.InvoiceAppointmentId })">
+                        @patient.FullName — @patient.PatientCode
+                    </option>
+                }
+            </select>
+            <button id="newInvoiceButton" class="hms-btn hms-btn-primary" type="button" disabled>New invoice</button>
+        </div>
+        <p id="invoicePatientHelp" class="hms-field-help" aria-live="polite"></p>
+    </section>
 </div>
+
+<div class="hms-dashboard-grid hms-receptionist-content">
+    <section class="hms-card">
+        <h2 class="hms-card-title">Today's appointments</h2>
+        @if (Model.Today.Count == 0)
+        {
+            <partial name="_EmptyState" model="@("No records found.")" />
+        }
+        else
+        {
+            <div class="hms-table-scroll">
+                <table class="hms-table">
+                    <thead>
+                        <tr><th>Time</th><th>Patient</th><th>Doctor</th><th>Status</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var appointment in Model.Today)
+                        {
+                            <tr>
+                                <td>@appointment.StartTime.ToString(@"hh\:mm")</td>
+                                <td>@appointment.PatientName</td>
+                                <td>@appointment.DoctorName</td>
+                                <td><partial name="_StatusBadge" model="@appointment.Status" /></td>
+                                <td>
+                                    @if (appointment.Status == EntityStatus.AppointmentConfirmed)
+                                    {
+                                        <form asp-controller="Appointment" asp-action="CheckIn" asp-route-id="@appointment.Id" method="post">
+                                            <button class="hms-btn hms-btn-primary" type="submit">Check in</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+
+    <section class="hms-card">
+        <h2 class="hms-card-title">Recent notifications</h2>
+        @if (Model.RecentNotifications.Count == 0)
+        {
+            <partial name="_EmptyState" model="@("No records found.")" />
+        }
+        else
+        {
+            <ul class="hms-dashboard-notification-list">
+                @foreach (var notification in Model.RecentNotifications)
+                {
+                    <li class="@(notification.IsRead ? "" : "hms-notification-unread")">
+                        <span>@notification.Message</span>
+                        <time datetime="@notification.CreatedAt.ToString("O")">@notification.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")</time>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+</div>
+
+@section Scripts {
+    <script src="~/js/pages/dashboard.js" asp-append-version="true"></script>
+}

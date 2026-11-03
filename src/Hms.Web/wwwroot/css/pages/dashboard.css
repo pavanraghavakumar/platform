@@ -75,6 +75,35 @@
     font-weight: 600;
 }
 
+.hms-receptionist-tools,
+.hms-receptionist-content {
+    margin-top: var(--hms-space-6);
+}
+
+.hms-receptionist-content {
+    grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+}
+
+.hms-patient-picker {
+    display: flex;
+    align-items: stretch;
+    gap: var(--hms-space-2);
+    margin-top: var(--hms-space-2);
+}
+
+.hms-patient-picker .hms-input,
+.hms-patient-picker .hms-select {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.hms-field-help {
+    min-height: 18px;
+    margin: var(--hms-space-2) 0 0;
+    color: var(--hms-error);
+    font-size: 12px;
+}
+
 @media (max-width: 1024px) {
     .hms-dashboard-grid {
         grid-template-columns: minmax(0, 1fr);
@@ -98,5 +127,14 @@
     .hms-dashboard-notification-list li {
         flex-direction: column;
         gap: var(--hms-space-1);
+    }
+
+    .hms-patient-picker {
+        flex-direction: column;
+    }
+
+    .hms-patient-picker .hms-btn {
+        width: 100%;
+        justify-content: center;
     }
 }
