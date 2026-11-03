@@ -1,48 +1,96 @@
-@model IReadOnlyList<Hms.Web.Models.Entities.Appointment>
+@model Hms.Web.ViewModels.Appointment.AppointmentListViewModel
 @{
     ViewData["Title"] = "Appointments";
-    var statuses = new[] { "Pending", "Confirmed", "Checked In", "In Progress", "Completed", "Cancelled", "No Show" };
 }
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/appointment.css" asp-append-version="true" />
+}
+
 <div class="hms-page-header">
     <h1>Appointments</h1>
-    @if (User.IsInRole(Roles.Receptionist) || User.IsInRole(Roles.Patient))
+    @if (Model.IsReceptionist || Model.IsPatient)
     {
         <a class="hms-btn hms-btn-primary" asp-controller="Appointment" asp-action="Book">New appointment</a>
     }
 </div>
 
 <div class="hms-card">
-    <form method="get" class="hms-search-box" style="max-width:260px;margin-bottom:16px;">
-        <select name="status" onchange="this.form.submit()">
+    <form method="get" class="hms-appointment-toolbar">
+        <label for="statusFilter">Status</label>
+        <select id="statusFilter" name="status" onchange="this.form.submit()">
             <option value="">All statuses</option>
-            @foreach (var status in statuses)
+            @foreach (var status in Hms.Web.ViewModels.Appointment.AppointmentListViewModel.Statuses)
             {
-                <option value="@status" selected="@(ViewData["Status"]?.ToString() == status)">@status</option>
+                <option value="@status" selected="@(Model.Status == status)">@status</option>
             }
         </select>
     </form>
 
-    @if (Model.Count == 0)
+    @if (Model.Appointments.Count == 0)
     {
         <partial name="_EmptyState" model="@("No records found.")" />
     }
     else
     {
-        <table class="hms-table">
-            <thead><tr><th>Date</th><th>Time</th><th>Patient</th><th>Doctor</th><th>Status</th><th></th></tr></thead>
+        <table class="hms-table hms-appointment-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
             <tbody>
-                @foreach (var appointment in Model)
+                @foreach (var appointment in Model.Appointments)
                 {
                     <tr>
-                        <td>@appointment.AppointmentDate.ToString("dd MMM yyyy")</td>
-                        <td>@appointment.StartTime.ToString(@"hh\:mm")</td>
-                        <td>@appointment.Patient?.FullName</td>
-                        <td>@appointment.Doctor?.FullName</td>
-                        <td><partial name="_StatusBadge" model="@appointment.Status" /></td>
-                        <td>
-                            @if (User.IsInRole(Roles.Receptionist))
+                        <td data-label="Date">@appointment.AppointmentDate.ToString("dd MMM yyyy")</td>
+                        <td data-label="Time">@appointment.StartTime.ToString(@"hh\:mm")</td>
+                        <td data-label="Patient">@appointment.Patient?.FullName</td>
+                        <td data-label="Doctor">@appointment.Doctor?.FullName</td>
+                        <td data-label="Status"><partial name="_StatusBadge" model="@appointment.Status" /></td>
+                        <td data-label="Actions" class="hms-appointment-actions">
+                            @if (Model.IsReceptionist && appointment.Status == EntityStatus.AppointmentPending)
                             {
-                                <a class="hms-btn hms-btn-secondary" asp-controller="Invoice" asp-action="Generate" asp-route-appointmentId="@appointment.Id">Generate invoice</a>
+                                <form asp-controller="Appointment" asp-action="Confirm" asp-route-id="@appointment.Id" method="post">
+                                    <button type="submit" class="hms-btn hms-btn-primary hms-btn-sm">Confirm</button>
+                                </form>
+                            }
+                            @if (Model.IsReceptionist && appointment.Status == EntityStatus.AppointmentConfirmed)
+                            {
+                                <form asp-controller="Appointment" asp-action="CheckIn" asp-route-id="@appointment.Id" method="post">
+                                    <button type="submit" class="hms-btn hms-btn-primary hms-btn-sm">Check in</button>
+                                </form>
+                                <form asp-controller="Appointment" asp-action="NoShow" asp-route-id="@appointment.Id" method="post">
+                                    <button type="submit" class="hms-btn hms-btn-secondary hms-btn-sm">No Show</button>
+                                </form>
+                            }
+                            @if (Model.IsDoctor && appointment.Status == EntityStatus.AppointmentCheckedIn)
+                            {
+                                <form asp-controller="Appointment" asp-action="Start" asp-route-id="@appointment.Id" method="post">
+                                    <button type="submit" class="hms-btn hms-btn-primary hms-btn-sm">Start</button>
+                                </form>
+                            }
+                            @if (Model.IsDoctor && appointment.Status == EntityStatus.AppointmentInProgress)
+                            {
+                                <form asp-controller="Appointment" asp-action="Complete" asp-route-id="@appointment.Id" method="post">
+                                    <button type="submit" class="hms-btn hms-btn-primary hms-btn-sm">Complete</button>
+                                </form>
+                            }
+                            @if ((Model.IsReceptionist || Model.IsPatient)
+                                 && (appointment.Status == EntityStatus.AppointmentPending || appointment.Status == EntityStatus.AppointmentConfirmed))
+                            {
+                                <form asp-controller="Appointment" asp-action="Cancel" asp-route-id="@appointment.Id" method="post">
+                                    <button type="submit" class="hms-btn hms-btn-danger hms-btn-sm" data-confirm>Cancel</button>
+                                </form>
+                            }
+                            @if (Model.IsReceptionist)
+                            {
+                                <a class="hms-btn hms-btn-secondary hms-btn-sm" asp-controller="Invoice" asp-action="Generate" asp-route-appointmentId="@appointment.Id">Generate invoice</a>
                             }
                         </td>
                     </tr>
@@ -51,3 +99,5 @@
         </table>
     }
 </div>
+
+<partial name="_ConfirmDialog" model="@("Cancel this appointment?")" />

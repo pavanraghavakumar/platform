@@ -1,6 +1,7 @@
 using Hms.Web.Data;
 using Hms.Web.Models.Entities;
 using Hms.Web.ViewModels.Patient;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hms.Web.Services;
@@ -12,6 +13,9 @@ public interface IPatientService
     Task<IReadOnlyList<Patient>> SearchAsync(string? term);
 
     Task<Patient> RegisterAsync(Patient patient);
+
+    /// <summary>Registers a patient together with the Patient account used for portal access and notifications.</summary>
+    Task<Patient> RegisterWithAccountAsync(Patient patient, string password);
 
     /// <summary>One page of the patient list, filtered by search text and status and ordered by the sort option.</summary>
     Task<PatientListViewModel> GetPageAsync(string? search, string? status, string? sort, int page, int pageSize);
@@ -29,10 +33,17 @@ public interface IPatientService
 public class PatientService : IPatientService
 {
     private readonly HmsDbContext _db;
+    private readonly UserManager<ApplicationUser>? _users;
 
     public PatientService(HmsDbContext db)
     {
         _db = db;
+    }
+
+    public PatientService(HmsDbContext db, UserManager<ApplicationUser> users)
+    {
+        _db = db;
+        _users = users;
     }
 
     public async Task<string> NextPatientCodeAsync()
@@ -83,6 +94,70 @@ public class PatientService : IPatientService
 
         _db.Patients.Add(patient);
         await _db.SaveChangesAsync();
+        return patient;
+    }
+
+    public async Task<Patient> RegisterWithAccountAsync(Patient patient, string password)
+    {
+        if (_users is null)
+        {
+            throw new InvalidOperationException("Patient account registration is not available.");
+        }
+
+        if (string.IsNullOrWhiteSpace(patient.FullName) || string.IsNullOrWhiteSpace(patient.Phone))
+        {
+            throw new InvalidOperationException("Full name and phone number are required.");
+        }
+
+        var email = patient.Email?.Trim();
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+        {
+            throw new InvalidOperationException("Email and sign-in password are required.");
+        }
+
+        if (await _users.FindByEmailAsync(email) is not null)
+        {
+            throw new InvalidOperationException("A user with this email already exists.");
+        }
+
+        await using var transaction = await _db.Database.BeginTransactionAsync();
+        var now = DateTime.UtcNow;
+        var user = new ApplicationUser
+        {
+            UserName = email,
+            Email = email,
+            EmailConfirmed = true,
+            FullName = patient.FullName.Trim(),
+            PhoneNumber = patient.Phone.Trim(),
+            IsActive = true,
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        var created = await _users.CreateAsync(user, password);
+        if (!created.Succeeded)
+        {
+            throw new InvalidOperationException(string.Join(" ", created.Errors.Select(error => error.Description)));
+        }
+
+        var roleAdded = await _users.AddToRoleAsync(user, Roles.Patient);
+        if (!roleAdded.Succeeded)
+        {
+            throw new InvalidOperationException(string.Join(" ", roleAdded.Errors.Select(error => error.Description)));
+        }
+
+        patient.FullName = patient.FullName.Trim();
+        patient.Phone = patient.Phone.Trim();
+        patient.Email = email;
+        patient.PatientCode = await NextPatientCodeAsync();
+        patient.Status = EntityStatus.Active;
+        patient.UserId = user.Id;
+        patient.CreatedAt = now;
+        patient.UpdatedAt = now;
+
+        _db.Patients.Add(patient);
+        await _db.SaveChangesAsync();
+        await transaction.CommitAsync();
         return patient;
     }
 

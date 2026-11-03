@@ -45,6 +45,11 @@
                 <input asp-for="Email" type="email" autocomplete="email" />
             </div>
             <div class="hms-field">
+                <label asp-for="Password">Sign-in password</label>
+                <input asp-for="Password" type="password" autocomplete="new-password" />
+                <span class="hms-field-hint">Used with the email address for the patient's portal account.</span>
+            </div>
+            <div class="hms-field">
                 <label asp-for="Address">Address</label>
                 <input asp-for="Address" autocomplete="street-address" />
             </div>

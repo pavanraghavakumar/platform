@@ -333,7 +333,11 @@ public class DashboardController : Controller
         }
         catch (InvalidOperationException ex)
         {
-            ModelState.AddModelError(string.Empty, ex.Message);
+            ModelState.AddModelError(
+                string.Empty,
+                ex.Message == "This time slot is already booked."
+                    ? "Choose a free time slot."
+                    : ex.Message);
             model.Doctors = (await BuildBookingModelAsync()).Doctors;
             return View("~/Views/Portal/Book.cshtml", model);
         }

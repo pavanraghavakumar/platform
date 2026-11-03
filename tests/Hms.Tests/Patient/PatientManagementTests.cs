@@ -6,6 +6,8 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
+using AppointmentEntity = Hms.Web.Models.Entities.Appointment;
+
 namespace Hms.Tests.PatientManagement;
 
 /// <summary>
@@ -135,7 +137,7 @@ public class PatientManagementTests : IDisposable
         var doctor = await AddDoctorAsync("Dr History");
 
         _db.Appointments.AddRange(
-            new Appointment
+            new AppointmentEntity
             {
                 PatientId = patient.Id,
                 DoctorId = doctor.Id,
@@ -143,7 +145,7 @@ public class PatientManagementTests : IDisposable
                 StartTime = new TimeSpan(9, 0, 0),
                 Status = EntityStatus.AppointmentCompleted
             },
-            new Appointment
+            new AppointmentEntity
             {
                 PatientId = patient.Id,
                 DoctorId = doctor.Id,
@@ -195,7 +197,7 @@ public class PatientManagementTests : IDisposable
         var patient = await _service.RegisterAsync(NewPatient("Deactivate Patient", "9550000001"));
         var doctor = await AddDoctorAsync("Dr Keep");
 
-        var appointment = new Appointment
+        var appointment = new AppointmentEntity
         {
             PatientId = patient.Id,
             DoctorId = doctor.Id,

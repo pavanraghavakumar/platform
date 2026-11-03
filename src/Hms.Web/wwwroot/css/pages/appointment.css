@@ -1,0 +1,90 @@
+/* Appointment booking and status workflow. */
+
+.hms-appointment-toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--hms-space-2);
+    margin-bottom: var(--hms-space-4);
+}
+
+.hms-appointment-toolbar label {
+    font-size: 13px;
+    color: var(--hms-text-muted);
+}
+
+.hms-appointment-toolbar select {
+    padding: 8px 12px;
+    border: 1px solid var(--hms-border);
+    border-radius: var(--hms-radius-control);
+    background: var(--hms-surface);
+    font: inherit;
+    color: var(--hms-text);
+}
+
+.hms-appointment-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--hms-space-2);
+}
+
+.hms-appointment-actions form {
+    margin: 0;
+}
+
+.hms-btn-sm {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+/* The slot picker: a grid of 30-minute buttons. */
+.hms-slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    gap: var(--hms-space-2);
+    margin-top: var(--hms-space-2);
+}
+
+.hms-slot {
+    padding: 8px 10px;
+    border: 1px solid var(--hms-border);
+    border-radius: var(--hms-radius-control);
+    background: var(--hms-surface);
+    color: var(--hms-text);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+}
+
+.hms-slot:hover {
+    border-color: var(--hms-accent);
+}
+
+.hms-slot.is-selected {
+    background: var(--hms-accent);
+    border-color: var(--hms-accent);
+    color: #fff;
+}
+
+.hms-slot.is-taken {
+    background: var(--hms-bg);
+    color: var(--hms-text-muted);
+    text-decoration: line-through;
+    cursor: not-allowed;
+}
+
+.hms-slot-empty {
+    color: var(--hms-text-muted);
+    font-size: 13px;
+}
+
+@media (max-width: 767px) {
+    .hms-appointment-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .hms-appointment-actions {
+        flex-direction: column;
+    }
+}

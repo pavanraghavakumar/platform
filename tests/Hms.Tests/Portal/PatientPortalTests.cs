@@ -28,7 +28,19 @@ public class PatientPortalTests : IClassFixture<PatientPortalTests.PatientPortal
         await using var scope = _factory.Services.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<HmsDbContext>();
         var patient = await DemoPatientAsync(db);
-        var doctor = await db.Doctors.Include(d => d.Department).FirstAsync();
+        var department = await db.Departments.FirstAsync();
+        var doctor = new Doctor
+        {
+            FullName = $"Portal Dashboard Doctor {marker}",
+            Email = $"portal.dashboard.{marker}@test.local",
+            Phone = "9000000404",
+            Specialization = "General Medicine",
+            DepartmentId = department.Id,
+            ConsultationFee = 500,
+            Status = EntityStatus.Active
+        };
+        db.Doctors.Add(doctor);
+        await db.SaveChangesAsync();
 
         var alreadyPassedToday = NewAppointment(patient.Id, doctor.Id, today, 0, EntityStatus.AppointmentConfirmed);
         var next = NewAppointment(patient.Id, doctor.Id, today.AddDays(2), 9, EntityStatus.AppointmentConfirmed);
