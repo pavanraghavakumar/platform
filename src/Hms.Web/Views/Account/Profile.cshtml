@@ -1,26 +1,46 @@
-@model Hms.Web.Models.Entities.ApplicationUser?
+@model Hms.Web.ViewModels.Account.ProfileViewModel
 @{
     ViewData["Title"] = "My profile";
 }
-<h1>My profile</h1>
 
-<div class="hms-card">
-    <dl class="hms-table">
-        <tr><th>User name</th><td>@Model?.UserName</td></tr>
-        <tr><th>Email</th><td>@Model?.Email</td></tr>
-        <tr><th>Phone number</th><td>@Model?.PhoneNumber</td></tr>
-    </dl>
-</div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/account.css" asp-append-version="true" />
+}
 
-<div class="hms-card">
-    <h2>Save a new phone number</h2>
-    <form asp-controller="Account" asp-action="Profile" method="post">
-        <div class="hms-field">
-            <label for="phoneNumber">Phone number</label>
-            <input id="phoneNumber" name="phoneNumber" type="tel" value="@Model?.PhoneNumber" />
+<div class="hms-account-page">
+    <header class="hms-account-header">
+        <div class="hms-account-icon" aria-hidden="true"><i class="bi bi-person"></i></div>
+        <div>
+            <h1>My profile</h1>
+            <p>View your account details and update your contact number.</p>
         </div>
-        <div class="hms-form-actions">
-            <button type="submit" class="hms-btn hms-btn-primary">Save</button>
-        </div>
-    </form>
+    </header>
+
+    <div class="hms-account-grid">
+        <section class="hms-card hms-profile-card" aria-labelledby="accountDetailsTitle">
+            <h2 id="accountDetailsTitle">Account details</h2>
+            <dl class="hms-profile-details">
+                <div><dt>User name</dt><dd>@Model.UserName</dd></div>
+                <div><dt>Email</dt><dd>@Model.Email</dd></div>
+                <div><dt>Role</dt><dd><span class="hms-role-badge">@Model.Role</span></dd></div>
+                <div><dt>Phone number</dt><dd>@(string.IsNullOrWhiteSpace(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</dd></div>
+            </dl>
+        </section>
+
+        <section class="hms-card hms-account-form-card" aria-labelledby="phoneTitle">
+            <h2 id="phoneTitle">Update phone number</h2>
+            <p class="hms-account-help">Enter the phone number you want associated with your account.</p>
+            <form asp-controller="Account" asp-action="Profile" method="post" novalidate>
+                <div class="hms-field">
+                    <label asp-for="PhoneNumber"></label>
+                    <input asp-for="PhoneNumber" type="tel" autocomplete="tel" />
+                    <span asp-validation-for="PhoneNumber" class="hms-field-error"></span>
+                </div>
+                <div class="hms-form-actions">
+                    <button type="submit" class="hms-btn hms-btn-primary">Save phone number</button>
+                </div>
+            </form>
+            <a class="hms-account-link" asp-controller="Account" asp-action="ChangePassword">Change password</a>
+        </section>
+    </div>
 </div>

@@ -171,33 +171,18 @@ public class AccountController : Controller
     public async Task<IActionResult> Profile()
     {
         var user = await _userManager.GetUserAsync(User);
-        return View(user);
-    }
-
-    [HttpPost]
-    [Authorize]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Profile(string phoneNumber)
-    {
-        var user = await _userManager.GetUserAsync(User);
-        if (user is not null)
+        if (user is null)
         {
-            user.PhoneNumber = phoneNumber;
-            user.UpdatedAt = DateTime.UtcNow;
-            await _userManager.UpdateAsync(user);
+            return RedirectToAction(nameof(Login));
         }
 
-        return View(user);
+        return View(await BuildProfileViewModelAsync(user));
     }
-
-    [HttpGet]
-    [Authorize]
-    public IActionResult ChangePassword() => View();
 
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword)
+    public async Task<IActionResult> Profile(ProfileViewModel model)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user is null)
@@ -205,30 +190,83 @@ public class AccountController : Controller
             return RedirectToAction(nameof(Login));
         }
 
-        if (string.IsNullOrEmpty(newPassword) || newPassword.Length < 8)
+        if (!ModelState.IsValid)
         {
-            ModelState.AddModelError(string.Empty, "Password must be at least 8 characters.");
-            return View();
+            await PopulateProfileDetailsAsync(model, user);
+            return View(model);
         }
 
-        var result = await _userManager.ChangePasswordAsync(user, currentPassword ?? string.Empty, newPassword);
+        user.PhoneNumber = model.PhoneNumber?.Trim();
+        user.UpdatedAt = DateTime.UtcNow;
+        var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
         {
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError(string.Empty, error.Description);
+                ModelState.AddModelError(nameof(model.PhoneNumber), error.Description);
             }
 
-            return View();
+            await PopulateProfileDetailsAsync(model, user);
+            return View(model);
         }
 
+        TempData["Message"] = "Profile saved.";
+        return RedirectToAction(nameof(Profile));
+    }
+
+    [HttpGet]
+    [Authorize]
+    public IActionResult ChangePassword() => View(new ChangePasswordViewModel());
+
+    [HttpPost]
+    [Authorize]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user is null)
+        {
+            return RedirectToAction(nameof(Login));
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(nameof(model.CurrentPassword), error.Description);
+            }
+
+            return View(model);
+        }
+
+        await _signInManager.RefreshSignInAsync(user);
         ViewData["Message"] = "Your password has been changed.";
-        return View();
+        return View(new ChangePasswordViewModel());
     }
 
     [HttpGet]
     [AllowAnonymous]
     public IActionResult AccessDenied() => View();
+
+    private async Task<ProfileViewModel> BuildProfileViewModelAsync(ApplicationUser user)
+    {
+        var model = new ProfileViewModel { PhoneNumber = user.PhoneNumber };
+        await PopulateProfileDetailsAsync(model, user);
+        return model;
+    }
+
+    private async Task PopulateProfileDetailsAsync(ProfileViewModel model, ApplicationUser user)
+    {
+        model.UserName = user.UserName ?? string.Empty;
+        model.Email = user.Email ?? string.Empty;
+        model.Role = (await _userManager.GetRolesAsync(user)).SingleOrDefault() ?? string.Empty;
+    }
 
     /// <summary>
     /// The dashboard of the signed-in person's role: Admin, Doctor, Receptionist or Patient.
