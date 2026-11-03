@@ -79,8 +79,8 @@
     - _Area: ui_
     - _Issue: #22_
 
-- [ ] 5. Appointments
-  - [ ] 5.1 Appointment booking and status workflow
+- [x] 5. Appointments
+  - [x] 5.1 Appointment booking and status workflow
     - Build the booking page for the Receptionist and the Patient with doctor and date pickers that load free slots from `GET /Appointment/Slots` (only slots inside the doctor's working hours with no appointment Pending, Confirmed, Checked In or In Progress), the booking action creating a Pending appointment with "Appointment booked.", "This time slot is already booked." on a conflict and "You can only book appointments for yourself." for a Patient booking for someone else.
     - Build the appointment list with status filter and the actions Confirm (adds a notification for the patient), Check in (adds a notification for the doctor), No Show, Cancel (frees the slot at once and notifies the other party), Start and Complete, each allowed only from the status `design.md` gives it.
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 5.10_
