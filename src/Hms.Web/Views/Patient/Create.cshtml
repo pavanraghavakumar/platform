@@ -1,25 +1,82 @@
-@model Hms.Web.Models.Entities.Patient
+@model Hms.Web.ViewModels.Patient.PatientCreateViewModel
 @{
     ViewData["Title"] = "New patient";
 }
-<h1>New patient</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/patient.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <h1>New patient</h1>
+</div>
 
 <div class="hms-card">
-    <form asp-controller="Patient" asp-action="Create" method="post">
-        <div asp-validation-summary="All" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
+    <form asp-controller="Patient" asp-action="Create" method="post" class="hms-patient-form">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div asp-validation-summary="All" class="hms-alert hms-alert-error"></div>
+        }
+
+        <h2 class="hms-patient-section-title">Personal details</h2>
         <div class="hms-form-grid">
-            <div class="hms-field"><label asp-for="FullName">Full name</label><input asp-for="FullName" /></div>
-            <div class="hms-field"><label asp-for="DateOfBirth">Date of birth</label><input asp-for="DateOfBirth" type="date" /></div>
-            <div class="hms-field"><label asp-for="Gender">Gender</label><input asp-for="Gender" /></div>
-            <div class="hms-field"><label asp-for="Phone">Phone</label><input asp-for="Phone" /></div>
-            <div class="hms-field"><label asp-for="Email">Email</label><input asp-for="Email" type="email" /></div>
-            <div class="hms-field"><label asp-for="Address">Address</label><input asp-for="Address" /></div>
-            <div class="hms-field"><label asp-for="EmergencyContactName">Emergency contact name</label><input asp-for="EmergencyContactName" /></div>
-            <div class="hms-field"><label asp-for="EmergencyContactPhone">Emergency contact phone</label><input asp-for="EmergencyContactPhone" /></div>
+            <div class="hms-field">
+                <label asp-for="FullName">Full name <span class="hms-required">*</span></label>
+                <input asp-for="FullName" autocomplete="name" />
+            </div>
+            <div class="hms-field">
+                <label asp-for="DateOfBirth">Date of birth</label>
+                <input asp-for="DateOfBirth" type="date" />
+            </div>
+            <div class="hms-field">
+                <label asp-for="Gender">Gender</label>
+                <select asp-for="Gender">
+                    <option value="">Select…</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="hms-field">
+                <label asp-for="Phone">Phone <span class="hms-required">*</span></label>
+                <input asp-for="Phone" autocomplete="tel" />
+            </div>
+            <div class="hms-field">
+                <label asp-for="Email">Email</label>
+                <input asp-for="Email" type="email" autocomplete="email" />
+            </div>
+            <div class="hms-field">
+                <label asp-for="Address">Address</label>
+                <input asp-for="Address" autocomplete="street-address" />
+            </div>
         </div>
+
+        <h2 class="hms-patient-section-title">Emergency contact</h2>
+        <div class="hms-form-grid">
+            <div class="hms-field">
+                <label asp-for="EmergencyContactName">Emergency contact name</label>
+                <input asp-for="EmergencyContactName" />
+            </div>
+            <div class="hms-field">
+                <label asp-for="EmergencyContactPhone">Emergency contact phone</label>
+                <input asp-for="EmergencyContactPhone" />
+            </div>
+        </div>
+
+        <h2 class="hms-patient-section-title">Medical notes</h2>
+        <div class="hms-form-grid">
+            <div class="hms-field">
+                <label asp-for="MedicalHistory">Medical history</label>
+                <textarea asp-for="MedicalHistory" rows="3"></textarea>
+            </div>
+            <div class="hms-field">
+                <label asp-for="Allergies">Allergies</label>
+                <textarea asp-for="Allergies" rows="3"></textarea>
+            </div>
+        </div>
+
         <div class="hms-form-actions">
             <a class="hms-btn hms-btn-secondary" asp-controller="Patient" asp-action="Index">Cancel</a>
-            <button type="submit" class="hms-btn hms-btn-primary">Save</button>
+            <button type="submit" class="hms-btn hms-btn-primary">Save patient</button>
         </div>
     </form>
 </div>

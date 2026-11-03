@@ -1,46 +1,116 @@
-@model IReadOnlyList<Hms.Web.Models.Entities.Patient>
+@model Hms.Web.ViewModels.Patient.PatientListViewModel
 @{
     ViewData["Title"] = "Patients";
+    var statuses = new[] { EntityStatus.Active, EntityStatus.Inactive };
 }
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/patient.css" asp-append-version="true" />
+}
+
 <div class="hms-page-header">
     <h1>Patients</h1>
     @if (User.IsInRole(Roles.Receptionist))
     {
-        <a class="hms-btn hms-btn-primary" asp-controller="Patient" asp-action="Create">New patient</a>
+        <a class="hms-btn hms-btn-primary" asp-controller="Patient" asp-action="Create">
+            <i class="bi bi-person-plus"></i> New patient
+        </a>
     }
 </div>
 
 <div class="hms-card">
-    <form method="get" class="hms-search-box" style="max-width:360px;margin-bottom:16px;">
-        <i class="bi bi-search"></i>
-        <input type="search" name="search" value="@ViewData["Search"]" placeholder="Search by name, patient ID or phone" />
+    <form method="get" asp-controller="Patient" asp-action="Index" class="hms-patient-toolbar" role="search">
+        <div class="hms-search-box hms-patient-search">
+            <i class="bi bi-search"></i>
+            <input type="search" name="search" value="@Model.Search"
+                   placeholder="Search by name, patient ID or phone" aria-label="Search patients" />
+        </div>
+
+        <label class="hms-patient-control">
+            <span>Status</span>
+            <select name="status" aria-label="Filter by status">
+                <option value="" selected="@(string.IsNullOrEmpty(Model.Status))">All statuses</option>
+                @foreach (var status in statuses)
+                {
+                    <option value="@status" selected="@(Model.Status == status)">@status</option>
+                }
+            </select>
+        </label>
+
+        <label class="hms-patient-control">
+            <span>Sort</span>
+            <select name="sort" aria-label="Sort patients">
+                @foreach (var option in Hms.Web.ViewModels.Patient.PatientSort.Options)
+                {
+                    <option value="@option.Value" selected="@(Model.Sort == option.Value)">@option.Label</option>
+                }
+            </select>
+        </label>
+
+        <button type="submit" class="hms-btn hms-btn-secondary">Apply</button>
     </form>
 
-    @if (Model.Count == 0)
+    @if (Model.Patients.Count == 0)
     {
         <partial name="_EmptyState" model="@("No records found.")" />
     }
     else
     {
-        <table class="hms-table">
+        <table class="hms-table hms-patient-table">
             <thead>
-                <tr><th>Patient ID</th><th>Full name</th><th>Phone</th><th>Gender</th><th>Status</th><th>Registered</th><th></th></tr>
+                <tr>
+                    <th>Patient ID</th>
+                    <th>Full name</th>
+                    <th>Phone</th>
+                    <th>Gender</th>
+                    <th>Status</th>
+                    <th>Registered</th>
+                    <th></th>
+                </tr>
             </thead>
             <tbody>
-                @foreach (var patient in Model)
+                @foreach (var patient in Model.Patients)
                 {
                     <tr>
-                        <td>@patient.PatientCode</td>
-                        <td>@patient.FullName</td>
-                        <td>@patient.Phone</td>
-                        <td>@patient.Gender</td>
-                        <td><partial name="_StatusBadge" model="@patient.Status" /></td>
-                        <td>@patient.CreatedAt.ToString("dd MMM yyyy")</td>
-                        <td><a class="hms-btn hms-btn-secondary" asp-controller="Patient" asp-action="Details" asp-route-id="@patient.Id">View</a></td>
+                        <td data-label="Patient ID">@patient.PatientCode</td>
+                        <td data-label="Full name">@patient.FullName</td>
+                        <td data-label="Phone">@patient.Phone</td>
+                        <td data-label="Gender">@patient.Gender</td>
+                        <td data-label="Status"><partial name="_StatusBadge" model="@patient.Status" /></td>
+                        <td data-label="Registered">@patient.CreatedAt.ToString("dd MMM yyyy")</td>
+                        <td class="hms-patient-actions">
+                            <a class="hms-btn hms-btn-secondary" asp-controller="Patient" asp-action="Details" asp-route-id="@patient.Id">View</a>
+                        </td>
                     </tr>
                 }
             </tbody>
         </table>
-        <partial name="_Pagination" model="@(Convert.ToInt32(ViewData["Page"] ?? 1))" />
+
+        <nav class="hms-pagination" aria-label="Pagination">
+            @if (Model.HasPrevious)
+            {
+                <a class="hms-btn hms-btn-secondary"
+                   asp-controller="Patient" asp-action="Index"
+                   asp-route-search="@Model.Search" asp-route-status="@Model.Status"
+                   asp-route-sort="@Model.Sort" asp-route-page="@(Model.Page - 1)">Previous</a>
+            }
+            else
+            {
+                <span class="hms-btn hms-btn-secondary" aria-disabled="true">Previous</span>
+            }
+
+            <span class="hms-pagination-page">Page @Model.Page of @Model.TotalPages</span>
+
+            @if (Model.HasNext)
+            {
+                <a class="hms-btn hms-btn-secondary"
+                   asp-controller="Patient" asp-action="Index"
+                   asp-route-search="@Model.Search" asp-route-status="@Model.Status"
+                   asp-route-sort="@Model.Sort" asp-route-page="@(Model.Page + 1)">Next</a>
+            }
+            else
+            {
+                <span class="hms-btn hms-btn-secondary" aria-disabled="true">Next</span>
+            }
+        </nav>
     }
 </div>

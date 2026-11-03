@@ -1,25 +1,72 @@
-@model Hms.Web.Models.Entities.Patient
+@model Hms.Web.ViewModels.Patient.PatientEditViewModel
 @{
     ViewData["Title"] = "Edit patient";
 }
-<h1>Edit patient</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/patient.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <div class="hms-patient-heading">
+        <h1>Edit patient</h1>
+        <span class="hms-patient-code">@Model.PatientCode</span>
+    </div>
+</div>
 
 <div class="hms-card">
     @if (ViewData["Message"] is string message)
     {
-        <div class="hms-alert hms-alert-success">@message</div>
+        <div class="hms-alert hms-alert-success" role="status">@message</div>
     }
-    <form asp-controller="Patient" asp-action="Edit" asp-route-id="@Model.Id" method="post">
+
+    <form asp-controller="Patient" asp-action="Edit" asp-route-id="@Model.Id" method="post" class="hms-patient-form">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="PatientCode" />
+        <input type="hidden" asp-for="FullName" />
+
+        <h2 class="hms-patient-section-title">Contact details</h2>
         <div class="hms-form-grid">
-            <div class="hms-field"><label asp-for="Phone">Phone</label><input asp-for="Phone" /></div>
-            <div class="hms-field"><label asp-for="Email">Email</label><input asp-for="Email" type="email" /></div>
-            <div class="hms-field"><label asp-for="Address">Address</label><input asp-for="Address" /></div>
-            <div class="hms-field"><label asp-for="EmergencyContactName">Emergency contact name</label><input asp-for="EmergencyContactName" /></div>
-            <div class="hms-field"><label asp-for="EmergencyContactPhone">Emergency contact phone</label><input asp-for="EmergencyContactPhone" /></div>
+            <div class="hms-field">
+                <label asp-for="Phone">Phone</label>
+                <input asp-for="Phone" autocomplete="tel" />
+            </div>
+            <div class="hms-field">
+                <label asp-for="Email">Email</label>
+                <input asp-for="Email" type="email" autocomplete="email" />
+            </div>
+            <div class="hms-field">
+                <label asp-for="Address">Address</label>
+                <input asp-for="Address" autocomplete="street-address" />
+            </div>
         </div>
+
+        <h2 class="hms-patient-section-title">Emergency contact</h2>
+        <div class="hms-form-grid">
+            <div class="hms-field">
+                <label asp-for="EmergencyContactName">Emergency contact name</label>
+                <input asp-for="EmergencyContactName" />
+            </div>
+            <div class="hms-field">
+                <label asp-for="EmergencyContactPhone">Emergency contact phone</label>
+                <input asp-for="EmergencyContactPhone" />
+            </div>
+        </div>
+
+        <h2 class="hms-patient-section-title">Medical notes</h2>
+        <div class="hms-form-grid">
+            <div class="hms-field">
+                <label asp-for="MedicalHistory">Medical history</label>
+                <textarea asp-for="MedicalHistory" rows="3"></textarea>
+            </div>
+            <div class="hms-field">
+                <label asp-for="Allergies">Allergies</label>
+                <textarea asp-for="Allergies" rows="3"></textarea>
+            </div>
+        </div>
+
         <div class="hms-form-actions">
-            <a class="hms-btn hms-btn-secondary" asp-controller="Patient" asp-action="Index">Cancel</a>
-            <button type="submit" class="hms-btn hms-btn-primary">Save</button>
+            <a class="hms-btn hms-btn-secondary" asp-controller="Patient" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+            <button type="submit" class="hms-btn hms-btn-primary">Save changes</button>
         </div>
     </form>
 </div>
