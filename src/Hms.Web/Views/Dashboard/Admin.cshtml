@@ -1,18 +1,159 @@
+@model Hms.Web.ViewModels.Dashboard.AdminDashboardViewModel
 @{
     ViewData["Title"] = "Admin dashboard";
+    var revenueLabels = Model.RevenueByMonth.Select(p => p.Label).ToList();
+    var revenueValues = Model.RevenueByMonth.Select(p => p.Value).ToList();
+    var trendLabels = Model.AppointmentTrend.Select(p => p.Label).ToList();
+    var trendValues = Model.AppointmentTrend.Select(p => p.Value).ToList();
 }
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/dashboard.css" asp-append-version="true" />
+}
+
 <div class="hms-page-header">
     <h1>Admin dashboard</h1>
+    <div class="hms-dashboard-actions">
+        <a class="hms-btn hms-btn-secondary" asp-controller="Report" asp-action="Index">
+            <i class="bi bi-bar-chart"></i> Reports
+        </a>
+    </div>
 </div>
 
 <div class="hms-kpi-grid">
-    <partial name="_KpiCard" model="@(new KpiCardModel("bi-people", "—", "Total patients"))" />
-    <partial name="_KpiCard" model="@(new KpiCardModel("bi-person-badge", "—", "Total doctors"))" />
-    <partial name="_KpiCard" model="@(new KpiCardModel("bi-person-workspace", "—", "Total staff"))" />
-    <partial name="_KpiCard" model="@(new KpiCardModel("bi-diagram-3", "—", "Departments"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-people", Model.TotalPatients.ToString(), "Total patients"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-person-badge", Model.TotalDoctors.ToString(), "Total doctors"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-person-workspace", Model.TotalStaff.ToString(), "Total staff"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-diagram-3", Model.TotalDepartments.ToString(), "Departments"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-calendar-check", Model.TodaysAppointments.ToString(), "Today's appointments"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-hourglass-split", Model.PendingAppointments.ToString(), "Pending appointments"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-clipboard2-pulse", Model.CompletedConsultations.ToString(), "Completed consultations"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-cash-coin", "₹" + Model.TotalRevenue.ToString("N2"), "Total revenue"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-exclamation-circle", "₹" + Model.OutstandingBalance.ToString("N2"), "Outstanding balance"))" />
 </div>
 
-<div class="hms-card">
-    <h2>Welcome</h2>
-    <p class="hms-empty">The dashboard figures are filled in by the Admin dashboard task.</p>
+<div class="hms-dashboard-grid">
+    <section class="hms-card">
+        <h2 class="hms-card-title">Revenue — last 6 months</h2>
+        <div class="hms-chart-wrap">
+            <canvas id="hmsRevenueChart"
+                    data-labels="@string.Join("|", revenueLabels)"
+                    data-values="@string.Join("|", revenueValues.Select(v => v.ToString(System.Globalization.CultureInfo.InvariantCulture)))"
+                    aria-label="Revenue of the last 6 months"></canvas>
+        </div>
+    </section>
+
+    <section class="hms-card">
+        <h2 class="hms-card-title">Appointments — last 7 days</h2>
+        <div class="hms-chart-wrap">
+            <canvas id="hmsAppointmentChart"
+                    data-labels="@string.Join("|", trendLabels)"
+                    data-values="@string.Join("|", trendValues.Select(v => v.ToString(System.Globalization.CultureInfo.InvariantCulture)))"
+                    aria-label="Appointment trend of the last 7 days"></canvas>
+        </div>
+    </section>
 </div>
+
+<div class="hms-dashboard-grid">
+    <section class="hms-card">
+        <h2 class="hms-card-title">Recent patient registrations</h2>
+        @if (Model.RecentPatients.Count == 0)
+        {
+            <partial name="_EmptyState" model="@("No records found.")" />
+        }
+        else
+        {
+            <table class="hms-table">
+                <thead>
+                    <tr>
+                        <th>Patient ID</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Registered</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var patient in Model.RecentPatients)
+                    {
+                        <tr>
+                            <td>@patient.PatientCode</td>
+                            <td>
+                                <a asp-controller="Patient" asp-action="Details" asp-route-id="@patient.Id">@patient.FullName</a>
+                            </td>
+                            <td>@patient.Phone</td>
+                            <td>@patient.RegisteredAt.ToLocalTime().ToString("dd MMM yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+    <section class="hms-card">
+        <h2 class="hms-card-title">Recent appointments</h2>
+        @if (Model.RecentAppointments.Count == 0)
+        {
+            <partial name="_EmptyState" model="@("No records found.")" />
+        }
+        else
+        {
+            <table class="hms-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var appointment in Model.RecentAppointments)
+                    {
+                        <tr>
+                            <td>@appointment.AppointmentDate.ToString("dd MMM yyyy")</td>
+                            <td>@appointment.StartTime.ToString(@"hh\:mm")</td>
+                            <td>@appointment.PatientName <span class="hms-muted">@appointment.PatientCode</span></td>
+                            <td>@appointment.DoctorName</td>
+                            <td><partial name="_StatusBadge" model="@appointment.Status" /></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+</div>
+
+<section class="hms-card">
+    <h2 class="hms-card-title">Departments</h2>
+    @if (Model.Departments.Count == 0)
+    {
+        <partial name="_EmptyState" model="@("No records found.")" />
+    }
+    else
+    {
+        <table class="hms-table">
+            <thead>
+                <tr>
+                    <th>Department</th>
+                    <th>Status</th>
+                    <th>Doctors</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var department in Model.Departments)
+                {
+                    <tr>
+                        <td>@department.Name</td>
+                        <td><partial name="_StatusBadge" model="@department.Status" /></td>
+                        <td>@department.DoctorCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</section>
+
+@section Scripts {
+    <script src="~/js/pages/dashboard.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,60 @@
+/* Admin dashboard — charts, recent activity and department list. */
+
+.hms-dashboard-actions {
+    display: flex;
+    gap: var(--hms-space-2);
+    flex-wrap: wrap;
+}
+
+.hms-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--hms-space-6);
+}
+
+.hms-dashboard-grid > .hms-card {
+    margin-bottom: 0;
+}
+
+.hms-dashboard-grid + .hms-dashboard-grid,
+.hms-dashboard-grid + .hms-card {
+    margin-top: var(--hms-space-6);
+}
+
+.hms-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--hms-primary);
+    margin: 0 0 var(--hms-space-4);
+}
+
+.hms-chart-wrap {
+    position: relative;
+    height: 260px;
+}
+
+.hms-muted {
+    color: var(--hms-text-muted);
+    font-size: 12px;
+}
+
+@media (max-width: 1024px) {
+    .hms-dashboard-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .hms-dashboard-actions {
+        width: 100%;
+    }
+
+    .hms-dashboard-actions .hms-btn {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+
+    .hms-chart-wrap {
+        height: 220px;
+    }
+}
