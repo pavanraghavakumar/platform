@@ -185,6 +185,9 @@ public class HmsDbContext : IdentityDbContext<ApplicationUser>
             e.Property(x => x.Name).HasMaxLength(200).IsRequired();
             e.Property(x => x.UnitPrice).HasColumnType("decimal(18,2)");
             e.Property(x => x.Status).HasMaxLength(20);
+            e.ToTable(t => t.HasCheckConstraint(
+                "CK_Medicines_StockQuantity_NonNegative",
+                "StockQuantity >= 0"));
             e.HasOne(x => x.Category)
                 .WithMany(c => c.Medicines)
                 .HasForeignKey(x => x.CategoryId)

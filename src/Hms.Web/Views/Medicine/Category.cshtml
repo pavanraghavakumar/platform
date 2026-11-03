@@ -1,13 +1,25 @@
-@model IReadOnlyList<Hms.Web.Models.Entities.MedicineCategory>
+@model IReadOnlyList<MedicineCategory>
 @{
     ViewData["Title"] = "Medicine categories";
 }
-<h1>Medicine categories</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/pharmacy.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <h1>Medicine categories</h1>
+    <a class="hms-btn hms-btn-secondary" asp-controller="Medicine" asp-action="Index">Back to pharmacy</a>
+</div>
 
 <div class="hms-card">
     <form asp-controller="Medicine" asp-action="Category" method="post" class="hms-form-grid">
-        <div class="hms-field"><label for="name">Name</label><input id="name" name="name" /></div>
-        <div class="hms-form-actions"><button type="submit" class="hms-btn hms-btn-primary">Add category</button></div>
+        <div class="hms-field">
+            <label for="name">Name</label>
+            <input id="name" name="name" required />
+        </div>
+        <div class="hms-form-actions">
+            <button type="submit" class="hms-btn hms-btn-primary">Add category</button>
+        </div>
     </form>
 
     @if (Model.Count == 0)
