@@ -1,7 +1,7 @@
 # Tasks: Healthcare Management System
 
-- [ ] 1. Project setup
-  - [ ] 1.1 Project setup
+- [x] 1. Project setup
+  - [x] 1.1 Project setup
     - Create `Hms.sln` with the MVC project `src/Hms.Web` (.NET 8, ASP.NET Core MVC, Razor) and the xUnit project `tests/Hms.Tests`; add `README.md` with the commands of `## Build and run` and a `.gitignore` that includes `.env`, `bin/`, `obj/`, `logs/` and `*.db`.
     - Write the whole data model of `design.md` as entities and `HmsDbContext` (Identity users, patients, doctors, schedules, staff, departments, appointments, medical records, prescriptions, medicines, batches, lab tests and requests, invoices, payments, notifications, audit entries, system settings) with keys, relationships, deletion behaviour, unique indexes and `decimal(18,2)` money, plus the first EF Core migration on SQLite.
     - Register Identity with the four roles Admin, Doctor, Receptionist and Patient, the DbContext, the services and repositories in `Program.cs`; add the exception handling middleware, the `/health` endpoint answering `{"status":"ok"}`, and the `DemoDataSeeder` that creates the demo records and the four demo logins only when the database is empty and never when `ASPNETCORE_ENVIRONMENT` is `Production`; `Dev` applies the migrations and runs the seeder before the app starts.
