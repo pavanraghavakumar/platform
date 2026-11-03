@@ -52,7 +52,7 @@
     - _Verify: dotnet test --filter FullyQualifiedName~DepartmentStaffTests_
     - _Area: ui_
     - _Issue: #19_
-  - [ ] 3.3 Doctor management
+  - [x] 3.3 Doctor management
     - Build the doctor list with department filter, the create form (full name, email, phone, specialization, department, qualifications, years of experience, consultation fee) that creates the doctor Active with a Doctor sign-in account, the edit page for details, fee and the weekly working schedule with "End time must be after start time." when the end is not after the start, the profile page with schedule and appointment history newest first, and the deactivate action that stops new bookings.
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7_
     - _Depends: 1_
@@ -121,8 +121,8 @@
     - _Area: ui_
     - _Issue: #26_
 
-- [ ] 9. Pharmacy
-  - [ ] 9.1 Medicine catalog, stock and inventory report
+- [x] 9. Pharmacy
+  - [x] 9.1 Medicine catalog, stock and inventory report
     - Build the medicine list with status badges, the create form (name, category, supplier, unit price, reorder level, stock quantity) saving In Stock, the category and supplier pages, the stock-in form (batch number, quantity, expiry date) that adds to the stock and saves the batch, the stock-out form that subtracts and shows "Not enough stock available." when the quantity is more than the stock, the status rules In Stock, Low Stock, Out of Stock and Expired, and the inventory report with the count of Low Stock and Out of Stock medicines.
     - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8, 9.9_
     - _Depends: 1_
@@ -161,8 +161,8 @@
     - _Area: ui_
     - _Issue: #30_
 
-- [ ] 13. Receptionist dashboard
-  - [ ] 13.1 Receptionist dashboard
+- [x] 13. Receptionist dashboard
+  - [x] 13.1 Receptionist dashboard
     - Build `/Dashboard/Receptionist` with KPI cards for appointments today, Pending appointments, Checked In appointments and payments recorded today; today's appointments with time, patient name, doctor name and status earliest first and a Check in button on each Confirmed one; a patient search box that opens the matching patient's profile; the 5 most recent notifications; and the New appointment and New invoice quick actions.
     - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5, 13.6_
     - _Depends: 1_
