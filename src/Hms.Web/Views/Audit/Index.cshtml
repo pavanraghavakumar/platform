@@ -1,50 +1,97 @@
-@model IReadOnlyList<Hms.Web.Models.Entities.AuditEntry>
+@model Hms.Web.ViewModels.Audit.AuditListViewModel
 @{
     ViewData["Title"] = "Audit trail";
     var recordTypes = new[] { "MedicalRecord", "Prescription", "Invoice", "Payment" };
+    var firstEntry = Model.TotalCount == 0 ? 0 : ((Model.Page - 1) * Model.PageSize) + 1;
+    var lastEntry = Math.Min(Model.Page * Model.PageSize, Model.TotalCount);
 }
-<h1>Audit trail</h1>
+<div class="hms-page-header">
+    <div>
+        <h1>Audit trail</h1>
+        <p>Review changes to medical and financial records.</p>
+    </div>
+</div>
 
-<div class="hms-card">
-    <form method="get" class="hms-form-grid">
+<div class="hms-card audit-card">
+    <form method="get" class="audit-filters">
         <div class="hms-field">
             <label for="recordType">Record type</label>
             <select id="recordType" name="recordType">
                 <option value="">All record types</option>
                 @foreach (var type in recordTypes)
                 {
-                    <option value="@type" selected="@(ViewData["RecordType"]?.ToString() == type)">@type</option>
+                    <option value="@type" selected="@(Model.RecordType == type)">@type</option>
                 }
             </select>
         </div>
-        <div class="hms-field"><label for="from">Start date</label><input id="from" name="from" type="date" /></div>
-        <div class="hms-field"><label for="to">End date</label><input id="to" name="to" type="date" /></div>
-        <div class="hms-form-actions"><button type="submit" class="hms-btn hms-btn-primary">Filter</button></div>
+        <div class="hms-field">
+            <label for="from">Start date</label>
+            <input id="from" name="from" type="date" value="@Model.From?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="hms-field">
+            <label for="to">End date</label>
+            <input id="to" name="to" type="date" value="@Model.To?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="audit-filter-actions">
+            <button type="submit" class="hms-btn hms-btn-primary">Filter</button>
+            <a asp-action="Index" class="hms-btn hms-btn-secondary">Clear</a>
+        </div>
     </form>
 
-    @if (Model.Count == 0)
+    @if (Model.Entries.Count == 0)
     {
         <partial name="_EmptyState" model="@("No records found.")" />
     }
     else
     {
-        <table class="hms-table">
-            <thead><tr><th>Record type</th><th>Record ID</th><th>Field</th><th>Previous</th><th>New</th><th>User</th><th>Time</th></tr></thead>
-            <tbody>
-                @foreach (var entry in Model)
-                {
-                    <tr>
-                        <td>@entry.RecordType</td>
-                        <td>@entry.RecordId</td>
-                        <td>@entry.FieldName</td>
-                        <td>@entry.OldValue</td>
-                        <td>@entry.NewValue</td>
-                        <td>@entry.UserName</td>
-                        <td>@entry.ChangedAt.ToString("dd MMM yyyy HH:mm")</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-        <partial name="_Pagination" model="@(Convert.ToInt32(ViewData["Page"] ?? 1))" />
+        <div class="hms-table-wrap">
+            <table class="hms-table audit-table">
+                <thead><tr><th>Record type</th><th>Record ID</th><th>Field</th><th>Previous value</th><th>New value</th><th>User name</th><th>Time</th></tr></thead>
+                <tbody>
+                    @foreach (var entry in Model.Entries)
+                    {
+                        <tr>
+                            <td data-label="Record type">@entry.RecordType</td>
+                            <td data-label="Record ID">@entry.RecordId</td>
+                            <td data-label="Field">@entry.FieldName</td>
+                            <td data-label="Previous value" class="audit-value">@(entry.OldValue ?? "—")</td>
+                            <td data-label="New value" class="audit-value">@(entry.NewValue ?? "—")</td>
+                            <td data-label="User name">@entry.UserName</td>
+                            <td data-label="Time"><time datetime="@entry.ChangedAt.ToString("O")">@entry.ChangedAt.ToString("dd MMM yyyy HH:mm")</time></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="hms-list-footer">
+            <span class="hms-list-count">Showing @firstEntry–@lastEntry of @Model.TotalCount entries</span>
+            @if (Model.TotalPages > 1)
+            {
+                <nav class="hms-pagination" aria-label="Audit trail pages">
+                    @if (Model.Page == 1)
+                    {
+                        <span class="hms-btn hms-btn-secondary" aria-disabled="true">Previous</span>
+                    }
+                    else
+                    {
+                        <a asp-action="Index" asp-route-page="@(Model.Page - 1)" asp-route-recordType="@Model.RecordType"
+                           asp-route-from="@Model.From?.ToString("yyyy-MM-dd")" asp-route-to="@Model.To?.ToString("yyyy-MM-dd")"
+                           class="hms-btn hms-btn-secondary">Previous</a>
+                    }
+                    <span>Page @Model.Page of @Model.TotalPages</span>
+                    @if (Model.Page >= Model.TotalPages)
+                    {
+                        <span class="hms-btn hms-btn-secondary" aria-disabled="true">Next</span>
+                    }
+                    else
+                    {
+                        <a asp-action="Index" asp-route-page="@(Model.Page + 1)" asp-route-recordType="@Model.RecordType"
+                           asp-route-from="@Model.From?.ToString("yyyy-MM-dd")" asp-route-to="@Model.To?.ToString("yyyy-MM-dd")"
+                           class="hms-btn hms-btn-secondary">Next</a>
+                    }
+                </nav>
+            }
+        </div>
     }
 </div>

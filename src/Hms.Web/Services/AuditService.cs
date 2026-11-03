@@ -28,6 +28,7 @@ public class AuditService : IAuditService
             return;
         }
 
+        var changedAt = DateTime.UtcNow;
         _db.AuditEntries.Add(new AuditEntry
         {
             RecordType = recordType,
@@ -36,9 +37,9 @@ public class AuditService : IAuditService
             OldValue = oldValue,
             NewValue = newValue,
             UserName = userName,
-            ChangedAt = DateTime.UtcNow,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            ChangedAt = changedAt,
+            CreatedAt = changedAt,
+            UpdatedAt = changedAt
         });
 
         await _db.SaveChangesAsync();
