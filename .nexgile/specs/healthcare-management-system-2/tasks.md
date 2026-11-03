@@ -16,7 +16,7 @@
     - _Area: setup_
     - _Issue: #15_
 
-- [ ] 2. Sign-in, password and profile pages
+- [x] 2. Sign-in, password and profile pages
   - [x] 2.1 Sign-in, forgot and reset password pages
     - Build the sign-in page at `/` and `/Account/Login` as a centred card on the navy-to-teal gradient with the hospital name and logo, user name and password fields, a Sign in button, a Forgot password link and the red alert "Invalid user name or password."; sign in redirects to `/Dashboard/Admin`, `/Dashboard/Doctor`, `/Dashboard/Receptionist` or `/Dashboard/Patient` by role, and a deactivated account is blocked with "Your account is deactivated.".
     - Build the forgot-password page that shows the reset link on the page itself, and the reset-password page the link opens; build the sign-out action that ends the session and returns to `/`, and the access-denied page showing "You do not have access to this page.".
@@ -26,7 +26,7 @@
     - _Verify: dotnet test --filter FullyQualifiedName~AccountPages_
     - _Area: ui_
     - _Issue: #16_
-  - [ ] 2.2 Profile and change password pages
+  - [x] 2.2 Profile and change password pages
     - Build the profile page showing user name, email, role and phone with a form that saves a new phone number, and the change-password page that saves a new password of at least 8 characters and shows "Your password has been changed." or "Password must be at least 8 characters." beside the field with the typed values kept.
     - _Requirements: 1.7, 1.8, 1.9, 17.6_
     - _Depends: 1_
@@ -111,8 +111,8 @@
     - _Area: ui_
     - _Issue: #25_
 
-- [ ] 8. Laboratory
-  - [ ] 8.1 Laboratory test catalog and lab requests
+- [x] 8. Laboratory
+  - [x] 8.1 Laboratory test catalog and lab requests
     - Build the laboratory test catalog and its create form (name, category, price, normal range); build the lab request list with status filter, the request action that creates one request per test with status Requested linked to the patient, Doctor and appointment, the start action setting In Progress, the result form that sets Completed with a notification for the requesting Doctor, the result page showing test name, normal range, result value, remarks and date, the ownership check showing "You do not have access to this page." for another Doctor's request, and the printable report with a Print button.
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 8.8_
     - _Depends: 1_
@@ -131,8 +131,8 @@
     - _Area: ui_
     - _Issue: #27_
 
-- [ ] 10. Billing and payments
-  - [ ] 10.1 Invoices, payments and printable invoice
+- [x] 10. Billing and payments
+  - [x] 10.1 Invoices, payments and printable invoice
     - Build the invoice list with status filter, the generate action that adds the consultation fee, the completed lab requests and the prescription medicines of the appointment as lines, the additional service charge line, the discount and tax fields with the total to 2 decimal places, the payment form (amount, method, date) that sets Unpaid, Partially Paid or Paid and shows the outstanding balance, "Payment cannot be more than the outstanding balance." for an overpayment, the refund action that reverses the paid amount and notifies the patient, the audit entry on each payment, and the printable invoice with every line, discount, tax, total, paid amount, outstanding balance and a Print button.
     - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.6, 10.7, 10.8, 10.9, 10.10_
     - _Depends: 1_
