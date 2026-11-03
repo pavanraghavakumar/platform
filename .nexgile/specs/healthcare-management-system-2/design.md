@@ -6,7 +6,7 @@ The Healthcare Management System (HMS) is a server-rendered ASP.NET Core MVC web
 
 The app starts at `/`. A person who is not signed in sees the sign-in page there; a signed-in person is sent to the dashboard of their role: `/Dashboard/Admin`, `/Dashboard/Doctor`, `/Dashboard/Receptionist` or `/Dashboard/Patient`.
 
-Everything is local: no cloud hosting, no deployment, no external database server, no email and no SMS. Notifications are rows in the database shown inside the app.
+Notifications are rows in the database shown inside the app; the app sends no email and no SMS.
 
 ## Architecture
 
@@ -260,7 +260,7 @@ A clean, modern healthcare SaaS style: calm navy and teal on white, generous whi
 - Fields: white with `--hms-border` border, 8px radius, label above in 13px muted text; focus border teal with a soft ring; invalid border red with the message below in red.
 - Tables: white card, header row in soft grey uppercase 12px, row hover `#f8fafc`, status badges as rounded pills (Pending amber, Confirmed blue, Checked In teal, In Progress navy, Completed green, Cancelled grey, No Show red; Unpaid red, Partially Paid amber, Paid green).
 - KPI cards: icon in a tinted circle, big number, label, small trend line.
-- Sidebar: navy, white icons and labels, active item with a teal left bar; collapsed to 72px of icons.
+- Sidebar: navy, white icons and labels, active item with a teal left bar; collapsed to 72px of icons. Its navigation area fills the browser height and scrolls independently of the main content when its menu items are taller than the browser window.
 
 **Layout per screen:**
 

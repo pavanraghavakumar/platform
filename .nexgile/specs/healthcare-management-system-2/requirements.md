@@ -284,6 +284,7 @@ _Source: F1, S2, R1, R2, R3, R4_
 7. WHEN a list has no rows THE SYSTEM SHALL show the message "No records found."
 8. WHILE the browser window is 375 pixels wide THE SYSTEM SHALL show every page without horizontal scrolling, with the sidebar hidden behind a menu button.
 9. WHILE the browser window is 1280 pixels wide THE SYSTEM SHALL show the sidebar expanded beside the content area.
+10. WHILE the sidebar navigation is taller than the browser window THE SYSTEM SHALL let the user scroll the sidebar independently of the main content area.
 
 ## Requirement 18: Demo data and demo logins
 

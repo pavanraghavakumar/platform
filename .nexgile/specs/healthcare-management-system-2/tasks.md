@@ -198,3 +198,12 @@
     - _Verify: dotnet test --filter FullyQualifiedName~LayoutTests_
     - _Area: ui_
     - _Issue: #34_
+
+- [ ] 16. Full-height independently scrolling sidebar
+  - Make the signed-in sidebar fill the browser height and keep its navigation independently vertically scrollable when the menu is taller than the browser window, without making the main content scroll with it.
+  - Update `LayoutTests.cs` and the saved `e2e/layout.spec.ts` journey to check the full-height sidebar and independent sidebar navigation scrolling at a short browser height.
+  - _Requirements: 17.10_
+  - _Depends: 1, 15.2_
+  - _Files: src/Hms.Web/Views/Shared/_Layout.cshtml, src/Hms.Web/Views/Shared/_Sidebar.cshtml, src/Hms.Web/wwwroot/css/site.css, tests/Hms.Tests/Layout/LayoutTests.cs, e2e/layout.spec.ts_
+  - _Verify: dotnet test --filter FullyQualifiedName~LayoutTests_
+  - _Area: ui_
