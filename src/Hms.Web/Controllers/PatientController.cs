@@ -1,6 +1,7 @@
 using Hms.Web.Data;
 using Hms.Web.Models.Entities;
 using Hms.Web.Services;
+using Hms.Web.ViewModels.Patient;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,52 +21,56 @@ public class PatientController : Controller
     }
 
     [Authorize(Roles = Roles.Receptionist + "," + Roles.Admin)]
-    public async Task<IActionResult> Index(string? search, int page = 1)
+    public async Task<IActionResult> Index(string? search, string? status, string? sort, int page = 1)
     {
-        const int pageSize = 10;
-        var query = _db.Patients.AsQueryable();
-        if (!string.IsNullOrWhiteSpace(search))
-        {
-            var term = search.Trim();
-            query = query.Where(p => p.FullName.Contains(term) || p.PatientCode.Contains(term) || p.Phone.Contains(term));
-        }
-
-        ViewData["Search"] = search;
-        ViewData["Page"] = page;
-        return View(await query.OrderBy(p => p.Id).Skip((Math.Max(page, 1) - 1) * pageSize).Take(pageSize).ToListAsync());
+        var model = await _patients.GetPageAsync(search, status, sort, page, PatientListViewModel.PageSize);
+        return View(model);
     }
 
     [Authorize(Roles = Roles.Receptionist)]
     [HttpGet]
-    public IActionResult Create() => View(new Patient());
+    public IActionResult Create() => View(new PatientCreateViewModel());
 
     [Authorize(Roles = Roles.Receptionist)]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Patient patient)
+    public async Task<IActionResult> Create(PatientCreateViewModel model)
     {
-        if (string.IsNullOrWhiteSpace(patient.FullName) || string.IsNullOrWhiteSpace(patient.Phone))
+        if (string.IsNullOrWhiteSpace(model.FullName) || string.IsNullOrWhiteSpace(model.Phone))
         {
             ModelState.AddModelError(string.Empty, "Full name and phone number are required.");
-            return View(patient);
+            return View(model);
         }
 
-        await _patients.RegisterAsync(patient);
-        return RedirectToAction(nameof(Index));
+        var patient = new Patient
+        {
+            FullName = model.FullName,
+            DateOfBirth = model.DateOfBirth ?? default,
+            Gender = model.Gender?.Trim() ?? string.Empty,
+            Phone = model.Phone,
+            Email = model.Email?.Trim(),
+            Address = model.Address?.Trim(),
+            EmergencyContactName = model.EmergencyContactName?.Trim(),
+            EmergencyContactPhone = model.EmergencyContactPhone?.Trim(),
+            MedicalHistory = model.MedicalHistory,
+            Allergies = model.Allergies
+        };
+
+        var created = await _patients.RegisterAsync(patient);
+        TempData["Message"] = $"Patient {created.PatientCode} registered.";
+        return RedirectToAction(nameof(Details), new { id = created.Id });
     }
 
     [Authorize(Roles = Roles.Receptionist + "," + Roles.Admin + "," + Roles.Doctor)]
     public async Task<IActionResult> Details(int id)
     {
-        var patient = await _db.Patients
-            .Include(p => p.Appointments).ThenInclude(a => a.Doctor)
-            .FirstOrDefaultAsync(p => p.Id == id);
-        if (patient is null)
+        var model = await _patients.GetProfileAsync(id);
+        if (model is null)
         {
             return NotFound();
         }
 
-        return View(patient);
+        return View(model);
     }
 
     [Authorize(Roles = Roles.Receptionist)]
@@ -78,29 +83,27 @@ public class PatientController : Controller
             return NotFound();
         }
 
-        return View(patient);
+        return View(ToEditModel(patient));
     }
 
     [Authorize(Roles = Roles.Receptionist)]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Patient patient)
+    public async Task<IActionResult> Edit(int id, PatientEditViewModel model)
     {
-        var existing = await _db.Patients.FindAsync(id);
-        if (existing is null)
+        if (id != model.Id)
+        {
+            return BadRequest();
+        }
+
+        var updated = await _patients.UpdateContactAsync(model);
+        if (updated is null)
         {
             return NotFound();
         }
 
-        existing.Phone = patient.Phone;
-        existing.Email = patient.Email;
-        existing.Address = patient.Address;
-        existing.EmergencyContactName = patient.EmergencyContactName;
-        existing.EmergencyContactPhone = patient.EmergencyContactPhone;
-        existing.UpdatedAt = DateTime.UtcNow;
-        await _db.SaveChangesAsync();
         ViewData["Message"] = "Patient details saved.";
-        return View(existing);
+        return View(ToEditModel(updated));
     }
 
     [Authorize(Roles = Roles.Receptionist)]
@@ -108,15 +111,14 @@ public class PatientController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Deactivate(int id)
     {
-        var patient = await _db.Patients.FindAsync(id);
-        if (patient is not null)
+        var deactivated = await _patients.DeactivateAsync(id);
+        if (!deactivated)
         {
-            patient.Status = EntityStatus.Inactive;
-            patient.UpdatedAt = DateTime.UtcNow;
-            await _db.SaveChangesAsync();
+            return NotFound();
         }
 
-        return RedirectToAction(nameof(Index));
+        TempData["Message"] = "Patient deactivated.";
+        return RedirectToAction(nameof(Details), new { id });
     }
 
     [Authorize(Roles = Roles.Doctor)]
@@ -125,4 +127,18 @@ public class PatientController : Controller
         var patients = await _db.Patients.OrderBy(p => p.FullName).ToListAsync();
         return View(patients);
     }
+
+    private static PatientEditViewModel ToEditModel(Patient patient) => new()
+    {
+        Id = patient.Id,
+        PatientCode = patient.PatientCode,
+        FullName = patient.FullName,
+        Phone = patient.Phone,
+        Email = patient.Email,
+        Address = patient.Address,
+        EmergencyContactName = patient.EmergencyContactName,
+        EmergencyContactPhone = patient.EmergencyContactPhone,
+        MedicalHistory = patient.MedicalHistory,
+        Allergies = patient.Allergies
+    };
 }

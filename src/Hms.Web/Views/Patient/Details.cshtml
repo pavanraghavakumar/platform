@@ -1,25 +1,72 @@
-@model Hms.Web.Models.Entities.Patient
+@model Hms.Web.ViewModels.Patient.PatientDetailsViewModel
 @{
     ViewData["Title"] = "Patient profile";
+    var patient = Model.Patient;
+    var isReceptionist = User.IsInRole(Roles.Receptionist);
 }
-<h1>@Model.FullName</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/patient.css" asp-append-version="true" />
+}
 
-<div class="hms-card">
-    <dl class="hms-table">
-        <tr><th>Patient ID</th><td>@Model.PatientCode</td></tr>
-        <tr><th>Date of birth</th><td>@Model.DateOfBirth.ToString("dd MMM yyyy")</td></tr>
-        <tr><th>Gender</th><td>@Model.Gender</td></tr>
-        <tr><th>Phone</th><td>@Model.Phone</td></tr>
-        <tr><th>Email</th><td>@Model.Email</td></tr>
-        <tr><th>Address</th><td>@Model.Address</td></tr>
-        <tr><th>Emergency contact</th><td>@Model.EmergencyContactName (@Model.EmergencyContactPhone)</td></tr>
-        <tr><th>Medical history</th><td>@Model.MedicalHistory</td></tr>
-        <tr><th>Allergies</th><td>@Model.Allergies</td></tr>
-        <tr><th>Status</th><td><partial name="_StatusBadge" model="@Model.Status" /></td></tr>
-    </dl>
+<div class="hms-page-header">
+    <div class="hms-patient-heading">
+        <h1>@patient.FullName</h1>
+        <span class="hms-patient-code">@patient.PatientCode</span>
+        <partial name="_StatusBadge" model="@patient.Status" />
+    </div>
+    @if (isReceptionist)
+    {
+        <div class="hms-patient-header-actions">
+            <a class="hms-btn hms-btn-secondary" asp-controller="Patient" asp-action="Edit" asp-route-id="@patient.Id">
+                <i class="bi bi-pencil"></i> Edit details
+            </a>
+            @if (patient.Status == EntityStatus.Active)
+            {
+                <form asp-controller="Patient" asp-action="Deactivate" asp-route-id="@patient.Id" method="post" class="hms-inline-form">
+                    <button type="submit" class="hms-btn hms-btn-danger" data-confirm>Deactivate</button>
+                </form>
+            }
+        </div>
+    }
 </div>
 
-<div class="hms-card">
+<div class="hms-patient-grid">
+    <section class="hms-card">
+        <h2>Personal and contact details</h2>
+        <dl class="hms-detail-list">
+            <div><dt>Patient ID</dt><dd>@patient.PatientCode</dd></div>
+            <div><dt>Full name</dt><dd>@patient.FullName</dd></div>
+            <div><dt>Date of birth</dt><dd>@(patient.DateOfBirth == default ? "—" : patient.DateOfBirth.ToString("dd MMM yyyy"))</dd></div>
+            <div><dt>Gender</dt><dd>@(string.IsNullOrWhiteSpace(patient.Gender) ? "—" : patient.Gender)</dd></div>
+            <div><dt>Phone</dt><dd>@patient.Phone</dd></div>
+            <div><dt>Email</dt><dd>@(string.IsNullOrWhiteSpace(patient.Email) ? "—" : patient.Email)</dd></div>
+            <div><dt>Address</dt><dd>@(string.IsNullOrWhiteSpace(patient.Address) ? "—" : patient.Address)</dd></div>
+            <div><dt>Registered</dt><dd>@patient.CreatedAt.ToString("dd MMM yyyy")</dd></div>
+            <div><dt>Status</dt><dd><partial name="_StatusBadge" model="@patient.Status" /></dd></div>
+        </dl>
+    </section>
+
+    <section class="hms-card">
+        <h2>Emergency contact</h2>
+        <dl class="hms-detail-list">
+            <div><dt>Name</dt><dd>@(string.IsNullOrWhiteSpace(patient.EmergencyContactName) ? "—" : patient.EmergencyContactName)</dd></div>
+            <div><dt>Phone</dt><dd>@(string.IsNullOrWhiteSpace(patient.EmergencyContactPhone) ? "—" : patient.EmergencyContactPhone)</dd></div>
+        </dl>
+
+        <h2 class="hms-patient-section-title">Medical history</h2>
+        <p class="hms-patient-note">@(string.IsNullOrWhiteSpace(patient.MedicalHistory) ? "No medical history recorded." : patient.MedicalHistory)</p>
+
+        <h2 class="hms-patient-section-title">Allergies</h2>
+        <p class="hms-patient-note">@(string.IsNullOrWhiteSpace(patient.Allergies) ? "No known allergies." : patient.Allergies)</p>
+
+        <div class="hms-patient-counts">
+            <span><strong>@Model.MedicalRecordCount</strong> medical records</span>
+            <span><strong>@Model.InvoiceCount</strong> invoices</span>
+        </div>
+    </section>
+</div>
+
+<section class="hms-card">
     <h2>Appointment history</h2>
     @if (Model.Appointments.Count == 0)
     {
@@ -28,18 +75,22 @@
     else
     {
         <table class="hms-table">
-            <thead><tr><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th></tr></thead>
+            <thead>
+                <tr><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th></tr>
+            </thead>
             <tbody>
-                @foreach (var appointment in Model.Appointments.OrderByDescending(a => a.AppointmentDate).ThenByDescending(a => a.StartTime))
+                @foreach (var appointment in Model.Appointments)
                 {
                     <tr>
-                        <td>@appointment.Doctor?.FullName</td>
-                        <td>@appointment.AppointmentDate.ToString("dd MMM yyyy")</td>
-                        <td>@appointment.StartTime.ToString(@"hh\:mm")</td>
-                        <td><partial name="_StatusBadge" model="@appointment.Status" /></td>
+                        <td data-label="Doctor">@appointment.Doctor?.FullName</td>
+                        <td data-label="Date">@appointment.AppointmentDate.ToString("dd MMM yyyy")</td>
+                        <td data-label="Time">@appointment.StartTime.ToString(@"hh\:mm")</td>
+                        <td data-label="Status"><partial name="_StatusBadge" model="@appointment.Status" /></td>
                     </tr>
                 }
             </tbody>
         </table>
     }
-</div>
+</section>
+
+<partial name="_ConfirmDialog" model="@("Deactivate this patient? Their appointments, medical records and invoices are kept.")" />

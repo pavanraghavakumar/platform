@@ -1,0 +1,207 @@
+/* ==========================================================================
+   Patient management — list, registration, profile and edit pages.
+   Builds on the design tokens of site.css.
+   ========================================================================== */
+
+/* ---------- List toolbar ---------- */
+
+.hms-patient-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--hms-space-3);
+    margin-bottom: var(--hms-space-4);
+}
+
+.hms-patient-search {
+    flex: 1 1 260px;
+    max-width: 420px;
+}
+
+.hms-patient-control {
+    display: flex;
+    flex-direction: column;
+    gap: var(--hms-space-1);
+    font-size: 13px;
+    color: var(--hms-text-muted);
+}
+
+.hms-patient-control select {
+    padding: 9px 12px;
+    border: 1px solid var(--hms-border);
+    border-radius: var(--hms-radius-control);
+    background: var(--hms-surface);
+    font: inherit;
+    color: var(--hms-text);
+    min-width: 150px;
+}
+
+.hms-patient-control select:focus {
+    outline: none;
+    border-color: var(--hms-accent);
+    box-shadow: 0 0 0 3px rgba(15, 157, 148, .15);
+}
+
+.hms-patient-table td.hms-patient-actions {
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* ---------- Pagination ---------- */
+
+.hms-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--hms-space-3);
+    margin-top: var(--hms-space-4);
+}
+
+.hms-pagination .hms-btn[aria-disabled="true"] {
+    opacity: .5;
+    pointer-events: none;
+}
+
+.hms-pagination-page {
+    color: var(--hms-text-muted);
+    font-size: 13px;
+}
+
+/* ---------- Profile ---------- */
+
+.hms-patient-heading {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--hms-space-3);
+}
+
+.hms-patient-heading h1 {
+    margin: 0;
+}
+
+.hms-patient-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13px;
+    color: var(--hms-text-muted);
+    background: var(--hms-bg);
+    border: 1px solid var(--hms-border);
+    border-radius: var(--hms-radius-control);
+    padding: 2px 8px;
+}
+
+.hms-patient-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--hms-space-3);
+}
+
+.hms-inline-form {
+    display: inline;
+    margin: 0;
+}
+
+.hms-patient-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--hms-space-6);
+}
+
+.hms-patient-grid .hms-card {
+    margin-bottom: var(--hms-space-6);
+}
+
+.hms-detail-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--hms-space-2);
+    margin: 0;
+}
+
+.hms-detail-list > div {
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: var(--hms-space-3);
+    padding: var(--hms-space-2) 0;
+    border-bottom: 1px solid var(--hms-border);
+}
+
+.hms-detail-list > div:last-child {
+    border-bottom: 0;
+}
+
+.hms-detail-list dt {
+    color: var(--hms-text-muted);
+    font-size: 13px;
+}
+
+.hms-detail-list dd {
+    margin: 0;
+    word-break: break-word;
+}
+
+.hms-patient-note {
+    margin: 0 0 var(--hms-space-4);
+    white-space: pre-wrap;
+}
+
+.hms-patient-counts {
+    display: flex;
+    gap: var(--hms-space-4);
+    color: var(--hms-text-muted);
+    font-size: 13px;
+    margin-top: var(--hms-space-4);
+}
+
+.hms-patient-counts strong {
+    color: var(--hms-primary);
+}
+
+/* ---------- Forms ---------- */
+
+.hms-patient-section-title {
+    font-size: 15px;
+    margin: var(--hms-space-4) 0 var(--hms-space-3);
+    padding-bottom: var(--hms-space-2);
+    border-bottom: 1px solid var(--hms-border);
+}
+
+.hms-patient-form .hms-patient-section-title:first-of-type {
+    margin-top: 0;
+}
+
+.hms-required {
+    color: var(--hms-error);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 900px) {
+    .hms-patient-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .hms-patient-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .hms-patient-search {
+        max-width: none;
+    }
+
+    .hms-patient-control select {
+        width: 100%;
+    }
+
+    .hms-detail-list > div {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2px;
+    }
+
+    .hms-patient-header-actions {
+        flex-wrap: wrap;
+    }
+}
