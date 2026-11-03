@@ -112,7 +112,27 @@ public class AppointmentController : Controller
     [Authorize(Roles = Roles.Doctor)]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public Task<IActionResult> Start(int id) => Transition(id, EntityStatus.AppointmentCheckedIn, EntityStatus.AppointmentInProgress);
+    public async Task<IActionResult> Start(int id)
+    {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var ownsAppointment = await _db.Appointments.AnyAsync(a => a.Id == id && a.Doctor!.UserId == userId);
+        if (!ownsAppointment)
+        {
+            return RedirectToAction("AccessDenied", "Account");
+        }
+
+        var started = await _appointments.TryTransitionAsync(
+            id,
+            EntityStatus.AppointmentCheckedIn,
+            EntityStatus.AppointmentInProgress);
+
+        if (!started)
+        {
+            return RedirectToAction("Doctor", "Dashboard");
+        }
+
+        return RedirectToAction("Index", "Consultation", new { appointmentId = id });
+    }
 
     [Authorize(Roles = Roles.Doctor)]
     [HttpPost]

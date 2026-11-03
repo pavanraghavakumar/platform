@@ -1,4 +1,4 @@
-@model IReadOnlyList<Hms.Web.Models.Entities.Patient>
+@model IReadOnlyList<Hms.Web.ViewModels.Dashboard.DoctorPatientRow>
 @{
     ViewData["Title"] = "My patients";
 }
@@ -11,19 +11,22 @@
     }
     else
     {
+        <div class="hms-table-scroll">
         <table class="hms-table">
-            <thead><tr><th>Patient ID</th><th>Name</th><th>Status</th><th></th></tr></thead>
+            <thead><tr><th>Patient ID</th><th>Name</th><th>Last appointment</th><th>Status</th><th></th></tr></thead>
             <tbody>
                 @foreach (var patient in Model)
                 {
                     <tr>
                         <td>@patient.PatientCode</td>
                         <td>@patient.FullName</td>
+                        <td>@patient.LastAppointmentDate.ToString("dd MMM yyyy")</td>
                         <td><partial name="_StatusBadge" model="@patient.Status" /></td>
                         <td><a class="hms-btn hms-btn-secondary" asp-controller="Patient" asp-action="Details" asp-route-id="@patient.Id">View</a></td>
                     </tr>
                 }
             </tbody>
         </table>
+        </div>
     }
 </div>
