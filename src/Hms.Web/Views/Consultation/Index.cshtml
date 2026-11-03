@@ -1,40 +1,146 @@
-@model Hms.Web.Models.Entities.Appointment
+@model Hms.Web.ViewModels.Consultation.ConsultationPageViewModel
 @{
     ViewData["Title"] = "Consultation";
-    var record = ViewData["Record"] as Hms.Web.Models.Entities.MedicalRecord ?? new Hms.Web.Models.Entities.MedicalRecord { AppointmentId = Model.Id, PatientId = Model.PatientId, DoctorId = Model.DoctorId };
+    var form = Model.Form;
+    var isFinal = form.IsFinal;
 }
-<h1>Consultation — @Model.Patient?.FullName</h1>
 
-<div class="hms-card">
-    <dl class="hms-table">
-        <tr><th>Patient ID</th><td>@Model.Patient?.PatientCode</td></tr>
-        <tr><th>Allergies</th><td>@Model.Patient?.Allergies</td></tr>
-        <tr><th>Medical history</th><td>@Model.Patient?.MedicalHistory</td></tr>
-        <tr><th>Appointment</th><td>@Model.AppointmentDate.ToString("dd MMM yyyy") @Model.StartTime.ToString(@"hh\:mm")</td></tr>
-    </dl>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/clinical.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <div>
+        <h1>Consultation — @Model.PatientName</h1>
+        <p class="hms-empty">
+            @Model.AppointmentDate.ToString("dd MMM yyyy") at @Model.StartTime.ToString(@"hh\:mm")
+            · <partial name="_StatusBadge" model="@Model.AppointmentStatus" />
+        </p>
+    </div>
+    <a class="hms-btn hms-btn-secondary" asp-controller="MedicalRecord" asp-action="Index" asp-route-patientId="@Model.PatientId">
+        <i class="bi bi-folder2-open"></i> Medical records
+    </a>
 </div>
 
-<div class="hms-card">
-    <h2>Medical record</h2>
-    <form asp-controller="Consultation" asp-action="Save" method="post">
-        <input type="hidden" name="Id" value="@record.Id" />
-        <input type="hidden" name="AppointmentId" value="@Model.Id" />
-        <input type="hidden" name="PatientId" value="@Model.PatientId" />
-        <input type="hidden" name="DoctorId" value="@Model.DoctorId" />
-        <div asp-validation-summary="All" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
-        <div class="hms-form-grid">
-            <div class="hms-field"><label for="Symptoms">Symptoms</label><textarea id="Symptoms" name="Symptoms">@record.Symptoms</textarea></div>
-            <div class="hms-field"><label for="Diagnosis">Diagnosis</label><input id="Diagnosis" name="Diagnosis" value="@record.Diagnosis" /></div>
-            <div class="hms-field"><label for="BloodPressure">Blood pressure</label><input id="BloodPressure" name="BloodPressure" value="@record.BloodPressure" /></div>
-            <div class="hms-field"><label for="Temperature">Temperature</label><input id="Temperature" name="Temperature" value="@record.Temperature" /></div>
-            <div class="hms-field"><label for="Pulse">Pulse</label><input id="Pulse" name="Pulse" value="@record.Pulse" /></div>
-            <div class="hms-field"><label for="Weight">Weight</label><input id="Weight" name="Weight" value="@record.Weight" /></div>
-            <div class="hms-field"><label for="TreatmentPlan">Treatment plan</label><textarea id="TreatmentPlan" name="TreatmentPlan">@record.TreatmentPlan</textarea></div>
-            <div class="hms-field"><label for="Observations">Observations</label><textarea id="Observations" name="Observations">@record.Observations</textarea></div>
-            <div class="hms-field"><label for="FollowUpRecommendations">Follow-up recommendations</label><textarea id="FollowUpRecommendations" name="FollowUpRecommendations">@record.FollowUpRecommendations</textarea></div>
+<div class="clinical-grid">
+    <div class="clinical-side">
+        <div class="hms-card">
+            <h2>Patient details</h2>
+            <dl class="clinical-details">
+                <dt>Patient ID</dt><dd>@Model.PatientCode</dd>
+                <dt>Name</dt><dd>@Model.PatientName</dd>
+                <dt>Gender</dt><dd>@Model.PatientGender</dd>
+                <dt>Date of birth</dt><dd>@Model.PatientDateOfBirth.ToString("dd MMM yyyy")</dd>
+                <dt>Phone</dt><dd>@Model.PatientPhone</dd>
+                <dt>Email</dt><dd>@Model.PatientEmail</dd>
+                <dt>Address</dt><dd>@Model.PatientAddress</dd>
+            </dl>
         </div>
-        <div class="hms-form-actions">
-            <button type="submit" class="hms-btn hms-btn-primary">Save draft</button>
+
+        <div class="hms-card">
+            <h2>Allergies</h2>
+            <p class="clinical-note clinical-note-warning">@(string.IsNullOrWhiteSpace(Model.Allergies) ? "None recorded." : Model.Allergies)</p>
+            <h2>Medical history</h2>
+            <p class="clinical-note">@(string.IsNullOrWhiteSpace(Model.MedicalHistory) ? "None recorded." : Model.MedicalHistory)</p>
         </div>
-    </form>
+
+        <div class="hms-card">
+            <h2>Last 5 consultations</h2>
+            @if (Model.RecentConsultations.Count == 0)
+            {
+                <partial name="_EmptyState" model="@("No records found.")" />
+            }
+            else
+            {
+                <ul class="clinical-history">
+                    @foreach (var item in Model.RecentConsultations)
+                    {
+                        <li>
+                            <div class="clinical-history-head">
+                                <span>@item.Date.ToString("dd MMM yyyy")</span>
+                                <partial name="_StatusBadge" model="@item.Status" />
+                            </div>
+                            <div class="clinical-history-diagnosis">@item.Diagnosis</div>
+                            <div class="clinical-history-doctor">@item.DoctorName</div>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+
+    <div class="clinical-main">
+        <div class="hms-card">
+            <h2>Consultation record</h2>
+            @if (isFinal)
+            {
+                <div class="hms-alert hms-alert-success">This medical record is Final. Changes are kept in the audit trail.</div>
+            }
+
+            <form asp-controller="Consultation" asp-action="Save" method="post">
+                <input type="hidden" asp-for="Form.Id" />
+                <input type="hidden" asp-for="Form.AppointmentId" />
+                <input type="hidden" asp-for="Form.PatientId" />
+                <input type="hidden" asp-for="Form.DoctorId" />
+                <input type="hidden" asp-for="Form.Status" />
+
+                <div asp-validation-summary="ModelOnly" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
+
+                <div class="hms-form-grid">
+                    <div class="hms-field clinical-span-2">
+                        <label asp-for="Form.Symptoms">Symptoms</label>
+                        <textarea asp-for="Form.Symptoms" rows="2"></textarea>
+                    </div>
+                    <div class="hms-field clinical-span-2">
+                        <label asp-for="Form.Diagnosis">Diagnosis</label>
+                        <input asp-for="Form.Diagnosis" />
+                        <span asp-validation-for="Form.Diagnosis" class="field-validation-error"></span>
+                    </div>
+                    <div class="hms-field">
+                        <label asp-for="Form.BloodPressure">Blood pressure</label>
+                        <input asp-for="Form.BloodPressure" placeholder="120/80" />
+                    </div>
+                    <div class="hms-field">
+                        <label asp-for="Form.Temperature">Temperature</label>
+                        <input asp-for="Form.Temperature" placeholder="37.0 C" />
+                    </div>
+                    <div class="hms-field">
+                        <label asp-for="Form.Pulse">Pulse</label>
+                        <input asp-for="Form.Pulse" placeholder="72" />
+                    </div>
+                    <div class="hms-field">
+                        <label asp-for="Form.Weight">Weight</label>
+                        <input asp-for="Form.Weight" placeholder="70 kg" />
+                    </div>
+                    <div class="hms-field clinical-span-2">
+                        <label asp-for="Form.TreatmentPlan">Treatment plan</label>
+                        <textarea asp-for="Form.TreatmentPlan" rows="2"></textarea>
+                    </div>
+                    <div class="hms-field clinical-span-2">
+                        <label asp-for="Form.Observations">Observations</label>
+                        <textarea asp-for="Form.Observations" rows="2"></textarea>
+                    </div>
+                    <div class="hms-field clinical-span-2">
+                        <label asp-for="Form.FollowUpRecommendations">Follow-up recommendations</label>
+                        <textarea asp-for="Form.FollowUpRecommendations" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <div class="hms-form-actions">
+                    <button type="submit" class="hms-btn hms-btn-primary">
+                        <i class="bi bi-save"></i> Save draft
+                    </button>
+                </div>
+            </form>
+
+            @if (form.Id > 0 && !isFinal)
+            {
+                <form asp-controller="Consultation" asp-action="Finalize" asp-route-id="@form.Id" method="post" class="clinical-finalize">
+                    <button type="submit" class="hms-btn hms-btn-secondary">
+                        <i class="bi bi-check2-circle"></i> Finalize record
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
 </div>
