@@ -1,0 +1,12 @@
+{
+  "name": "hms-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright end-to-end journeys for the Healthcare Management System",
+  "scripts": {
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}

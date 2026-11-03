@@ -1,0 +1,46 @@
+@model IReadOnlyList<Hms.Web.Models.Entities.Patient>
+@{
+    ViewData["Title"] = "Patients";
+}
+<div class="hms-page-header">
+    <h1>Patients</h1>
+    @if (User.IsInRole(Roles.Receptionist))
+    {
+        <a class="hms-btn hms-btn-primary" asp-controller="Patient" asp-action="Create">New patient</a>
+    }
+</div>
+
+<div class="hms-card">
+    <form method="get" class="hms-search-box" style="max-width:360px;margin-bottom:16px;">
+        <i class="bi bi-search"></i>
+        <input type="search" name="search" value="@ViewData["Search"]" placeholder="Search by name, patient ID or phone" />
+    </form>
+
+    @if (Model.Count == 0)
+    {
+        <partial name="_EmptyState" model="@("No records found.")" />
+    }
+    else
+    {
+        <table class="hms-table">
+            <thead>
+                <tr><th>Patient ID</th><th>Full name</th><th>Phone</th><th>Gender</th><th>Status</th><th>Registered</th><th></th></tr>
+            </thead>
+            <tbody>
+                @foreach (var patient in Model)
+                {
+                    <tr>
+                        <td>@patient.PatientCode</td>
+                        <td>@patient.FullName</td>
+                        <td>@patient.Phone</td>
+                        <td>@patient.Gender</td>
+                        <td><partial name="_StatusBadge" model="@patient.Status" /></td>
+                        <td>@patient.CreatedAt.ToString("dd MMM yyyy")</td>
+                        <td><a class="hms-btn hms-btn-secondary" asp-controller="Patient" asp-action="Details" asp-route-id="@patient.Id">View</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <partial name="_Pagination" model="@(Convert.ToInt32(ViewData["Page"] ?? 1))" />
+    }
+</div>

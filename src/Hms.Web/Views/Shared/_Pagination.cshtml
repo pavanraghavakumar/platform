@@ -1,0 +1,7 @@
+@model int
+@{
+    var currentPage = Model < 1 ? 1 : Model;
+}
+<nav class="hms-pagination" aria-label="Pagination">
+    <span class="hms-pagination-page">Page @currentPage</span>
+</nav>

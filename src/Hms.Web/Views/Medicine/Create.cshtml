@@ -1,0 +1,41 @@
+@model Hms.Web.Models.Entities.Medicine
+@{
+    ViewData["Title"] = "New medicine";
+    var categories = ViewData["Categories"] as IReadOnlyList<Hms.Web.Models.Entities.MedicineCategory> ?? new List<Hms.Web.Models.Entities.MedicineCategory>();
+    var suppliers = ViewData["Suppliers"] as IReadOnlyList<Hms.Web.Models.Entities.Supplier> ?? new List<Hms.Web.Models.Entities.Supplier>();
+}
+<h1>New medicine</h1>
+
+<div class="hms-card">
+    <form asp-controller="Medicine" asp-action="Create" method="post">
+        <div asp-validation-summary="All" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
+        <div class="hms-form-grid">
+            <div class="hms-field"><label asp-for="Name">Name</label><input asp-for="Name" /></div>
+            <div class="hms-field">
+                <label asp-for="CategoryId">Category</label>
+                <select asp-for="CategoryId">
+                    @foreach (var category in categories)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="hms-field">
+                <label asp-for="SupplierId">Supplier</label>
+                <select asp-for="SupplierId">
+                    @foreach (var supplier in suppliers)
+                    {
+                        <option value="@supplier.Id">@supplier.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="hms-field"><label asp-for="UnitPrice">Unit price</label><input asp-for="UnitPrice" type="number" step="0.01" /></div>
+            <div class="hms-field"><label asp-for="ReorderLevel">Reorder level</label><input asp-for="ReorderLevel" type="number" /></div>
+            <div class="hms-field"><label asp-for="StockQuantity">Stock quantity</label><input asp-for="StockQuantity" type="number" /></div>
+        </div>
+        <div class="hms-form-actions">
+            <a class="hms-btn hms-btn-secondary" asp-controller="Medicine" asp-action="Index">Cancel</a>
+            <button type="submit" class="hms-btn hms-btn-primary">Save</button>
+        </div>
+    </form>
+</div>

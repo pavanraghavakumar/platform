@@ -1,0 +1,40 @@
+@model Hms.Web.Models.Entities.Appointment
+@{
+    ViewData["Title"] = "Consultation";
+    var record = ViewData["Record"] as Hms.Web.Models.Entities.MedicalRecord ?? new Hms.Web.Models.Entities.MedicalRecord { AppointmentId = Model.Id, PatientId = Model.PatientId, DoctorId = Model.DoctorId };
+}
+<h1>Consultation — @Model.Patient?.FullName</h1>
+
+<div class="hms-card">
+    <dl class="hms-table">
+        <tr><th>Patient ID</th><td>@Model.Patient?.PatientCode</td></tr>
+        <tr><th>Allergies</th><td>@Model.Patient?.Allergies</td></tr>
+        <tr><th>Medical history</th><td>@Model.Patient?.MedicalHistory</td></tr>
+        <tr><th>Appointment</th><td>@Model.AppointmentDate.ToString("dd MMM yyyy") @Model.StartTime.ToString(@"hh\:mm")</td></tr>
+    </dl>
+</div>
+
+<div class="hms-card">
+    <h2>Medical record</h2>
+    <form asp-controller="Consultation" asp-action="Save" method="post">
+        <input type="hidden" name="Id" value="@record.Id" />
+        <input type="hidden" name="AppointmentId" value="@Model.Id" />
+        <input type="hidden" name="PatientId" value="@Model.PatientId" />
+        <input type="hidden" name="DoctorId" value="@Model.DoctorId" />
+        <div asp-validation-summary="All" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
+        <div class="hms-form-grid">
+            <div class="hms-field"><label for="Symptoms">Symptoms</label><textarea id="Symptoms" name="Symptoms">@record.Symptoms</textarea></div>
+            <div class="hms-field"><label for="Diagnosis">Diagnosis</label><input id="Diagnosis" name="Diagnosis" value="@record.Diagnosis" /></div>
+            <div class="hms-field"><label for="BloodPressure">Blood pressure</label><input id="BloodPressure" name="BloodPressure" value="@record.BloodPressure" /></div>
+            <div class="hms-field"><label for="Temperature">Temperature</label><input id="Temperature" name="Temperature" value="@record.Temperature" /></div>
+            <div class="hms-field"><label for="Pulse">Pulse</label><input id="Pulse" name="Pulse" value="@record.Pulse" /></div>
+            <div class="hms-field"><label for="Weight">Weight</label><input id="Weight" name="Weight" value="@record.Weight" /></div>
+            <div class="hms-field"><label for="TreatmentPlan">Treatment plan</label><textarea id="TreatmentPlan" name="TreatmentPlan">@record.TreatmentPlan</textarea></div>
+            <div class="hms-field"><label for="Observations">Observations</label><textarea id="Observations" name="Observations">@record.Observations</textarea></div>
+            <div class="hms-field"><label for="FollowUpRecommendations">Follow-up recommendations</label><textarea id="FollowUpRecommendations" name="FollowUpRecommendations">@record.FollowUpRecommendations</textarea></div>
+        </div>
+        <div class="hms-form-actions">
+            <button type="submit" class="hms-btn hms-btn-primary">Save draft</button>
+        </div>
+    </form>
+</div>

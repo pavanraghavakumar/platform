@@ -1,0 +1,17 @@
+@model Hms.Web.Models.Entities.LabRequest
+@{
+    ViewData["Title"] = "Lab request";
+}
+<h1>Lab request</h1>
+
+<div class="hms-card">
+    <dl class="hms-table">
+        <tr><th>Patient</th><td>@Model.Patient?.FullName (@Model.Patient?.PatientCode)</td></tr>
+        <tr><th>Test</th><td>@Model.LaboratoryTest?.Name</td></tr>
+        <tr><th>Normal range</th><td>@Model.LaboratoryTest?.NormalRange</td></tr>
+        <tr><th>Result value</th><td>@Model.ResultValue</td></tr>
+        <tr><th>Remarks</th><td>@Model.Remarks</td></tr>
+        <tr><th>Result entered</th><td>@Model.ResultEnteredAt?.ToString("dd MMM yyyy HH:mm")</td></tr>
+        <tr><th>Status</th><td><partial name="_StatusBadge" model="@Model.Status" /></td></tr>
+    </dl>
+</div>

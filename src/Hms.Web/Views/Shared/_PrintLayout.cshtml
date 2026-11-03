@@ -1,0 +1,30 @@
+@inject Hms.Web.Data.HmsDbContext Db
+@{
+    var hospitalName = Db.SystemSettings
+        .Where(s => s.Key == SystemSetting.HospitalNameKey)
+        .Select(s => s.Value)
+        .FirstOrDefault() ?? SystemSetting.DefaultHospitalName;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - @hospitalName</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="hms-print-body">
+    <div class="hms-print-sheet">
+        <header class="hms-print-header">
+            <i class="bi bi-heart-pulse-fill"></i>
+            <h1>@hospitalName</h1>
+        </header>
+        @RenderBody()
+        <div class="hms-print-actions">
+            <button type="button" class="hms-btn hms-btn-primary" onclick="window.print()">Print</button>
+        </div>
+    </div>
+</body>
+</html>

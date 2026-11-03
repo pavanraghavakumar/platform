@@ -1,0 +1,50 @@
+@model Hms.Web.Models.Entities.Staff
+@{
+    ViewData["Title"] = "New staff member";
+    var departments = ViewData["Departments"] as IReadOnlyList<Hms.Web.Models.Entities.Department> ?? new List<Hms.Web.Models.Entities.Department>();
+}
+<h1>New staff member</h1>
+
+<div class="hms-card">
+    <form asp-controller="Staff" asp-action="Create" method="post">
+        <div asp-validation-summary="All" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
+        <div class="hms-form-grid">
+            <div class="hms-field">
+                <label asp-for="FullName">Full name</label>
+                <input asp-for="FullName" />
+            </div>
+            <div class="hms-field">
+                <label asp-for="Email">Email</label>
+                <input asp-for="Email" type="email" />
+            </div>
+            <div class="hms-field">
+                <label asp-for="Phone">Phone</label>
+                <input asp-for="Phone" />
+            </div>
+            <div class="hms-field">
+                <label asp-for="Role">Role</label>
+                <select asp-for="Role">
+                    <option value="Receptionist">Receptionist</option>
+                    <option value="Admin">Admin</option>
+                </select>
+            </div>
+            <div class="hms-field">
+                <label asp-for="Designation">Designation</label>
+                <input asp-for="Designation" />
+            </div>
+            <div class="hms-field">
+                <label asp-for="DepartmentId">Department</label>
+                <select asp-for="DepartmentId">
+                    @foreach (var department in departments)
+                    {
+                        <option value="@department.Id">@department.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="hms-form-actions">
+            <a class="hms-btn hms-btn-secondary" asp-controller="Staff" asp-action="Index">Cancel</a>
+            <button type="submit" class="hms-btn hms-btn-primary">Save</button>
+        </div>
+    </form>
+</div>

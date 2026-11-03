@@ -1,0 +1,25 @@
+@model string
+@{
+    var status = Model ?? string.Empty;
+    var cssClass = status switch
+    {
+        "Pending" => "hms-badge-amber",
+        "Confirmed" => "hms-badge-blue",
+        "Checked In" => "hms-badge-teal",
+        "In Progress" => "hms-badge-navy",
+        "Completed" => "hms-badge-green",
+        "Cancelled" => "hms-badge-grey",
+        "No Show" => "hms-badge-red",
+        "Unpaid" => "hms-badge-red",
+        "Partially Paid" => "hms-badge-amber",
+        "Paid" => "hms-badge-green",
+        "Active" => "hms-badge-green",
+        "Inactive" => "hms-badge-grey",
+        "Low Stock" => "hms-badge-amber",
+        "Out of Stock" => "hms-badge-red",
+        "Expired" => "hms-badge-red",
+        "In Stock" => "hms-badge-green",
+        _ => "hms-badge-grey"
+    };
+}
+<span class="hms-badge @cssClass">@status</span>

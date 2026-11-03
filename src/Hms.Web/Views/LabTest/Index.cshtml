@@ -1,0 +1,32 @@
+@model IReadOnlyList<Hms.Web.Models.Entities.LaboratoryTest>
+@{
+    ViewData["Title"] = "Laboratory tests";
+}
+<div class="hms-page-header">
+    <h1>Laboratory tests</h1>
+    <a class="hms-btn hms-btn-primary" asp-controller="LabTest" asp-action="Create">New test</a>
+</div>
+
+<div class="hms-card">
+    @if (Model.Count == 0)
+    {
+        <partial name="_EmptyState" model="@("No records found.")" />
+    }
+    else
+    {
+        <table class="hms-table">
+            <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Normal range</th></tr></thead>
+            <tbody>
+                @foreach (var test in Model)
+                {
+                    <tr>
+                        <td>@test.Name</td>
+                        <td>@test.Category</td>
+                        <td>₹@test.Price.ToString("0.00")</td>
+                        <td>@test.NormalRange</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

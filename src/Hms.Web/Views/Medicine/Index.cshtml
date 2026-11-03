@@ -1,0 +1,36 @@
+@model IReadOnlyList<Hms.Web.Models.Entities.Medicine>
+@{
+    ViewData["Title"] = "Pharmacy";
+}
+<div class="hms-page-header">
+    <h1>Pharmacy</h1>
+    <a class="hms-btn hms-btn-primary" asp-controller="Medicine" asp-action="Create">New medicine</a>
+</div>
+
+<div class="hms-card">
+    @if (Model.Count == 0)
+    {
+        <partial name="_EmptyState" model="@("No records found.")" />
+    }
+    else
+    {
+        <table class="hms-table">
+            <thead><tr><th>Name</th><th>Category</th><th>Stock</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var medicine in Model)
+                {
+                    <tr>
+                        <td>@medicine.Name</td>
+                        <td>@medicine.Category?.Name</td>
+                        <td>@medicine.StockQuantity</td>
+                        <td><partial name="_StatusBadge" model="@medicine.Status" /></td>
+                        <td>
+                            <a class="hms-btn hms-btn-secondary" asp-controller="Medicine" asp-action="StockIn" asp-route-id="@medicine.Id">Stock in</a>
+                            <a class="hms-btn hms-btn-secondary" asp-controller="Medicine" asp-action="StockOut" asp-route-id="@medicine.Id">Stock out</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

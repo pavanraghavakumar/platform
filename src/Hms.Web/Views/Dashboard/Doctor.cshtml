@@ -1,0 +1,18 @@
+@{
+    ViewData["Title"] = "Doctor dashboard";
+}
+<div class="hms-page-header">
+    <h1>Doctor dashboard</h1>
+</div>
+
+<div class="hms-kpi-grid">
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-calendar-check", "—", "Appointments today"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-hourglass-split", "—", "Checked in waiting"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-clipboard-check", "—", "Completed today"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-droplet", "—", "Lab results today"))" />
+</div>
+
+<div class="hms-card">
+    <h2>Welcome</h2>
+    <p class="hms-empty">The dashboard figures are filled in by the Doctor dashboard task.</p>
+</div>

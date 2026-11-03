@@ -1,0 +1,40 @@
+@model Hms.Web.Models.Entities.Prescription
+@{
+    ViewData["Title"] = "New prescription";
+    var medicines = ViewData["Medicines"] as IReadOnlyList<Hms.Web.Models.Entities.Medicine> ?? new List<Hms.Web.Models.Entities.Medicine>();
+}
+<h1>New prescription</h1>
+
+<div class="hms-card">
+    <form asp-controller="Prescription" asp-action="Create" method="post">
+        <div asp-validation-summary="All" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
+        <div class="hms-form-grid">
+            <div class="hms-field"><label asp-for="PatientId">Patient ID</label><input asp-for="PatientId" type="number" /></div>
+            <div class="hms-field"><label asp-for="DoctorId">Doctor ID</label><input asp-for="DoctorId" type="number" /></div>
+            <div class="hms-field"><label asp-for="MedicalRecordId">Medical record ID</label><input asp-for="MedicalRecordId" type="number" /></div>
+            <div class="hms-field"><label asp-for="Notes">Notes</label><input asp-for="Notes" /></div>
+        </div>
+
+        <h2>Medicine line</h2>
+        <div class="hms-form-grid">
+            <div class="hms-field">
+                <label for="medicineId">Medicine</label>
+                <select id="medicineId" name="Items[0].MedicineId">
+                    @foreach (var medicine in medicines)
+                    {
+                        <option value="@medicine.Id">@medicine.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="hms-field"><label for="dosage">Dosage</label><input id="dosage" name="Items[0].Dosage" /></div>
+            <div class="hms-field"><label for="frequency">Frequency</label><input id="frequency" name="Items[0].Frequency" /></div>
+            <div class="hms-field"><label for="durationDays">Duration (days)</label><input id="durationDays" name="Items[0].DurationDays" type="number" /></div>
+            <div class="hms-field"><label for="instructions">Instructions</label><input id="instructions" name="Items[0].Instructions" /></div>
+        </div>
+
+        <div class="hms-form-actions">
+            <a class="hms-btn hms-btn-secondary" asp-controller="Dashboard" asp-action="Doctor">Cancel</a>
+            <button type="submit" class="hms-btn hms-btn-primary">Save prescription</button>
+        </div>
+    </form>
+</div>

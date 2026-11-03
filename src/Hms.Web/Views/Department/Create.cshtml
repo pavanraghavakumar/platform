@@ -1,0 +1,20 @@
+@model Hms.Web.Models.Entities.Department
+@{
+    ViewData["Title"] = "New department";
+}
+<h1>New department</h1>
+
+<div class="hms-card">
+    <form asp-controller="Department" asp-action="Create" method="post">
+        <div asp-validation-summary="All" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
+        <div class="hms-field">
+            <label asp-for="Name">Name</label>
+            <input asp-for="Name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="hms-form-actions">
+            <a class="hms-btn hms-btn-secondary" asp-controller="Department" asp-action="Index">Cancel</a>
+            <button type="submit" class="hms-btn hms-btn-primary">Save</button>
+        </div>
+    </form>
+</div>

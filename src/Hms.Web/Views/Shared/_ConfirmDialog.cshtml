@@ -1,0 +1,10 @@
+@model string?
+<div class="hms-confirm-dialog" id="hmsConfirmDialog" hidden>
+    <div class="hms-confirm-card">
+        <p>@(string.IsNullOrWhiteSpace(Model) ? "Are you sure you want to continue?" : Model)</p>
+        <div class="hms-confirm-actions">
+            <button type="button" class="hms-btn hms-btn-secondary" data-confirm-cancel>Cancel</button>
+            <button type="button" class="hms-btn hms-btn-danger" data-confirm-ok>Confirm</button>
+        </div>
+    </div>
+</div>

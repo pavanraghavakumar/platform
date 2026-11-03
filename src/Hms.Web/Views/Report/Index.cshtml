@@ -1,0 +1,21 @@
+@{
+    ViewData["Title"] = "Reports";
+}
+<h1>Reports</h1>
+
+<div class="hms-card">
+    <form method="get" class="hms-form-grid">
+        <div class="hms-field"><label for="from">Start date</label><input id="from" name="from" type="date" /></div>
+        <div class="hms-field"><label for="to">End date</label><input id="to" name="to" type="date" /></div>
+    </form>
+
+    <ul>
+        <li><a asp-controller="Report" asp-action="Patients">Patient registrations</a></li>
+        <li><a asp-controller="Report" asp-action="Appointments">Appointments</a></li>
+        <li><a asp-controller="Report" asp-action="Departments">Departments</a></li>
+        <li><a asp-controller="Report" asp-action="Doctors">Doctor performance</a></li>
+        <li><a asp-controller="Report" asp-action="Laboratory">Laboratory</a></li>
+        <li><a asp-controller="Report" asp-action="Pharmacy">Pharmacy stock</a></li>
+        <li><a asp-controller="Report" asp-action="Revenue">Revenue</a></li>
+    </ul>
+</div>

@@ -1,0 +1,41 @@
+@model Hms.Web.Models.Entities.Doctor
+@{
+    ViewData["Title"] = "Doctor profile";
+}
+<h1>@Model.FullName</h1>
+
+<div class="hms-card">
+    <dl class="hms-table">
+        <tr><th>Specialization</th><td>@Model.Specialization</td></tr>
+        <tr><th>Department</th><td>@Model.Department?.Name</td></tr>
+        <tr><th>Qualifications</th><td>@Model.Qualifications</td></tr>
+        <tr><th>Years of experience</th><td>@Model.YearsOfExperience</td></tr>
+        <tr><th>Consultation fee</th><td>₹@Model.ConsultationFee.ToString("0.00")</td></tr>
+        <tr><th>Status</th><td><partial name="_StatusBadge" model="@Model.Status" /></td></tr>
+    </dl>
+</div>
+
+<div class="hms-card">
+    <h2>Working schedule</h2>
+    @if (Model.Schedules.Count == 0)
+    {
+        <partial name="_EmptyState" model="@("No records found.")" />
+    }
+    else
+    {
+        <table class="hms-table">
+            <thead><tr><th>Day</th><th>Working</th><th>Start</th><th>End</th></tr></thead>
+            <tbody>
+                @foreach (var schedule in Model.Schedules.OrderBy(s => s.DayOfWeek))
+                {
+                    <tr>
+                        <td>@schedule.DayOfWeek</td>
+                        <td>@(schedule.IsWorking ? "Yes" : "No")</td>
+                        <td>@schedule.StartTime</td>
+                        <td>@schedule.EndTime</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

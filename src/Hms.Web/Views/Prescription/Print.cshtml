@@ -1,0 +1,27 @@
+@model Hms.Web.Models.Entities.Prescription
+@{
+    ViewData["Title"] = "Prescription";
+    Layout = "_PrintLayout";
+}
+<h2>Prescription</h2>
+<dl class="hms-table">
+    <tr><th>Patient</th><td>@Model.Patient?.FullName (@Model.Patient?.PatientCode)</td></tr>
+    <tr><th>Doctor</th><td>@Model.Doctor?.FullName</td></tr>
+    <tr><th>Date</th><td>@Model.CreatedAt.ToString("dd MMM yyyy")</td></tr>
+</dl>
+
+<table class="hms-table">
+    <thead><tr><th>Medicine</th><th>Dosage</th><th>Frequency</th><th>Duration</th><th>Instructions</th></tr></thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>@item.Medicine?.Name</td>
+                <td>@item.Dosage</td>
+                <td>@item.Frequency</td>
+                <td>@item.DurationDays days</td>
+                <td>@item.Instructions</td>
+            </tr>
+        }
+    </tbody>
+</table>

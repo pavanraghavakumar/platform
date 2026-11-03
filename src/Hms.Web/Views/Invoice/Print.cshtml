@@ -1,0 +1,28 @@
+@model Hms.Web.Models.Entities.Invoice
+@{
+    ViewData["Title"] = "Invoice";
+    Layout = "_PrintLayout";
+}
+<h2>Invoice @Model.InvoiceNumber</h2>
+<dl class="hms-table">
+    <tr><th>Patient</th><td>@Model.Patient?.FullName (@Model.Patient?.PatientCode)</td></tr>
+    <tr><th>Date</th><td>@Model.CreatedAt.ToString("dd MMM yyyy")</td></tr>
+</dl>
+
+<table class="hms-table">
+    <thead><tr><th>Description</th><th>Amount</th></tr></thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr><td>@item.Description</td><td>₹@item.Amount.ToString("0.00")</td></tr>
+        }
+    </tbody>
+</table>
+
+<dl class="hms-table">
+    <tr><th>Discount</th><td>₹@Model.DiscountAmount.ToString("0.00")</td></tr>
+    <tr><th>Tax rate</th><td>@Model.TaxRate.ToString("0.00")%</td></tr>
+    <tr><th>Total</th><td>₹@Model.Total.ToString("0.00")</td></tr>
+    <tr><th>Paid</th><td>₹@Model.PaidAmount.ToString("0.00")</td></tr>
+    <tr><th>Outstanding</th><td>₹@((Model.Total - Model.PaidAmount).ToString("0.00"))</td></tr>
+</dl>

@@ -1,0 +1,50 @@
+@model IReadOnlyList<Hms.Web.Models.Entities.Doctor>
+@{
+    ViewData["Title"] = "Doctors";
+    var departments = ViewData["Departments"] as IReadOnlyList<Hms.Web.Models.Entities.Department> ?? new List<Hms.Web.Models.Entities.Department>();
+}
+<div class="hms-page-header">
+    <h1>Doctors</h1>
+    <a class="hms-btn hms-btn-primary" asp-controller="Doctor" asp-action="Create">New doctor</a>
+</div>
+
+<div class="hms-card">
+    <form method="get" class="hms-search-box" style="max-width:320px;margin-bottom:16px;">
+        <select name="departmentId" onchange="this.form.submit()">
+            <option value="">All departments</option>
+            @foreach (var department in departments)
+            {
+                <option value="@department.Id" selected="@(ViewData["DepartmentId"]?.ToString() == department.Id.ToString())">@department.Name</option>
+            }
+        </select>
+    </form>
+
+    @if (Model.Count == 0)
+    {
+        <partial name="_EmptyState" model="@("No records found.")" />
+    }
+    else
+    {
+        <table class="hms-table">
+            <thead>
+                <tr><th>Name</th><th>Specialization</th><th>Department</th><th>Fee</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody>
+                @foreach (var doctor in Model)
+                {
+                    <tr>
+                        <td>@doctor.FullName</td>
+                        <td>@doctor.Specialization</td>
+                        <td>@doctor.Department?.Name</td>
+                        <td>₹@doctor.ConsultationFee.ToString("0.00")</td>
+                        <td><partial name="_StatusBadge" model="@doctor.Status" /></td>
+                        <td>
+                            <a class="hms-btn hms-btn-secondary" asp-controller="Doctor" asp-action="Details" asp-route-id="@doctor.Id">View</a>
+                            <a class="hms-btn hms-btn-secondary" asp-controller="Doctor" asp-action="Edit" asp-route-id="@doctor.Id">Edit</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

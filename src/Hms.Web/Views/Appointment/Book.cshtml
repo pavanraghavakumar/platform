@@ -1,0 +1,82 @@
+@{
+    ViewData["Title"] = "Book appointment";
+    var doctors = ViewData["Doctors"] as IReadOnlyList<Hms.Web.Models.Entities.Doctor> ?? new List<Hms.Web.Models.Entities.Doctor>();
+    var patients = ViewData["Patients"] as IReadOnlyList<Hms.Web.Models.Entities.Patient> ?? new List<Hms.Web.Models.Entities.Patient>();
+}
+<h1>Book appointment</h1>
+
+<div class="hms-card">
+    <form asp-controller="Appointment" asp-action="Book" method="post">
+        <div asp-validation-summary="All" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
+        <div class="hms-form-grid">
+            <div class="hms-field">
+                <label for="patientId">Patient</label>
+                <select id="patientId" name="patientId">
+                    @foreach (var patient in patients)
+                    {
+                        <option value="@patient.Id">@patient.PatientCode - @patient.FullName</option>
+                    }
+                </select>
+            </div>
+            <div class="hms-field">
+                <label for="doctorId">Doctor</label>
+                <select id="doctorId" name="doctorId">
+                    @foreach (var doctor in doctors)
+                    {
+                        <option value="@doctor.Id">@doctor.FullName - @doctor.Specialization</option>
+                    }
+                </select>
+            </div>
+            <div class="hms-field">
+                <label for="date">Date</label>
+                <input id="date" name="date" type="date" />
+            </div>
+            <div class="hms-field">
+                <label for="time">Time slot</label>
+                <select id="time" name="time">
+                    <option value="">Choose a date first</option>
+                </select>
+            </div>
+        </div>
+        <div class="hms-form-actions">
+            <a class="hms-btn hms-btn-secondary" asp-controller="Appointment" asp-action="Index">Cancel</a>
+            <button type="submit" class="hms-btn hms-btn-primary">Book</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var doctor = document.getElementById('doctorId');
+            var date = document.getElementById('date');
+            var time = document.getElementById('time');
+
+            function loadSlots() {
+                if (!doctor.value || !date.value) {
+                    return;
+                }
+                fetch('/Appointment/Slots?doctorId=' + encodeURIComponent(doctor.value) + '&date=' + encodeURIComponent(date.value))
+                    .then(function (response) { return response.ok ? response.json() : { slots: [] }; })
+                    .then(function (data) {
+                        time.innerHTML = '';
+                        if (!data.slots || data.slots.length === 0) {
+                            time.innerHTML = '<option value="">No free slots</option>';
+                            return;
+                        }
+                        data.slots.forEach(function (slot) {
+                            var option = document.createElement('option');
+                            option.value = slot.time;
+                            option.textContent = slot.time + (slot.available ? '' : ' (booked)');
+                            option.disabled = !slot.available;
+                            time.appendChild(option);
+                        });
+                    })
+                    .catch(function () { time.innerHTML = '<option value="">Could not load slots</option>'; });
+            }
+
+            doctor.addEventListener('change', loadSlots);
+            date.addEventListener('change', loadSlots);
+        })();
+    </script>
+}
