@@ -2,16 +2,25 @@
 @{
     ViewData["Title"] = "Invoices";
     var statuses = new[] { "Unpaid", "Partially Paid", "Paid", "Cancelled" };
+    var current = ViewData["Status"]?.ToString();
 }
-<h1>Invoices</h1>
 
-<div class="hms-card">
-    <form method="get" class="hms-search-box" style="max-width:260px;margin-bottom:16px;">
-        <select name="status" onchange="this.form.submit()">
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/billing.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <h1>Invoices</h1>
+</div>
+
+<div class="hms-card billing-card">
+    <form method="get" class="billing-toolbar">
+        <label for="status" class="billing-toolbar-label">Status</label>
+        <select id="status" name="status" class="billing-select" onchange="this.form.submit()">
             <option value="">All statuses</option>
             @foreach (var status in statuses)
             {
-                <option value="@status" selected="@(ViewData["Status"]?.ToString() == status)">@status</option>
+                <option value="@status" selected="@(current == status)">@status</option>
             }
         </select>
     </form>
@@ -22,18 +31,25 @@
     }
     else
     {
-        <table class="hms-table">
-            <thead><tr><th>Invoice</th><th>Patient</th><th>Total</th><th>Paid</th><th>Status</th><th></th></tr></thead>
+        <table class="hms-table billing-table">
+            <thead>
+                <tr><th>Invoice</th><th>Patient</th><th>Total</th><th>Paid</th><th>Outstanding</th><th>Status</th><th></th></tr>
+            </thead>
             <tbody>
                 @foreach (var invoice in Model)
                 {
+                    var outstanding = invoice.Total - invoice.PaidAmount;
                     <tr>
-                        <td>@invoice.InvoiceNumber</td>
-                        <td>@invoice.Patient?.FullName</td>
-                        <td>₹@invoice.Total.ToString("0.00")</td>
-                        <td>₹@invoice.PaidAmount.ToString("0.00")</td>
-                        <td><partial name="_StatusBadge" model="@invoice.Status" /></td>
-                        <td><a class="hms-btn hms-btn-secondary" asp-controller="Invoice" asp-action="Details" asp-route-id="@invoice.Id">View</a></td>
+                        <td data-label="Invoice">@invoice.InvoiceNumber</td>
+                        <td data-label="Patient">@invoice.Patient?.FullName</td>
+                        <td data-label="Total">₹@invoice.Total.ToString("0.00")</td>
+                        <td data-label="Paid">₹@invoice.PaidAmount.ToString("0.00")</td>
+                        <td data-label="Outstanding">₹@outstanding.ToString("0.00")</td>
+                        <td data-label="Status"><partial name="_StatusBadge" model="@invoice.Status" /></td>
+                        <td class="billing-actions">
+                            <a class="hms-btn hms-btn-secondary" asp-controller="Invoice" asp-action="Details" asp-route-id="@invoice.Id">View</a>
+                            <a class="hms-btn hms-btn-secondary" asp-controller="Invoice" asp-action="Print" asp-route-id="@invoice.Id" target="_blank">Print</a>
+                        </td>
                     </tr>
                 }
             </tbody>

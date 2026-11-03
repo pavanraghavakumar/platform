@@ -1,0 +1,132 @@
+/* Billing and payments: invoice list, generate form, invoice page and printable invoice. */
+
+.billing-card {
+    margin-bottom: var(--hms-space-6, 24px);
+}
+
+.billing-header-actions {
+    display: flex;
+    gap: var(--hms-space-2, 8px);
+}
+
+.billing-toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--hms-space-2, 8px);
+    margin-bottom: var(--hms-space-4, 16px);
+}
+
+.billing-toolbar-label {
+    font-size: 13px;
+    color: var(--hms-text-muted, #64708a);
+}
+
+.billing-select {
+    padding: 8px 12px;
+    border: 1px solid var(--hms-border, #e2e7f0);
+    border-radius: 8px;
+    background: var(--hms-surface, #fff);
+    color: var(--hms-text, #1b2437);
+    font-size: 14px;
+}
+
+.billing-select:focus {
+    outline: none;
+    border-color: var(--hms-accent, #0f9d94);
+    box-shadow: 0 0 0 3px rgba(15, 157, 148, .15);
+}
+
+.billing-table .billing-amount {
+    text-align: right;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.billing-actions {
+    display: flex;
+    gap: var(--hms-space-2, 8px);
+    justify-content: flex-end;
+}
+
+.billing-inline-form {
+    display: inline;
+    margin: 0;
+}
+
+.billing-section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--hms-primary, #0f2f5c);
+    margin: var(--hms-space-5, 20px) 0 var(--hms-space-3, 12px);
+}
+
+.billing-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--hms-space-3, 12px);
+    margin: 0 0 var(--hms-space-4, 16px);
+}
+
+.billing-summary dt {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--hms-text-muted, #64708a);
+}
+
+.billing-summary dd {
+    margin: 2px 0 0;
+    font-size: 14px;
+    color: var(--hms-text, #1b2437);
+}
+
+.billing-totals {
+    margin-top: var(--hms-space-4, 16px);
+    margin-left: auto;
+    max-width: 360px;
+    border-top: 1px solid var(--hms-border, #e2e7f0);
+    padding-top: var(--hms-space-3, 12px);
+}
+
+.billing-total-row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--hms-space-4, 16px);
+    padding: 6px 0;
+    font-size: 14px;
+    color: var(--hms-text, #1b2437);
+    font-variant-numeric: tabular-nums;
+}
+
+.billing-total-grand {
+    border-top: 1px solid var(--hms-border, #e2e7f0);
+    margin-top: 4px;
+    padding-top: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--hms-primary, #0f2f5c);
+}
+
+.billing-total-outstanding {
+    font-weight: 600;
+    color: var(--hms-error, #d64545);
+}
+
+.billing-print-title {
+    margin-top: 0;
+    color: var(--hms-primary, #0f2f5c);
+}
+
+.billing-print-summary {
+    margin-bottom: var(--hms-space-4, 16px);
+}
+
+@media (max-width: 640px) {
+    .billing-totals {
+        max-width: none;
+    }
+
+    .billing-actions {
+        justify-content: flex-start;
+    }
+}

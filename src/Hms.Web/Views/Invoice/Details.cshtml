@@ -1,48 +1,104 @@
-@model Hms.Web.Models.Entities.Invoice
+@model Hms.Web.ViewModels.Billing.InvoiceDetailsViewModel
 @{
     ViewData["Title"] = "Invoice";
+    var invoice = Model.Invoice;
 }
-<h1>Invoice @Model.InvoiceNumber</h1>
 
-<div class="hms-card">
-    <dl class="hms-table">
-        <tr><th>Patient</th><td>@Model.Patient?.FullName (@Model.Patient?.PatientCode)</td></tr>
-        <tr><th>Status</th><td><partial name="_StatusBadge" model="@Model.Status" /></td></tr>
-        <tr><th>Discount</th><td>₹@Model.DiscountAmount.ToString("0.00")</td></tr>
-        <tr><th>Tax rate</th><td>@Model.TaxRate.ToString("0.00")%</td></tr>
-        <tr><th>Total</th><td>₹@Model.Total.ToString("0.00")</td></tr>
-        <tr><th>Paid</th><td>₹@Model.PaidAmount.ToString("0.00")</td></tr>
-        <tr><th>Outstanding</th><td>₹@((Model.Total - Model.PaidAmount).ToString("0.00"))</td></tr>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/billing.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <h1>Invoice @invoice.InvoiceNumber</h1>
+    <div class="billing-header-actions">
+        <a class="hms-btn hms-btn-secondary" asp-controller="Invoice" asp-action="Print" asp-route-id="@invoice.Id" target="_blank">Print</a>
+    </div>
+</div>
+
+<div class="hms-card billing-card">
+    <dl class="billing-summary">
+        <div><dt>Patient</dt><dd>@invoice.Patient?.FullName (@invoice.Patient?.PatientCode)</dd></div>
+        <div><dt>Status</dt><dd><partial name="_StatusBadge" model="@invoice.Status" /></dd></div>
+        <div><dt>Date</dt><dd>@invoice.CreatedAt.ToString("dd MMM yyyy")</dd></div>
     </dl>
 
-    <table class="hms-table">
-        <thead><tr><th>Description</th><th>Amount</th></tr></thead>
+    <table class="hms-table billing-table">
+        <thead><tr><th>Description</th><th class="billing-amount">Amount</th></tr></thead>
         <tbody>
             @foreach (var item in Model.Items)
             {
-                <tr><td>@item.Description</td><td>₹@item.Amount.ToString("0.00")</td></tr>
+                <tr><td data-label="Description">@item.Description</td><td data-label="Amount" class="billing-amount">₹@item.Amount.ToString("0.00")</td></tr>
             }
         </tbody>
     </table>
+
+    <div class="billing-totals">
+        <div class="billing-total-row"><span>Lines total</span><span>₹@Model.LinesTotal.ToString("0.00")</span></div>
+        <div class="billing-total-row"><span>Discount</span><span>₹@invoice.DiscountAmount.ToString("0.00")</span></div>
+        <div class="billing-total-row"><span>Tax (@invoice.TaxRate.ToString("0.00")%)</span><span>₹@Model.Tax.ToString("0.00")</span></div>
+        <div class="billing-total-row billing-total-grand"><span>Total</span><span>₹@invoice.Total.ToString("0.00")</span></div>
+        <div class="billing-total-row"><span>Paid amount</span><span>₹@invoice.PaidAmount.ToString("0.00")</span></div>
+        <div class="billing-total-row billing-total-outstanding"><span>Outstanding balance</span><span>₹@Model.Outstanding.ToString("0.00")</span></div>
+    </div>
 </div>
 
-@if (User.IsInRole(Roles.Receptionist))
+<div class="hms-card billing-card">
+    <h2 class="billing-section-title">Payments</h2>
+    @if (Model.Payments.Count == 0)
+    {
+        <p class="hms-empty">No payments recorded.</p>
+    }
+    else
+    {
+        <table class="hms-table billing-table">
+            <thead><tr><th>Date</th><th>Method</th><th class="billing-amount">Amount</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var payment in Model.Payments)
+                {
+                    <tr>
+                        <td data-label="Date">@payment.PaidAt.ToString("dd MMM yyyy")</td>
+                        <td data-label="Method">@payment.Method</td>
+                        <td data-label="Amount" class="billing-amount">₹@payment.Amount.ToString("0.00")</td>
+                        <td data-label="Status"><partial name="_StatusBadge" model="@payment.Status" /></td>
+                        <td class="billing-actions">
+                            @if (User.IsInRole(Roles.Receptionist) && payment.Status != "Refunded")
+                            {
+                                <form asp-controller="Invoice" asp-action="Refund" asp-route-paymentId="@payment.Id" method="post" class="billing-inline-form">
+                                    <button type="submit" class="hms-btn hms-btn-danger">Refund</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@if (Model.CanRecordPayment)
 {
-    <div class="hms-card">
-        <h2>Record a payment</h2>
-        <form asp-controller="Invoice" asp-action="Pay" asp-route-id="@Model.Id" method="post">
+    <div class="hms-card billing-card">
+        <h2 class="billing-section-title">Record a payment</h2>
+        <form asp-controller="Invoice" asp-action="Pay" asp-route-id="@invoice.Id" method="post" class="billing-form">
             <div class="hms-form-grid">
-                <div class="hms-field"><label for="amount">Amount</label><input id="amount" name="amount" type="number" step="0.01" /></div>
+                <div class="hms-field">
+                    <label for="amount">Amount</label>
+                    <input id="amount" name="amount" type="number" step="0.01" min="0.01" max="@Model.Outstanding.ToString(System.Globalization.CultureInfo.InvariantCulture)" aria-describedby="amount-help" required />
+                    <small id="amount-help" class="hms-field-help">Enter an amount greater than zero and no more than the outstanding balance.</small>
+                </div>
                 <div class="hms-field">
                     <label for="method">Method</label>
                     <select id="method" name="method">
-                        <option value="Cash">Cash</option>
-                        <option value="Card">Card</option>
-                        <option value="UPI">UPI</option>
-                        <option value="Bank Transfer">Bank Transfer</option>
+                        @foreach (var method in Hms.Web.ViewModels.Billing.PaymentFormViewModel.Methods)
+                        {
+                            <option value="@method">@method</option>
+                        }
                     </select>
                 </div>
-                <div class="hms-field"><label for="paidAt">Date</label><input id="paidAt" name="paidAt" type="date" /></div>
+                <div class="hms-field">
+                    <label for="paidAt">Date</label>
+                    <input id="paidAt" name="paidAt" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                </div>
             </div>
             <div class="hms-form-actions">
                 <button type="submit" class="hms-btn hms-btn-primary">Record payment</button>
