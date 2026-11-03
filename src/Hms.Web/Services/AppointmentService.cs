@@ -37,6 +37,11 @@ public class AppointmentService : IAppointmentService
 
     public async Task<IReadOnlyList<SlotDto>> GetFreeSlotsAsync(int doctorId, DateTime date)
     {
+        if (!await _db.Doctors.AnyAsync(d => d.Id == doctorId && d.Status == EntityStatus.Active))
+        {
+            return Array.Empty<SlotDto>();
+        }
+
         var schedule = await _db.DoctorSchedules
             .FirstOrDefaultAsync(s => s.DoctorId == doctorId && s.DayOfWeek == date.DayOfWeek);
 
@@ -63,6 +68,11 @@ public class AppointmentService : IAppointmentService
 
     public async Task<Appointment> BookAsync(int patientId, int doctorId, DateTime date, TimeSpan startTime, string? notes)
     {
+        if (!await _db.Doctors.AnyAsync(d => d.Id == doctorId && d.Status == EntityStatus.Active))
+        {
+            throw new InvalidOperationException("This doctor is not available for booking.");
+        }
+
         var conflict = await _db.Appointments.AnyAsync(a =>
             a.DoctorId == doctorId
             && a.AppointmentDate.Date == date.Date

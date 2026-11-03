@@ -1,34 +1,25 @@
-@model Hms.Web.Models.Entities.Doctor
+@model Hms.Web.ViewModels.Doctor.DoctorCreateViewModel
 @{
     ViewData["Title"] = "New doctor";
-    var departments = ViewData["Departments"] as IReadOnlyList<Hms.Web.Models.Entities.Department> ?? new List<Hms.Web.Models.Entities.Department>();
+    var departments = ViewData["Departments"] as IReadOnlyList<Hms.Web.Models.Entities.Department> ?? Array.Empty<Hms.Web.Models.Entities.Department>();
 }
-<h1>New doctor</h1>
-
+@section Styles { <link rel="stylesheet" href="~/css/pages/admin.css" asp-append-version="true" /> }
+<div class="hms-page-header"><h1>New doctor</h1></div>
 <div class="hms-card">
-    <form asp-controller="Doctor" asp-action="Create" method="post">
-        <div asp-validation-summary="All" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
         <div class="hms-form-grid">
-            <div class="hms-field"><label asp-for="FullName">Full name</label><input asp-for="FullName" /></div>
-            <div class="hms-field"><label asp-for="Email">Email</label><input asp-for="Email" type="email" /></div>
-            <div class="hms-field"><label asp-for="Phone">Phone</label><input asp-for="Phone" /></div>
-            <div class="hms-field"><label asp-for="Specialization">Specialization</label><input asp-for="Specialization" /></div>
-            <div class="hms-field">
-                <label asp-for="DepartmentId">Department</label>
-                <select asp-for="DepartmentId">
-                    @foreach (var department in departments)
-                    {
-                        <option value="@department.Id">@department.Name</option>
-                    }
-                </select>
-            </div>
-            <div class="hms-field"><label asp-for="Qualifications">Qualifications</label><input asp-for="Qualifications" /></div>
-            <div class="hms-field"><label asp-for="YearsOfExperience">Years of experience</label><input asp-for="YearsOfExperience" type="number" /></div>
-            <div class="hms-field"><label asp-for="ConsultationFee">Consultation fee</label><input asp-for="ConsultationFee" type="number" step="0.01" /></div>
+            <div class="hms-field"><label asp-for="FullName">Full name</label><input asp-for="FullName" autofocus /><span asp-validation-for="FullName" class="text-danger"></span></div>
+            <div class="hms-field"><label asp-for="Email">Email</label><input asp-for="Email" type="email" /><span asp-validation-for="Email" class="text-danger"></span></div>
+            <div class="hms-field"><label asp-for="Phone">Phone</label><input asp-for="Phone" /><span asp-validation-for="Phone" class="text-danger"></span></div>
+            <div class="hms-field"><label asp-for="Specialization">Specialization</label><input asp-for="Specialization" /><span asp-validation-for="Specialization" class="text-danger"></span></div>
+            <div class="hms-field"><label asp-for="DepartmentId">Department</label><select asp-for="DepartmentId"><option value="">Select a department</option>@foreach (var department in departments) { <option value="@department.Id">@department.Name</option> }</select><span asp-validation-for="DepartmentId" class="text-danger"></span></div>
+            <div class="hms-field"><label asp-for="Qualifications">Qualifications</label><input asp-for="Qualifications" /><span asp-validation-for="Qualifications" class="text-danger"></span></div>
+            <div class="hms-field"><label asp-for="YearsOfExperience">Years of experience</label><input asp-for="YearsOfExperience" type="number" min="0" /><span asp-validation-for="YearsOfExperience" class="text-danger"></span></div>
+            <div class="hms-field"><label asp-for="ConsultationFee">Consultation fee</label><input asp-for="ConsultationFee" type="number" min="0" step="0.01" /><span asp-validation-for="ConsultationFee" class="text-danger"></span></div>
+            <div class="hms-field"><label asp-for="Password">Temporary password</label><input asp-for="Password" type="password" autocomplete="new-password" /><span asp-validation-for="Password" class="text-danger"></span><small class="hms-field-hint">At least 8 characters, with a digit. The doctor signs in with their email.</small></div>
         </div>
-        <div class="hms-form-actions">
-            <a class="hms-btn hms-btn-secondary" asp-controller="Doctor" asp-action="Index">Cancel</a>
-            <button type="submit" class="hms-btn hms-btn-primary">Save</button>
-        </div>
+        <div class="hms-form-actions"><a class="hms-btn hms-btn-secondary" asp-action="Index" data-confirm>Cancel</a><button class="hms-btn hms-btn-primary" type="submit">Save</button></div>
     </form>
 </div>
+<partial name="_ConfirmDialog" model='"Discard the doctor details you entered?"' />

@@ -1,33 +1,38 @@
-@model Hms.Web.Models.Entities.Doctor
+@model Hms.Web.ViewModels.Doctor.DoctorEditViewModel
 @{
     ViewData["Title"] = "Edit doctor";
-    var departments = ViewData["Departments"] as IReadOnlyList<Hms.Web.Models.Entities.Department> ?? new List<Hms.Web.Models.Entities.Department>();
+    var departments = ViewData["Departments"] as IReadOnlyList<Hms.Web.Models.Entities.Department> ?? Array.Empty<Hms.Web.Models.Entities.Department>();
 }
-<h1>Edit doctor</h1>
-
-<div class="hms-card">
-    <form asp-controller="Doctor" asp-action="Edit" asp-route-id="@Model.Id" method="post">
+@section Styles { <link rel="stylesheet" href="~/css/pages/admin.css" asp-append-version="true" /> }
+<div class="hms-page-header"><h1>Edit doctor</h1></div>
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+    <div class="hms-card">
+        <h2>Doctor details</h2>
+        <div asp-validation-summary="ModelOnly" class="hms-alert hms-alert-error" hidden="@(ViewData.ModelState.IsValid)"></div>
         <div class="hms-form-grid">
-            <div class="hms-field"><label asp-for="FullName">Full name</label><input asp-for="FullName" /></div>
-            <div class="hms-field"><label asp-for="Email">Email</label><input asp-for="Email" type="email" /></div>
-            <div class="hms-field"><label asp-for="Phone">Phone</label><input asp-for="Phone" /></div>
-            <div class="hms-field"><label asp-for="Specialization">Specialization</label><input asp-for="Specialization" /></div>
-            <div class="hms-field">
-                <label asp-for="DepartmentId">Department</label>
-                <select asp-for="DepartmentId">
-                    @foreach (var department in departments)
-                    {
-                        <option value="@department.Id" selected="@(department.Id == Model.DepartmentId)">@department.Name</option>
-                    }
-                </select>
-            </div>
-            <div class="hms-field"><label asp-for="Qualifications">Qualifications</label><input asp-for="Qualifications" /></div>
-            <div class="hms-field"><label asp-for="YearsOfExperience">Years of experience</label><input asp-for="YearsOfExperience" type="number" /></div>
-            <div class="hms-field"><label asp-for="ConsultationFee">Consultation fee</label><input asp-for="ConsultationFee" type="number" step="0.01" /></div>
+            <div class="hms-field"><label asp-for="FullName">Full name</label><input asp-for="FullName" /><span asp-validation-for="FullName" class="text-danger"></span></div>
+            <div class="hms-field"><label asp-for="Email">Email</label><input asp-for="Email" type="email" /><span asp-validation-for="Email" class="text-danger"></span></div>
+            <div class="hms-field"><label asp-for="Phone">Phone</label><input asp-for="Phone" /><span asp-validation-for="Phone" class="text-danger"></span></div>
+            <div class="hms-field"><label asp-for="Specialization">Specialization</label><input asp-for="Specialization" /><span asp-validation-for="Specialization" class="text-danger"></span></div>
+            <div class="hms-field"><label asp-for="DepartmentId">Department</label><select asp-for="DepartmentId"><option value="">Select a department</option>@foreach (var department in departments) { <option value="@department.Id">@department.Name</option> }</select><span asp-validation-for="DepartmentId" class="text-danger"></span></div>
+            <div class="hms-field"><label asp-for="Qualifications">Qualifications</label><input asp-for="Qualifications" /><span asp-validation-for="Qualifications" class="text-danger"></span></div>
+            <div class="hms-field"><label asp-for="YearsOfExperience">Years of experience</label><input asp-for="YearsOfExperience" type="number" min="0" /><span asp-validation-for="YearsOfExperience" class="text-danger"></span></div>
+            <div class="hms-field"><label asp-for="ConsultationFee">Consultation fee</label><input asp-for="ConsultationFee" type="number" min="0" step="0.01" /><span asp-validation-for="ConsultationFee" class="text-danger"></span></div>
         </div>
-        <div class="hms-form-actions">
-            <a class="hms-btn hms-btn-secondary" asp-controller="Doctor" asp-action="Index">Cancel</a>
-            <button type="submit" class="hms-btn hms-btn-primary">Save</button>
+    </div>
+    <div class="hms-card">
+        <h2>Weekly working schedule</h2>
+        <div class="hms-schedule-grid">
+            @for (var index = 0; index < Model.Schedules.Count; index++)
+            {
+                <div class="hms-schedule-row">
+                    <input asp-for="Schedules[index].DayOfWeek" type="hidden" />
+                    <label class="hms-schedule-day"><input asp-for="Schedules[index].IsWorking" /> @Model.Schedules[index].DayOfWeek</label>
+                    <div class="hms-field"><label asp-for="Schedules[index].StartTime">Start time</label><input asp-for="Schedules[index].StartTime" type="time" /></div>
+                    <div class="hms-field"><label asp-for="Schedules[index].EndTime">End time</label><input asp-for="Schedules[index].EndTime" type="time" /><span asp-validation-for="Schedules[index].EndTime" class="text-danger"></span></div>
+                </div>
+            }
         </div>
-    </form>
-</div>
+        <div class="hms-form-actions"><a class="hms-btn hms-btn-secondary" asp-action="Details" asp-route-id="@Model.Id">Cancel</a><button class="hms-btn hms-btn-primary" type="submit">Save</button></div>
+    </div>
+</form>

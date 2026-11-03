@@ -1,4 +1,4 @@
-/* Admin pages: department and staff lists and forms. */
+/* Admin pages: department, staff, and doctor lists and forms. */
 
 .hms-toolbar {
     display: flex;
@@ -95,6 +95,16 @@
     font-size: 0.8125rem;
 }
 
+.hms-table-wrap { overflow-x: auto; }
+.hms-row-actions { display: flex; flex-wrap: wrap; gap: var(--hms-space-2); }
+.hms-schedule-grid { display: grid; gap: var(--hms-space-3); }
+.hms-schedule-row { display: grid; grid-template-columns: minmax(140px, 1fr) 1fr 1fr; align-items: end; gap: var(--hms-space-4); padding: var(--hms-space-3) 0; border-bottom: 1px solid var(--hms-border); }
+.hms-schedule-day { align-self: center; font-weight: 600; }
+.hms-details-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--hms-space-4); margin: 0; }
+.hms-details-grid div { padding-bottom: var(--hms-space-3); border-bottom: 1px solid var(--hms-border); }
+.hms-details-grid dt { color: var(--hms-text-muted); font-size: .8125rem; }
+.hms-details-grid dd { margin: 4px 0 0; }
+
 @media (max-width: 640px) {
     .hms-toolbar {
         flex-direction: column;
@@ -118,4 +128,7 @@
         flex-wrap: wrap;
         justify-content: center;
     }
+
+    .hms-schedule-row,
+    .hms-details-grid { grid-template-columns: 1fr; }
 }

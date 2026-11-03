@@ -1,41 +1,23 @@
-@model Hms.Web.Models.Entities.Doctor
-@{
-    ViewData["Title"] = "Doctor profile";
-}
-<h1>@Model.FullName</h1>
-
+@model Hms.Web.ViewModels.Doctor.DoctorDetailsViewModel
+@{ ViewData["Title"] = "Doctor profile"; }
+@section Styles { <link rel="stylesheet" href="~/css/pages/admin.css" asp-append-version="true" /> }
+<div class="hms-page-header"><h1>@Model.FullName</h1><a class="hms-btn hms-btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit doctor</a></div>
 <div class="hms-card">
-    <dl class="hms-table">
-        <tr><th>Specialization</th><td>@Model.Specialization</td></tr>
-        <tr><th>Department</th><td>@Model.Department?.Name</td></tr>
-        <tr><th>Qualifications</th><td>@Model.Qualifications</td></tr>
-        <tr><th>Years of experience</th><td>@Model.YearsOfExperience</td></tr>
-        <tr><th>Consultation fee</th><td>₹@Model.ConsultationFee.ToString("0.00")</td></tr>
-        <tr><th>Status</th><td><partial name="_StatusBadge" model="@Model.Status" /></td></tr>
+    <h2>Doctor details</h2>
+    <dl class="hms-details-grid">
+        <div><dt>Email</dt><dd>@Model.Email</dd></div><div><dt>Phone</dt><dd>@Model.Phone</dd></div>
+        <div><dt>Specialization</dt><dd>@Model.Specialization</dd></div><div><dt>Department</dt><dd>@Model.DepartmentName</dd></div>
+        <div><dt>Qualifications</dt><dd>@Model.Qualifications</dd></div><div><dt>Years of experience</dt><dd>@Model.YearsOfExperience</dd></div>
+        <div><dt>Consultation fee</dt><dd>₹@Model.ConsultationFee.ToString("0.00")</dd></div><div><dt>Status</dt><dd><partial name="_StatusBadge" model="@Model.Status" /></dd></div>
     </dl>
 </div>
-
 <div class="hms-card">
     <h2>Working schedule</h2>
-    @if (Model.Schedules.Count == 0)
-    {
-        <partial name="_EmptyState" model="@("No records found.")" />
-    }
-    else
-    {
-        <table class="hms-table">
-            <thead><tr><th>Day</th><th>Working</th><th>Start</th><th>End</th></tr></thead>
-            <tbody>
-                @foreach (var schedule in Model.Schedules.OrderBy(s => s.DayOfWeek))
-                {
-                    <tr>
-                        <td>@schedule.DayOfWeek</td>
-                        <td>@(schedule.IsWorking ? "Yes" : "No")</td>
-                        <td>@schedule.StartTime</td>
-                        <td>@schedule.EndTime</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
+    @if (Model.Schedules.Count == 0) { <partial name="_EmptyState" model='"No records found."' /> }
+    else { <table class="hms-table"><thead><tr><th>Day</th><th>Working</th><th>Start</th><th>End</th></tr></thead><tbody>@foreach (var schedule in Model.Schedules) { <tr><td>@schedule.DayOfWeek</td><td>@(schedule.IsWorking ? "Yes" : "No")</td><td>@(schedule.StartTime?.ToString(@"hh\:mm") ?? "—")</td><td>@(schedule.EndTime?.ToString(@"hh\:mm") ?? "—")</td></tr> }</tbody></table> }
+</div>
+<div class="hms-card">
+    <h2>Appointment history</h2>
+    @if (Model.Appointments.Count == 0) { <partial name="_EmptyState" model='"No records found."' /> }
+    else { <table class="hms-table"><thead><tr><th>Date</th><th>Time</th><th>Patient</th><th>Status</th></tr></thead><tbody>@foreach (var appointment in Model.Appointments) { <tr><td>@appointment.AppointmentDate.ToString("dd MMM yyyy")</td><td>@appointment.StartTime.ToString(@"hh\:mm")</td><td>@appointment.PatientName</td><td><partial name="_StatusBadge" model="@appointment.Status" /></td></tr> }</tbody></table> }
 </div>
