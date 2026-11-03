@@ -1,0 +1,57 @@
+/* ==========================================================================
+   Notification bell and panel
+   The bell sits in the top navigation bar; the panel opens under it.
+   ========================================================================== */
+
+.hms-bell {
+    position: relative;
+}
+
+.hms-bell[aria-expanded="true"] {
+    background: var(--hms-bg);
+}
+
+.hms-notification-panel {
+    padding: 0;
+    overflow: hidden;
+}
+
+.hms-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--hms-surface);
+}
+
+.hms-panel-empty {
+    margin: 0;
+    padding: var(--hms-space-6) var(--hms-space-4);
+    text-align: center;
+    color: var(--hms-text-muted);
+}
+
+.hms-panel-item {
+    background: var(--hms-surface);
+}
+
+.hms-panel-item:last-child {
+    border-bottom: 0;
+}
+
+.hms-panel-message {
+    color: var(--hms-text);
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.hms-panel-time {
+    font-size: 12px;
+}
+
+@media (max-width: 575.98px) {
+    .hms-notification-panel {
+        right: var(--hms-space-2);
+        left: var(--hms-space-2);
+        width: auto;
+    }
+}

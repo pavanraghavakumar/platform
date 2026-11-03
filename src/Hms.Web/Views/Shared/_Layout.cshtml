@@ -19,6 +19,10 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @if (isSignedIn)
+    {
+        <link rel="stylesheet" href="~/css/pages/notification.css" asp-append-version="true" />
+    }
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body class="@(isSignedIn ? "hms-signed-in" : "hms-anonymous")">
@@ -46,7 +50,7 @@
                     </form>
 
                     <div class="hms-topbar-actions">
-                        <button type="button" class="hms-icon-btn hms-bell" id="hmsBell" aria-label="Notifications">
+                        <button type="button" class="hms-icon-btn hms-bell" id="hmsBell" aria-label="Notifications" aria-expanded="false" aria-controls="hmsNotificationPanel">
                             <i class="bi bi-bell"></i>
                             <span class="hms-bell-count" id="hmsBellCount" hidden>0</span>
                         </button>
@@ -107,6 +111,10 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/chart.js/chart.umd.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    @if (isSignedIn)
+    {
+        <script src="~/js/pages/notification.js" asp-append-version="true"></script>
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -23,52 +23,7 @@
             });
         }
 
-        var bell = document.getElementById('hmsBell');
-        var bellCount = document.getElementById('hmsBellCount');
-        var panel = document.getElementById('hmsNotificationPanel');
-
-        function refreshUnreadCount() {
-            if (!bellCount) {
-                return;
-            }
-            fetch('/Notification/UnreadCount', { headers: { 'Accept': 'application/json' } })
-                .then(function (response) { return response.ok ? response.json() : null; })
-                .then(function (data) {
-                    if (!data) {
-                        return;
-                    }
-                    bellCount.textContent = data.count;
-                    bellCount.hidden = !data.count;
-                })
-                .catch(function () { /* the bell simply stays without a count */ });
-        }
-
-        if (bell && panel) {
-            bell.addEventListener('click', function (event) {
-                event.stopPropagation();
-                if (!panel.hidden) {
-                    panel.hidden = true;
-                    return;
-                }
-                fetch('/Notification/Panel', { headers: { 'Accept': 'text/html' } })
-                    .then(function (response) { return response.ok ? response.text() : ''; })
-                    .then(function (html) {
-                        panel.innerHTML = html;
-                        panel.hidden = false;
-                        if (bellCount) {
-                            bellCount.textContent = '0';
-                            bellCount.hidden = true;
-                        }
-                    })
-                    .catch(function () { /* leave the panel closed */ });
-            });
-            document.addEventListener('click', function (event) {
-                if (!panel.hidden && !panel.contains(event.target)) {
-                    panel.hidden = true;
-                }
-            });
-            refreshUnreadCount();
-        }
+        // The notification bell and panel live in js/pages/notification.js.
 
         var confirmDialog = document.getElementById('hmsConfirmDialog');
         if (confirmDialog) {

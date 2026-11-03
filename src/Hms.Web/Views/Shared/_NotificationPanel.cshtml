@@ -4,16 +4,16 @@
 </div>
 @if (Model is null || Model.Count == 0)
 {
-    <p class="hms-empty">You have no notifications.</p>
+    <p class="hms-empty hms-panel-empty">You have no notifications.</p>
 }
 else
 {
     <ul class="hms-panel-list">
         @foreach (var notification in Model)
         {
-            <li>
-                <span>@notification.Message</span>
-                <small>@notification.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small>
+            <li class="hms-panel-item">
+                <span class="hms-panel-message">@notification.Message</span>
+                <small class="hms-panel-time">@notification.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small>
             </li>
         }
     </ul>
