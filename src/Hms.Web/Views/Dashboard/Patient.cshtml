@@ -1,18 +1,66 @@
+@model Hms.Web.ViewModels.Dashboard.PatientDashboardViewModel
 @{
     ViewData["Title"] = "Patient dashboard";
+    var nextValue = Model.NextAppointment is null
+        ? "None"
+        : Model.NextAppointment.AppointmentDate.ToString("dd MMM");
 }
-<div class="hms-page-header">
-    <h1>Patient dashboard</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/portal.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header portal-page-header">
+    <div><h1>Patient dashboard</h1><p>Manage your appointments and healthcare documents.</p></div>
+    <a class="hms-btn hms-btn-primary" asp-action="PortalBook"><i class="bi bi-calendar-plus"></i> Book appointment</a>
 </div>
 
 <div class="hms-kpi-grid">
-    <partial name="_KpiCard" model="@(new KpiCardModel("bi-calendar-event", "—", "Next appointment"))" />
-    <partial name="_KpiCard" model="@(new KpiCardModel("bi-calendar-plus", "—", "Upcoming appointments"))" />
-    <partial name="_KpiCard" model="@(new KpiCardModel("bi-receipt", "—", "Unpaid invoices"))" />
-    <partial name="_KpiCard" model="@(new KpiCardModel("bi-cash-stack", "—", "Outstanding balance"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-calendar-event", nextValue, "Next appointment"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-calendar-plus", Model.UpcomingAppointments.ToString(), "Upcoming appointments"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-receipt", Model.UnpaidInvoices.ToString(), "Unpaid invoices"))" />
+    <partial name="_KpiCard" model="@(new KpiCardModel("bi-cash-stack", $"₹{Model.OutstandingBalance:N2}", "Outstanding balance"))" />
 </div>
 
-<div class="hms-card">
-    <h2>Welcome</h2>
-    <p class="hms-empty">The dashboard figures are filled in by the Patient dashboard task.</p>
+<div class="portal-dashboard-grid">
+    <section class="hms-card">
+        <h2>Next appointment</h2>
+        @if (Model.NextAppointment is null)
+        {
+            <partial name="_EmptyState" model="@("No upcoming appointments.")" />
+        }
+        else
+        {
+            <div class="portal-next-appointment">
+                <i class="bi bi-person-badge"></i>
+                <div><strong>@Model.NextAppointment.DoctorName</strong><span>@Model.NextAppointment.AppointmentDate.ToString("dd MMM yyyy") at @Model.NextAppointment.StartTime.ToString(@"hh\:mm")</span></div>
+                <partial name="_StatusBadge" model="@Model.NextAppointment.Status" />
+            </div>
+        }
+        <a class="hms-btn hms-btn-secondary" asp-action="PortalAppointments">View my appointments</a>
+    </section>
+
+    <section class="hms-card">
+        <h2>Recent notifications</h2>
+        @if (Model.RecentNotifications.Count == 0)
+        {
+            <partial name="_EmptyState" model="@("You have no notifications.")" />
+        }
+        else
+        {
+            <ul class="portal-notification-list">
+                @foreach (var item in Model.RecentNotifications)
+                {
+                    <li class="@(item.IsRead ? "" : "is-unread")"><i class="bi bi-bell"></i><div><span>@item.Message</span><time>@item.CreatedAt.ToString("dd MMM yyyy, HH:mm")</time></div></li>
+                }
+            </ul>
+        }
+    </section>
 </div>
+
+<nav class="portal-quick-links" aria-label="Patient portal">
+    <a asp-action="PortalRecords"><i class="bi bi-file-medical"></i><span>My records</span></a>
+    <a asp-action="PortalPrescriptions"><i class="bi bi-prescription2"></i><span>My prescriptions</span></a>
+    <a asp-action="PortalLabReports"><i class="bi bi-clipboard2-pulse"></i><span>My lab reports</span></a>
+    <a asp-action="PortalInvoices"><i class="bi bi-receipt"></i><span>My invoices</span></a>
+</nav>
+
