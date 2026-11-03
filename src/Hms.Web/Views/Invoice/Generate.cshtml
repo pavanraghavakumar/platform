@@ -1,24 +1,78 @@
-@model Hms.Web.Models.Entities.Appointment
+@model Hms.Web.ViewModels.Billing.InvoiceGenerateViewModel
 @{
     ViewData["Title"] = "Generate invoice";
 }
-<h1>Generate invoice</h1>
 
-<div class="hms-card">
-    <dl class="hms-table">
-        <tr><th>Patient</th><td>@Model.Patient?.FullName (@Model.Patient?.PatientCode)</td></tr>
-        <tr><th>Doctor</th><td>@Model.Doctor?.FullName</td></tr>
-        <tr><th>Consultation fee</th><td>₹@Model.Doctor?.ConsultationFee.ToString("0.00")</td></tr>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/billing.css" asp-append-version="true" />
+}
+
+<div class="hms-page-header">
+    <h1>Generate invoice</h1>
+</div>
+
+<div class="hms-card billing-card">
+    <dl class="billing-summary">
+        <div><dt>Patient</dt><dd>@Model.PatientName (@Model.PatientCode)</dd></div>
+        <div><dt>Doctor</dt><dd>@Model.DoctorName</dd></div>
+        <div><dt>Appointment date</dt><dd>@Model.AppointmentDate.ToString("dd MMM yyyy")</dd></div>
     </dl>
 
-    <form asp-controller="Invoice" asp-action="Generate" asp-route-appointmentId="@Model.Id" method="post">
+    <h2 class="billing-section-title">Invoice lines</h2>
+    <table class="hms-table billing-table">
+        <thead><tr><th>Description</th><th class="billing-amount">Amount</th></tr></thead>
+        <tbody>
+            @foreach (var line in Model.Lines)
+            {
+                <tr><td data-label="Description">@line.Description</td><td data-label="Amount" class="billing-amount">₹@line.Amount.ToString("0.00")</td></tr>
+            }
+            @if (Model.Lines.Count == 0)
+            {
+                <tr><td colspan="2" class="hms-empty">No chargeable lines for this appointment.</td></tr>
+            }
+        </tbody>
+    </table>
+
+    <form asp-controller="Invoice" asp-action="Generate" asp-route-appointmentId="@Model.AppointmentId" method="post" class="billing-form" id="invoiceGenerateForm">
+        <h2 class="billing-section-title">Additional service charge</h2>
         <div class="hms-form-grid">
-            <div class="hms-field"><label for="discountAmount">Discount amount</label><input id="discountAmount" name="discountAmount" type="number" step="0.01" value="0" /></div>
-            <div class="hms-field"><label for="taxRate">Tax rate (%)</label><input id="taxRate" name="taxRate" type="number" step="0.01" value="0" /></div>
+            <div class="hms-field">
+                <label for="additionalServiceDescription">Description</label>
+                <input id="additionalServiceDescription" name="additionalServiceDescription" type="text" maxlength="300" placeholder="e.g. Dressing" />
+            </div>
+            <div class="hms-field">
+                <label for="additionalServiceAmount">Amount</label>
+                <input id="additionalServiceAmount" name="additionalServiceAmount" type="number" step="0.01" min="0" value="0" class="billing-input" data-billing="amount" />
+            </div>
         </div>
+
+        <h2 class="billing-section-title">Discount and tax</h2>
+        <div class="hms-form-grid">
+            <div class="hms-field">
+                <label for="discountAmount">Discount amount</label>
+                <input id="discountAmount" name="discountAmount" type="number" step="0.01" min="0" value="0" class="billing-input" data-billing="discount" />
+            </div>
+            <div class="hms-field">
+                <label for="taxRate">Tax rate (%)</label>
+                <input id="taxRate" name="taxRate" type="number" step="0.01" min="0" max="100" value="0" class="billing-input" data-billing="tax" />
+            </div>
+        </div>
+
+        <div class="billing-totals" id="billingTotals"
+             data-lines-total="@Model.LinesTotal.ToString(System.Globalization.CultureInfo.InvariantCulture)">
+            <div class="billing-total-row"><span>Lines total</span><span id="billingLinesTotal">₹@Model.LinesTotal.ToString("0.00")</span></div>
+            <div class="billing-total-row"><span>Discount</span><span id="billingDiscount">₹0.00</span></div>
+            <div class="billing-total-row"><span>Tax</span><span id="billingTax">₹0.00</span></div>
+            <div class="billing-total-row billing-total-grand"><span>Total</span><span id="billingGrandTotal">₹@Model.LinesTotal.ToString("0.00")</span></div>
+        </div>
+
         <div class="hms-form-actions">
             <a class="hms-btn hms-btn-secondary" asp-controller="Invoice" asp-action="Index">Cancel</a>
-            <button type="submit" class="hms-btn hms-btn-primary">Generate</button>
+            <button type="submit" class="hms-btn hms-btn-primary">Generate invoice</button>
         </div>
     </form>
 </div>
+
+@section Scripts {
+    <script src="~/js/pages/billing.js" asp-append-version="true"></script>
+}
