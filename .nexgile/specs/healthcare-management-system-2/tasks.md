@@ -1,0 +1,180 @@
+# Tasks: Healthcare Management System
+
+- [ ] 1. Project setup
+  - [ ] 1.1 Project setup
+    - Create `Hms.sln` with the MVC project `src/Hms.Web` (.NET 8, ASP.NET Core MVC, Razor) and the xUnit project `tests/Hms.Tests`; add `README.md` with the commands of `## Build and run` and a `.gitignore` that includes `.env`, `bin/`, `obj/`, `logs/` and `*.db`.
+    - Write the whole data model of `design.md` as entities and `HmsDbContext` (Identity users, patients, doctors, schedules, staff, departments, appointments, medical records, prescriptions, medicines, batches, lab tests and requests, invoices, payments, notifications, audit entries, system settings) with keys, relationships, deletion behaviour, unique indexes and `decimal(18,2)` money, plus the first EF Core migration on SQLite.
+    - Register Identity with the four roles Admin, Doctor, Receptionist and Patient, the DbContext, the services and repositories in `Program.cs`; add the exception handling middleware, the `/health` endpoint answering `{"status":"ok"}`, and the `DemoDataSeeder` that creates the demo records and the four demo logins only when the database is empty and never when `ASPNETCORE_ENVIRONMENT` is `Production`; `Dev` applies the migrations and runs the seeder before the app starts.
+    - Write the shared layout `_Layout.cshtml` with the collapsible sidebar, top bar (hospital name from `SystemSetting`, search box, notification bell, profile dropdown), breadcrumb and footer; `_Sidebar.cshtml` with every menu item of every role pointing at the routes of `design.md`; the partials `_Pagination`, `_StatusBadge`, `_EmptyState`, `_ConfirmDialog`, `_KpiCard`, `_SearchBox`, `_NotificationPanel` and `_PrintLayout`; `wwwroot/css/site.css` with the colours, font, spacing, radius and component states of `## Look and feel` as CSS variables; and the local Bootstrap 5, Bootstrap Icons and Chart.js files under `wwwroot/lib/`.
+    - Create every controller and action of the route table in `design.md` with its role attribute and a working page, and the service and repository classes with their method signatures (`AppointmentService`, `ConsultationService`, `PrescriptionService`, `LabService`, `PharmacyService`, `BillingService`, `ReportService`, `NotificationService`, `AuditService`, `PatientService`), so screen tasks fill in their own controller and service only.
+    - Add `@playwright/test` as a dev dependency and an `e2e/` folder holding a `.gitkeep`, excluded from `dotnet test`; add one passing xUnit test that migrates a throwaway SQLite file in a temporary folder and checks the demo seeder creates the four demo logins.
+    - _Requirements: 1.1, 1.2, 17.1, 17.2, 17.3, 17.9, 18.1, 18.2, 18.3_
+    - _Files: Hms.sln, README.md, .gitignore, src/Hms.Web/**, tests/Hms.Tests/**, e2e/.gitkeep, package.json_
+    - _Verify: dotnet restore_
+    - _Verify: dotnet build --no-restore_
+    - _Verify: dotnet test --filter FullyQualifiedName~ProjectSetup_
+    - _Area: setup_
+
+- [ ] 2. Sign-in, password and profile pages
+  - [ ] 2.1 Sign-in, forgot and reset password pages
+    - Build the sign-in page at `/` and `/Account/Login` as a centred card on the navy-to-teal gradient with the hospital name and logo, user name and password fields, a Sign in button, a Forgot password link and the red alert "Invalid user name or password."; sign in redirects to `/Dashboard/Admin`, `/Dashboard/Doctor`, `/Dashboard/Receptionist` or `/Dashboard/Patient` by role, and a deactivated account is blocked with "Your account is deactivated.".
+    - Build the forgot-password page that shows the reset link on the page itself, and the reset-password page the link opens; build the sign-out action that ends the session and returns to `/`, and the access-denied page showing "You do not have access to this page.".
+    - _Requirements: 1.2, 1.3, 1.4, 1.5, 1.6, 1.10_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/AccountController.cs, src/Hms.Web/ViewModels/Account/**, src/Hms.Web/Views/Account/**, src/Hms.Web/wwwroot/css/pages/account.css, src/Hms.Web/wwwroot/js/pages/account.js, tests/Hms.Tests/Account/**, tests/Hms.Tests/AccountPagesTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~AccountPages_
+    - _Area: ui_
+  - [ ] 2.2 Profile and change password pages
+    - Build the profile page showing user name, email, role and phone with a form that saves a new phone number, and the change-password page that saves a new password of at least 8 characters and shows "Your password has been changed." or "Password must be at least 8 characters." beside the field with the typed values kept.
+    - _Requirements: 1.7, 1.8, 1.9, 17.6_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/AccountController.cs, src/Hms.Web/ViewModels/Account/ProfileViewModel.cs, src/Hms.Web/ViewModels/Account/ChangePasswordViewModel.cs, src/Hms.Web/Views/Account/Profile.cshtml, src/Hms.Web/Views/Account/ChangePassword.cshtml, src/Hms.Web/wwwroot/css/pages/account.css, tests/Hms.Tests/Account/ProfileTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~ProfileTests_
+    - _Area: ui_
+
+- [ ] 3. Admin dashboard and system administration
+  - [ ] 3.1 Admin dashboard
+    - Build `/Dashboard/Admin` with KPI cards for total patients, doctors, staff and departments, today's appointments, pending appointments, completed consultations, total revenue and outstanding balance, each read from the database; a revenue chart of the last 6 months and an appointment trend chart of the last 7 days drawn with the local Chart.js; the 5 most recent patient registrations and 5 most recent appointments newest first; and a department list with the number of doctors in each.
+    - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/DashboardController.cs, src/Hms.Web/ViewModels/Dashboard/AdminDashboardViewModel.cs, src/Hms.Web/Views/Dashboard/Admin.cshtml, src/Hms.Web/Services/ReportService.cs, src/Hms.Web/wwwroot/css/pages/dashboard.css, src/Hms.Web/wwwroot/js/pages/dashboard.js, tests/Hms.Tests/Dashboard/AdminDashboardTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~AdminDashboardTests_
+    - _Area: ui_
+  - [ ] 3.2 Departments and staff
+    - Build the department list and create form (status Active, duplicate name shows "A department with this name already exists.") and the deactivate action that sets Inactive and keeps doctors and appointments; build the staff list and create form (full name, email, phone, role, designation, department) that saves the staff member Active with a sign-in account, and the deactivate action that sets Inactive and blocks that person's sign-in with "Your account is deactivated.".
+    - _Requirements: 2.6, 2.7, 2.8, 2.9, 2.10, 17.4, 17.5, 17.7_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/DepartmentController.cs, src/Hms.Web/Controllers/StaffController.cs, src/Hms.Web/ViewModels/Department/**, src/Hms.Web/ViewModels/Staff/**, src/Hms.Web/Views/Department/**, src/Hms.Web/Views/Staff/**, src/Hms.Web/Services/StaffService.cs, src/Hms.Web/wwwroot/css/pages/admin.css, tests/Hms.Tests/Admin/DepartmentStaffTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~DepartmentStaffTests_
+    - _Area: ui_
+  - [ ] 3.3 Doctor management
+    - Build the doctor list with department filter, the create form (full name, email, phone, specialization, department, qualifications, years of experience, consultation fee) that creates the doctor Active with a Doctor sign-in account, the edit page for details, fee and the weekly working schedule with "End time must be after start time." when the end is not after the start, the profile page with schedule and appointment history newest first, and the deactivate action that stops new bookings.
+    - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/DoctorController.cs, src/Hms.Web/ViewModels/Doctor/**, src/Hms.Web/Views/Doctor/**, src/Hms.Web/Services/DoctorService.cs, src/Hms.Web/wwwroot/css/pages/admin.css, tests/Hms.Tests/Admin/DoctorManagementTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~DoctorManagementTests_
+    - _Area: ui_
+  - [ ] 3.4 Audit trail page
+    - Build `/Audit/Index` listing audit entries newest first, 20 per page, with record type, record ID, field, previous value, new value, user name and time, and filters by record type and date range; write `AuditService.Record` so a change to a medical record, prescription, invoice or payment saves an entry and opening a record without changing it saves none.
+    - _Requirements: 16.1, 16.2, 16.3, 16.4_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/AuditController.cs, src/Hms.Web/ViewModels/Audit/**, src/Hms.Web/Views/Audit/**, src/Hms.Web/Services/AuditService.cs, src/Hms.Web/wwwroot/css/pages/admin.css, tests/Hms.Tests/Admin/AuditTrailTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~AuditTrailTests_
+    - _Area: ui_
+
+- [ ] 4. Patient management
+  - [ ] 4.1 Patient list, registration and profile
+    - Build the patient list (patient ID, full name, phone, gender, status, registration date, 10 per page, search by name, patient ID or phone, sort control, status filter, "No records found."), the registration form that creates the patient with the next `P-00001` ID and status Active and shows "Full name and phone number are required." when the name or phone is missing, the profile page with personal and contact details, emergency contact, medical history, allergies and status, the edit form showing "Patient details saved.", the appointment history newest first, and the deactivate action that keeps appointments, records and invoices.
+    - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 17.4, 17.5, 17.6, 17.7_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/PatientController.cs, src/Hms.Web/ViewModels/Patient/**, src/Hms.Web/Views/Patient/**, src/Hms.Web/Services/PatientService.cs, src/Hms.Web/wwwroot/css/pages/patient.css, tests/Hms.Tests/Patient/PatientManagementTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~PatientManagementTests_
+    - _Area: ui_
+
+- [ ] 5. Appointments
+  - [ ] 5.1 Appointment booking and status workflow
+    - Build the booking page for the Receptionist and the Patient with doctor and date pickers that load free slots from `GET /Appointment/Slots` (only slots inside the doctor's working hours with no appointment Pending, Confirmed, Checked In or In Progress), the booking action creating a Pending appointment with "Appointment booked.", "This time slot is already booked." on a conflict and "You can only book appointments for yourself." for a Patient booking for someone else.
+    - Build the appointment list with status filter and the actions Confirm (adds a notification for the patient), Check in (adds a notification for the doctor), No Show, Cancel (frees the slot at once and notifies the other party), Start and Complete, each allowed only from the status `design.md` gives it.
+    - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 5.10_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/AppointmentController.cs, src/Hms.Web/ViewModels/Appointment/**, src/Hms.Web/Views/Appointment/**, src/Hms.Web/Services/AppointmentService.cs, src/Hms.Web/wwwroot/css/pages/appointment.css, src/Hms.Web/wwwroot/js/pages/appointment.js, tests/Hms.Tests/Appointment/AppointmentWorkflowTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~AppointmentWorkflowTests_
+    - _Area: ui_
+
+- [ ] 6. Consultation and medical records
+  - [ ] 6.1 Consultation page and medical records
+    - Build the consultation page for a Checked In or In Progress appointment showing the patient's details, allergies, medical history and the last 5 consultations with diagnosis and date, and the form for symptoms, diagnosis, blood pressure, temperature, pulse, weight, treatment plan, observations and follow-up recommendations that saves a Draft record, shows "Diagnosis is required." without a diagnosis, and finalizes with "Medical record finalized.".
+    - Build the patient's medical record list newest first with date, doctor, diagnosis and status, the record page, the ownership check showing "You do not have access to this page." for a Doctor with no appointment with that patient, and the audit entry when a Final record is edited.
+    - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/ConsultationController.cs, src/Hms.Web/Controllers/MedicalRecordController.cs, src/Hms.Web/ViewModels/Consultation/**, src/Hms.Web/ViewModels/MedicalRecord/**, src/Hms.Web/Views/Consultation/**, src/Hms.Web/Views/MedicalRecord/**, src/Hms.Web/Services/ConsultationService.cs, src/Hms.Web/wwwroot/css/pages/clinical.css, tests/Hms.Tests/Clinical/ConsultationTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~ConsultationTests_
+    - _Area: ui_
+
+- [ ] 7. Prescriptions
+  - [ ] 7.1 Prescription creation and printable page
+    - Build the prescription form that adds a medicine line with dosage, frequency, duration in days and instructions, saves the prescription Active linked to the patient, the Doctor and the consultation, and shows "Add at least one medicine." when empty; build the prescription history newest first, the status change to Completed or Cancelled with its audit entry, and the printable page with the hospital name, patient name and patient ID, Doctor name, date, each medicine and a Print button.
+    - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/PrescriptionController.cs, src/Hms.Web/ViewModels/Prescription/**, src/Hms.Web/Views/Prescription/**, src/Hms.Web/Services/PrescriptionService.cs, src/Hms.Web/wwwroot/css/pages/clinical.css, src/Hms.Web/wwwroot/js/pages/prescription.js, tests/Hms.Tests/Clinical/PrescriptionTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~PrescriptionTests_
+    - _Area: ui_
+
+- [ ] 8. Laboratory
+  - [ ] 8.1 Laboratory test catalog and lab requests
+    - Build the laboratory test catalog and its create form (name, category, price, normal range); build the lab request list with status filter, the request action that creates one request per test with status Requested linked to the patient, Doctor and appointment, the start action setting In Progress, the result form that sets Completed with a notification for the requesting Doctor, the result page showing test name, normal range, result value, remarks and date, the ownership check showing "You do not have access to this page." for another Doctor's request, and the printable report with a Print button.
+    - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 8.8_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/LabTestController.cs, src/Hms.Web/Controllers/LabRequestController.cs, src/Hms.Web/ViewModels/Lab/**, src/Hms.Web/Views/LabTest/**, src/Hms.Web/Views/LabRequest/**, src/Hms.Web/Services/LabService.cs, src/Hms.Web/wwwroot/css/pages/lab.css, tests/Hms.Tests/Lab/LabRequestTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~LabRequestTests_
+    - _Area: ui_
+
+- [ ] 9. Pharmacy
+  - [ ] 9.1 Medicine catalog, stock and inventory report
+    - Build the medicine list with status badges, the create form (name, category, supplier, unit price, reorder level, stock quantity) saving In Stock, the category and supplier pages, the stock-in form (batch number, quantity, expiry date) that adds to the stock and saves the batch, the stock-out form that subtracts and shows "Not enough stock available." when the quantity is more than the stock, the status rules In Stock, Low Stock, Out of Stock and Expired, and the inventory report with the count of Low Stock and Out of Stock medicines.
+    - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8, 9.9_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/MedicineController.cs, src/Hms.Web/ViewModels/Pharmacy/**, src/Hms.Web/Views/Medicine/**, src/Hms.Web/Services/PharmacyService.cs, src/Hms.Web/wwwroot/css/pages/pharmacy.css, tests/Hms.Tests/Pharmacy/PharmacyTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~PharmacyTests_
+    - _Area: ui_
+
+- [ ] 10. Billing and payments
+  - [ ] 10.1 Invoices, payments and printable invoice
+    - Build the invoice list with status filter, the generate action that adds the consultation fee, the completed lab requests and the prescription medicines of the appointment as lines, the additional service charge line, the discount and tax fields with the total to 2 decimal places, the payment form (amount, method, date) that sets Unpaid, Partially Paid or Paid and shows the outstanding balance, "Payment cannot be more than the outstanding balance." for an overpayment, the refund action that reverses the paid amount and notifies the patient, the audit entry on each payment, and the printable invoice with every line, discount, tax, total, paid amount, outstanding balance and a Print button.
+    - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.6, 10.7, 10.8, 10.9, 10.10_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/InvoiceController.cs, src/Hms.Web/ViewModels/Billing/**, src/Hms.Web/Views/Invoice/**, src/Hms.Web/Services/BillingService.cs, src/Hms.Web/wwwroot/css/pages/billing.css, src/Hms.Web/wwwroot/js/pages/billing.js, tests/Hms.Tests/Billing/InvoiceTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~InvoiceTests_
+    - _Area: ui_
+
+- [ ] 11. Reports and analytics
+  - [ ] 11.1 Reports page
+    - Build `/Report/Index` with a start and end date picker and the patient registration, appointment, department, doctor performance, laboratory, pharmacy stock and revenue reports, each showing the figures and tables `requirements.md` names, the revenue chart of net revenue per day drawn with the local Chart.js, and the access check for a person who is not an Admin.
+    - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/ReportController.cs, src/Hms.Web/ViewModels/Report/**, src/Hms.Web/Views/Report/**, src/Hms.Web/Services/ReportService.cs, src/Hms.Web/wwwroot/css/pages/report.css, src/Hms.Web/wwwroot/js/pages/report.js, tests/Hms.Tests/Report/ReportTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~ReportTests_
+    - _Area: ui_
+
+- [ ] 12. Doctor dashboard
+  - [ ] 12.1 Doctor dashboard and patient list
+    - Build `/Dashboard/Doctor` with KPI cards for today's appointments, Checked In appointments waiting, completed consultations today and lab results completed today; today's appointments with time, patient name, patient ID and status earliest first; the next 5 upcoming appointments; the 5 most recent notifications newest first; the patient list of only that Doctor's patients with patient ID, name, last appointment date and status; and the Start consultation button that opens the consultation page.
+    - _Requirements: 12.1, 12.2, 12.3, 12.4, 12.5, 12.6_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/DashboardController.cs, src/Hms.Web/ViewModels/Dashboard/DoctorDashboardViewModel.cs, src/Hms.Web/Views/Dashboard/Doctor.cshtml, src/Hms.Web/Views/Patient/DoctorPatients.cshtml, src/Hms.Web/wwwroot/css/pages/dashboard.css, src/Hms.Web/wwwroot/js/pages/dashboard.js, tests/Hms.Tests/Dashboard/DoctorDashboardTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~DoctorDashboardTests_
+    - _Area: ui_
+
+- [ ] 13. Receptionist dashboard
+  - [ ] 13.1 Receptionist dashboard
+    - Build `/Dashboard/Receptionist` with KPI cards for appointments today, Pending appointments, Checked In appointments and payments recorded today; today's appointments with time, patient name, doctor name and status earliest first and a Check in button on each Confirmed one; a patient search box that opens the matching patient's profile; the 5 most recent notifications; and the New appointment and New invoice quick actions.
+    - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5, 13.6_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/DashboardController.cs, src/Hms.Web/ViewModels/Dashboard/ReceptionistDashboardViewModel.cs, src/Hms.Web/Views/Dashboard/Receptionist.cshtml, src/Hms.Web/wwwroot/css/pages/dashboard.css, src/Hms.Web/wwwroot/js/pages/dashboard.js, tests/Hms.Tests/Dashboard/ReceptionistDashboardTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~ReceptionistDashboardTests_
+    - _Area: ui_
+
+- [ ] 14. Patient dashboard and patient portal
+  - [ ] 14.1 Patient dashboard and portal pages
+    - Build `/Dashboard/Patient` with the next appointment, the number of upcoming appointments, the number of unpaid invoices and the outstanding balance, and the 5 most recent notifications; build the Book appointment page listing Active doctors with specialization, department and consultation fee and the free slots; My appointments newest first with a Cancel button on Pending and Confirmed appointments behind a confirmation dialog; My records with the Final records; and My prescriptions, My lab reports and My invoices, each opening its printable page, with "You do not have access to this page." for another patient's record.
+    - _Requirements: 14.1, 14.2, 14.3, 14.4, 14.5, 14.6, 14.7, 14.8, 14.9_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/DashboardController.cs, src/Hms.Web/ViewModels/Dashboard/PatientDashboardViewModel.cs, src/Hms.Web/Views/Dashboard/Patient.cshtml, src/Hms.Web/Views/Portal/**, src/Hms.Web/wwwroot/css/pages/portal.css, src/Hms.Web/wwwroot/js/pages/portal.js, tests/Hms.Tests/Portal/PatientPortalTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~PatientPortalTests_
+    - _Area: ui_
+
+- [ ] 15. Notifications and responsive polish
+  - [ ] 15.1 Notification bell and panel
+    - Build the bell icon showing the unread count from `GET /Notification/UnreadCount`, the panel with the 10 most recent notifications newest first and their message and time, the mark-as-read that sets the count to 0, and "You have no notifications." when empty; write `NotificationService` so no email or SMS is sent.
+    - _Requirements: 15.1, 15.2, 15.3, 15.4, 15.5_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Controllers/NotificationController.cs, src/Hms.Web/Views/Shared/_NotificationPanel.cshtml, src/Hms.Web/Services/NotificationService.cs, src/Hms.Web/wwwroot/css/pages/notification.css, src/Hms.Web/wwwroot/js/pages/notification.js, tests/Hms.Tests/Notification/NotificationTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~NotificationTests_
+    - _Area: ui_
+  - [ ] 15.2 Responsive layout and empty states
+    - Make every page work at 375 pixels wide without horizontal scrolling with the sidebar behind a menu button, and at 1280 pixels wide with the sidebar expanded beside the content; check the sidebar toggle collapses to icons and expands again, and that every list page shows "No records found." when empty.
+    - _Requirements: 17.1, 17.3, 17.7, 17.8, 17.9_
+    - _Depends: 1_
+    - _Files: src/Hms.Web/Views/Shared/_Layout.cshtml, src/Hms.Web/Views/Shared/_Sidebar.cshtml, src/Hms.Web/Views/Shared/_EmptyState.cshtml, src/Hms.Web/wwwroot/css/site.css, src/Hms.Web/wwwroot/js/site.js, tests/Hms.Tests/Layout/LayoutTests.cs_
+    - _Verify: dotnet test --filter FullyQualifiedName~LayoutTests_
+    - _Area: ui_
