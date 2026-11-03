@@ -1,5 +1,6 @@
 using Hms.Web.Data;
 using Hms.Web.Models.Entities;
+using Hms.Web.ViewModels.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -33,49 +34,53 @@ public class AccountController : Controller
     [AllowAnonymous]
     public IActionResult Login(string? returnUrl = null)
     {
-        ViewData["ReturnUrl"] = returnUrl;
-        return View();
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            return RedirectToAction("Index", "Dashboard");
+        }
+
+        return View(new LoginViewModel { ReturnUrl = returnUrl });
     }
 
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(string userName, string password, string? returnUrl = null)
+    public async Task<IActionResult> Login(LoginViewModel model)
     {
-        ViewData["ReturnUrl"] = returnUrl;
-
-        if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(password))
+        if (string.IsNullOrWhiteSpace(model.UserName) || string.IsNullOrWhiteSpace(model.Password))
         {
             ModelState.AddModelError(string.Empty, "Invalid user name or password.");
-            return View();
+            return View(model);
         }
 
-        var user = await _userManager.FindByNameAsync(userName) ?? await _userManager.FindByEmailAsync(userName);
+        var user = await _userManager.FindByNameAsync(model.UserName)
+            ?? await _userManager.FindByEmailAsync(model.UserName);
+
         if (user is null)
         {
             ModelState.AddModelError(string.Empty, "Invalid user name or password.");
-            return View();
+            return View(model);
         }
 
         if (!user.IsActive)
         {
             ModelState.AddModelError(string.Empty, "Your account is deactivated.");
-            return View();
+            return View(model);
         }
 
-        var result = await _signInManager.PasswordSignInAsync(user, password, isPersistent: false, lockoutOnFailure: false);
+        var result = await _signInManager.PasswordSignInAsync(user, model.Password, isPersistent: false, lockoutOnFailure: false);
         if (!result.Succeeded)
         {
             ModelState.AddModelError(string.Empty, "Invalid user name or password.");
-            return View();
+            return View(model);
         }
 
-        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+        if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
         {
-            return Redirect(returnUrl);
+            return Redirect(model.ReturnUrl);
         }
 
-        return RedirectToAction("Index", "Dashboard");
+        return Redirect(await DashboardUrlForAsync(user));
     }
 
     [HttpPost]
@@ -84,44 +89,69 @@ public class AccountController : Controller
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
-        return RedirectToAction(nameof(Login));
+        return Redirect("/");
     }
 
     [HttpGet]
     [AllowAnonymous]
-    public IActionResult ForgotPassword() => View();
+    public IActionResult ForgotPassword() => View(new ForgotPasswordViewModel());
 
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
-    public IActionResult ForgotPassword(string email)
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
     {
-        ViewData["ResetLink"] = $"/Account/ResetPassword?email={Uri.EscapeDataString(email ?? string.Empty)}";
-        return View();
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var user = await _userManager.FindByEmailAsync(model.Email);
+        if (user is not null)
+        {
+            // The reset link is shown on the page itself; nothing is emailed.
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var link = Url.Action(
+                nameof(ResetPassword),
+                "Account",
+                new { email = model.Email, token },
+                Request.Scheme);
+
+            ViewData["ResetLink"] = link;
+        }
+
+        return View(model);
     }
 
     [HttpGet]
     [AllowAnonymous]
-    public IActionResult ResetPassword(string? email = null)
+    public IActionResult ResetPassword(string? email = null, string? token = null)
     {
-        ViewData["Email"] = email;
-        return View();
+        return View(new ResetPasswordViewModel
+        {
+            Email = email ?? string.Empty,
+            Token = token ?? string.Empty
+        });
     }
 
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ResetPassword(string email, string password)
+    public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
     {
-        var user = await _userManager.FindByEmailAsync(email ?? string.Empty);
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var user = await _userManager.FindByEmailAsync(model.Email);
         if (user is null)
         {
             ModelState.AddModelError(string.Empty, "Invalid user name or password.");
-            return View();
+            return View(model);
         }
 
-        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var result = await _userManager.ResetPasswordAsync(user, token, password ?? string.Empty);
+        var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
         if (!result.Succeeded)
         {
             foreach (var error in result.Errors)
@@ -129,9 +159,10 @@ public class AccountController : Controller
                 ModelState.AddModelError(string.Empty, error.Description);
             }
 
-            return View();
+            return View(model);
         }
 
+        TempData["Message"] = "Your password has been reset. Sign in with your new password.";
         return RedirectToAction(nameof(Login));
     }
 
@@ -198,4 +229,27 @@ public class AccountController : Controller
     [HttpGet]
     [AllowAnonymous]
     public IActionResult AccessDenied() => View();
+
+    /// <summary>
+    /// The dashboard of the signed-in person's role: Admin, Doctor, Receptionist or Patient.
+    /// </summary>
+    private async Task<string> DashboardUrlForAsync(ApplicationUser user)
+    {
+        if (await _userManager.IsInRoleAsync(user, Roles.Admin))
+        {
+            return Url.Action("Admin", "Dashboard") ?? "/Dashboard/Admin";
+        }
+
+        if (await _userManager.IsInRoleAsync(user, Roles.Doctor))
+        {
+            return Url.Action("Doctor", "Dashboard") ?? "/Dashboard/Doctor";
+        }
+
+        if (await _userManager.IsInRoleAsync(user, Roles.Receptionist))
+        {
+            return Url.Action("Receptionist", "Dashboard") ?? "/Dashboard/Receptionist";
+        }
+
+        return Url.Action("Patient", "Dashboard") ?? "/Dashboard/Patient";
+    }
 }
