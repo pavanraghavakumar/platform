@@ -147,7 +147,85 @@ public class DashboardController : Controller
     }
 
     [Authorize(Roles = Roles.Receptionist)]
-    public IActionResult Receptionist() => View();
+    public async Task<IActionResult> Receptionist()
+    {
+        var userId = _userManager.GetUserId(User);
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var today = DateTime.UtcNow.Date;
+        var tomorrow = today.AddDays(1);
+        var appointments = _db.Appointments.AsNoTracking();
+
+        var todayAppointments = await appointments
+            .Where(a => a.AppointmentDate >= today && a.AppointmentDate < tomorrow)
+            .Select(a => new ReceptionistAppointmentRow
+            {
+                Id = a.Id,
+                StartTime = a.StartTime,
+                PatientName = a.Patient!.FullName,
+                DoctorName = a.Doctor!.FullName,
+                Status = a.Status
+            })
+            .ToListAsync();
+
+        var recordedPayments = await _db.Payments
+            .AsNoTracking()
+            .Where(p => p.Status == Models.Entities.EntityStatus.PaymentRecorded
+                && p.PaidAt >= today
+                && p.PaidAt < tomorrow)
+            .Select(p => p.Amount)
+            .ToListAsync();
+
+        var patientChoices = await _db.Patients
+            .AsNoTracking()
+            .OrderBy(p => p.FullName)
+            .ThenBy(p => p.PatientCode)
+            .Select(p => new ReceptionistPatientChoice
+            {
+                Id = p.Id,
+                PatientCode = p.PatientCode,
+                FullName = p.FullName,
+                Phone = p.Phone,
+                InvoiceAppointmentId = p.Appointments
+                    .Where(a => a.Invoice == null)
+                    .OrderByDescending(a => a.AppointmentDate)
+                    .ThenByDescending(a => a.Id)
+                    .Select(a => (int?)a.Id)
+                    .FirstOrDefault()
+            })
+            .ToListAsync();
+
+        var model = new ReceptionistDashboardViewModel
+        {
+            TodaysAppointments = todayAppointments.Count,
+            PendingAppointments = await appointments.CountAsync(a => a.Status == Models.Entities.EntityStatus.AppointmentPending),
+            CheckedInAppointments = await appointments.CountAsync(a => a.Status == Models.Entities.EntityStatus.AppointmentCheckedIn),
+            PaymentsRecordedToday = recordedPayments.Sum(),
+            Today = todayAppointments
+                .OrderBy(a => a.StartTime)
+                .ThenBy(a => a.Id)
+                .ToList(),
+            Patients = patientChoices,
+            RecentNotifications = await _db.Notifications
+                .AsNoTracking()
+                .Where(n => n.UserId == userId)
+                .OrderByDescending(n => n.CreatedAt)
+                .ThenByDescending(n => n.Id)
+                .Take(5)
+                .Select(n => new ReceptionistNotificationRow
+                {
+                    Message = n.Message,
+                    CreatedAt = n.CreatedAt,
+                    IsRead = n.IsRead
+                })
+                .ToListAsync()
+        };
+
+        return View(model);
+    }
 
     [Authorize(Roles = Roles.Patient)]
     public IActionResult Patient() => View();
