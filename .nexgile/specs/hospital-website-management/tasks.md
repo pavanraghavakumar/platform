@@ -9,6 +9,7 @@
   - _Verify: dotnet test tests/Hospital.ArchitectureTests/Hospital.ArchitectureTests.csproj --filter Setup_
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter Health_
   - _Area: setup_
+  - _Issue: #48_
 
 - [ ] 2. Public hospital homepage and navigation
   - Build the premium public homepage at `/` with the responsive hospital header, accessible desktop and off-canvas navigation, healthcare hero, all approved editorial/card sections, contact band, and full footer using published projections and maintained contact fallbacks.
@@ -19,6 +20,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter Home_
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter Home_
   - _Area: ui_
+  - _Issue: #49_
 
 - [ ] 3. About Hospital page
   - Build the `/about` editorial screen with hospital introduction, professional imagery, experience and achievement cards, quality-of-care content, safe omission of missing optional items, and visible routes to Departments, Our Doctors, Medical Services, and Book an Appointment.
@@ -29,6 +31,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter About_
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter About_
   - _Area: ui_
+  - _Issue: #50_
 
 - [ ] 4. Departments and Department Details
   - Build `/departments` as an image-led responsive card grid and `/departments/{slug}` as a polished detail screen with related published Doctors and a Department-preselected Book an Appointment route.
@@ -39,6 +42,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter Departments_
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter Departments_
   - _Area: ui_
+  - _Issue: #51_
 
 - [ ] 5. Our Doctors, Doctor Details, and availability
   - Build `/doctors` with Department and specialization filters and professional profile cards, plus `/doctors/{slug}` with profile, qualifications, Department, accessible availability states, retry behavior, and a Doctor-preselected Book an Appointment action.
@@ -49,6 +53,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter Doctors_
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter Doctors_
   - _Area: ui_
+  - _Issue: #52_
 
 - [ ] 6. Medical Services and Service Details
   - Build `/medical-services` with healthcare image cards and `/medical-services/{slug}` with an editorial service presentation, relevant care information, and a prominent Book an Appointment route.
@@ -59,6 +64,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter MedicalServices_
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter MedicalServices_
   - _Area: ui_
+  - _Issue: #53_
 
 - [ ] 7. Health Packages information screens
   - Build `/health-packages` and `/health-packages/{slug}` as polished, responsive information-only card and detail screens with no booking, checkout, purchase, payment, card, charge, tax, refund, or invoice controls.
@@ -69,6 +75,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter HealthPackages_
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter HealthPackages_
   - _Area: ui_
+  - _Issue: #54_
 
 - [ ] 8. Appointment Booking journey and selection APIs
   - Build the complete `/appointments/book` stepper and the Department, Doctor, availability, slot, and `POST /appointments` contracts, using visual Doctor and time-slot cards, accessible validation, responsive summaries, and deterministic dependent-selection clearing.
@@ -79,6 +86,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter Appointments_
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter Appointments_
   - _Area: ui_
+  - _Issue: #55_
 
 - [ ] 9. Contact Us and shared reception queue
   - Build `/contact` with the responsive contact methods, map, Emergency Care route, consent-aware enquiry form, field validation, progress, success, and retry states, then implement idempotent `POST /contact` queueing.
@@ -89,6 +97,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter Contact_
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter Contact_
   - _Area: ui_
+  - _Issue: #56_
 
 - [ ] 10. Patient Registration, Patient Login, and secured patient landing
   - Build focused public-layout Registration and Patient Login cards with the exact authentication fields, password reveal behavior, linked validation summaries, generic credential errors, safe value redisplay, and links between journeys.
@@ -99,6 +108,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter PatientAuthentication_
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter PatientAuthentication_
   - _Area: ui_
+  - _Issue: #57_
 
 - [ ] 11. Emergency Care instructions and operational review
   - Build `/emergency-care` with the emergency phone, immediate-life-threatening-emergency statement, contact and location instructions first, plus finished responsive styling and a persistent route supplied by the public shell.
@@ -109,6 +119,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter EmergencyCare_
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter EmergencyCare_
   - _Area: ui_
+  - _Issue: #58_
 
 - [ ] 12. Patient privacy requests, retention, and testimonial consent
   - Implement authenticated `POST /patient/privacy-requests` and the protected processing workflow for identity verification, affected-record discovery, correction, deletion or anonymization, retention decisions, outcomes, responsible Admin, and immutable audit evidence.
@@ -119,6 +130,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter PrivacyRequests_
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter PrivacyRequests_
   - _Area: api_
+  - _Issue: #59_
 
 - [ ] 13. Protected access, immutable audit, and healthcare workflow continuity
   - Apply deny-by-default policies and object-level authorization to preserved appointment scheduling, billing, pharmacy, laboratory, medical-record, access, and public-emergency operations while keeping their existing models, services, workflows, accounts, and SQLite records authoritative.
@@ -130,6 +142,7 @@
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter ProtectedHealthcare_
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter Compatibility_
   - _Area: api_
+  - _Issue: #60_
 
 - [ ] 14. Appointment communications, reporting, and operational alerts
   - Implement idempotent 24-hour Appointment reminders, booking funnel and 90-day completion measurement, Department-and-Doctor demand and slot reporting, and deduplicated safe IT support alerts for website, database, authentication, Appointment service, and reception queue failures.
@@ -140,6 +153,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter OperationalReporting_
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter OperationalReporting_
   - _Area: api_
+  - _Issue: #61_
 
 - [ ] 15. Capacity, data-volume, resilience, and recovery verification
   - Add repeatable load and data-volume fixtures for 500 public visitors, 75 signed-in people, 50,000 Patient records, 250,000 historical Appointments, and the year-1/year-3 Appointment volumes, measuring the approved public, availability, and submission percentiles without bypassing existing workflows.
@@ -151,6 +165,7 @@
   - _Verify: dotnet test tests/Hospital.ResilienceTests/Hospital.ResilienceTests.csproj --filter Recovery_
   - _Verify: dotnet test tests/Hospital.LoadTests/Hospital.LoadTests.csproj --filter ExpectedLoad_
   - _Area: setup_
+  - _Issue: #62_
 
 - [ ]* 16. Property tests for P1 published public information
   - Generate mixed publication states for About Hospital, Departments, Doctors, Medical Services, and Health Packages and prove every list, detail, filter, and update projection exposes only published information and returns the public not-found result otherwise.
@@ -161,6 +176,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter PublishedPublicInformationProperties_
   - _Mode: testgen_
   - _Area: setup_
+  - _Issue: #63_
 
 - [ ]* 17. Property tests for P2 and P13 public privacy and role authorization
   - Generate protected values, roles, routes, and object ownership combinations to prove public projections exclude protected data and existing role policies alone authorize protected healthcare actions.
@@ -171,6 +187,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter PublicPrivacyAndAuthorizationProperties_
   - _Mode: testgen_
   - _Area: setup_
+  - _Issue: #64_
 
 - [ ]* 18. Property tests for P3–P5 Appointment consistency
   - Generate selection transitions, repeated valid submissions, and lost-slot races to prove dependent choices stay consistent, accepted retries remain idempotent, and an unavailable slot never creates an Appointment.
@@ -182,6 +199,7 @@
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter AppointmentAtomicityProperties_
   - _Mode: testgen_
   - _Area: setup_
+  - _Issue: #65_
 
 - [ ]* 19. Property tests for P6 and P7 truthful form failures and exact queueing
   - Generate invalid and unavailable-service outcomes plus repeated Contact submissions to prove failed forms never claim success and accepted enquiries create exactly one enquiry, queue item, and Receptionist alert.
@@ -193,6 +211,7 @@
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter ContactQueueingProperties_
   - _Mode: testgen_
   - _Area: setup_
+  - _Issue: #66_
 
 - [ ]* 20. Property tests for P8, P20, and P21 timed operations and safe fallbacks
   - Generate times, worker replays, Emergency Care read failures, and operational dependency failures to prove one effect per due occurrence, maintained emergency fallback output, and one deduplicated protected-content-free support alert.
@@ -204,6 +223,7 @@
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter SafeFallbackAndAlertProperties_
   - _Mode: testgen_
   - _Area: setup_
+  - _Issue: #70_
 
 - [ ]* 21. Property tests for P9 and P10 Patient authentication
   - Generate account existence, invalid credentials, and valid, absent, altered, or external continuations to prove generic failures create no session and successful authentication returns only to a safe stable destination.
@@ -214,6 +234,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter PatientAuthenticationProperties_
   - _Mode: testgen_
   - _Area: setup_
+  - _Issue: #67_
 
 - [ ]* 22. Property tests for P11 and P12 privacy and consent
   - Generate Privacy requests, linked records, retention decisions, and Patient Testimonial consent histories to prove verification gates every action, eligible and retained data follow their rules, outcomes are audited, and public visibility follows current explicit consent.
@@ -224,6 +245,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter PrivacyAndConsentProperties_
   - _Mode: testgen_
   - _Area: setup_
+  - _Issue: #68_
 
 - [ ]* 23. Property tests for P14 immutable protected audit evidence
   - Generate protected views, changes, actors, and ordinary-user mutation attempts to prove complete audit evidence is appended once and cannot be altered or deleted during retention.
@@ -234,6 +256,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter ProtectedAuditProperties_
   - _Mode: testgen_
   - _Area: setup_
+  - _Issue: #69_
 
 - [ ]* 24. Property tests for P15 operational report totals
   - Generate booking, slot, and Contact enquiry events over selected periods to prove all grouped and overall totals agree with source events and the nonzero booking-start completion percentage uses valid unassisted submissions.
@@ -244,6 +267,7 @@
   - _Verify: dotnet test tests/Hospital.UnitTests/Hospital.UnitTests.csproj --filter OperationalReportProperties_
   - _Mode: testgen_
   - _Area: setup_
+  - _Issue: #71_
 
 - [ ]* 25. Property tests for P16 and P17 migration preservation and information-only packages
   - Generate representative existing SQLite fixtures and published Health Package renderings to prove migrations preserve every protected identifier and value while public package controls and contracts never introduce booking or money operations.
@@ -254,6 +278,7 @@
   - _Verify: dotnet test tests/Hospital.IntegrationTests/Hospital.IntegrationTests.csproj --filter MigrationAndPackageBoundaryProperties_
   - _Mode: testgen_
   - _Area: setup_
+  - _Issue: #72_
 
 - [ ] 26. Deployment setup for Azure App Service
   - Create Azure App Service staging and production deployment infrastructure, application package and pipeline, persistent mounts for SQLite, data-protection keys and media, health checks, restricted settings, monitoring, pre-cutover backup, 15-minute backup schedule, restore runbook, and safe promotion with one production system of record.
@@ -264,6 +289,7 @@
   - _Verify: dotnet test tests/Hospital.ArchitectureTests/Hospital.ArchitectureTests.csproj --filter Deployment_
   - _Mode: devops_
   - _Area: deploy_
+  - _Issue: #73_
 
 ## Assumptions
 
