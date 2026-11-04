@@ -1,6 +1,6 @@
 # Tasks: Premium Hospital Website – Healthcare Management System
 
-- [ ] 1. Project setup for ASP.NET Core MVC hospital website
+- [x] 1. Project setup for ASP.NET Core MVC hospital website
   - Create the .NET 8 solution and four-layer project skeleton, preserve-compatible EF Core SQLite foundation, public Razor layout, design tokens, secure middleware defaults, `/health`, development seed and settings, test projects, and README commands from the design.
   - Add `@playwright/test` as a development dependency in `package.json`, create the `e2e/` journey folder with `e2e/.gitkeep`, and configure the unit test runner to exclude `e2e/` so Greenfield's Tester can save journeys for `run_journeys` without unit tests collecting them.
   - Establish reusable application contracts, result types, temporary-SQLite integration fixture, fake clock/email/monitoring adapters, loopback `PORT` binding, and one passing architecture and health test so later features can be added without editing shared bootstrap files.
