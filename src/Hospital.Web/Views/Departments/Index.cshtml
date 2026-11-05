@@ -1,0 +1,55 @@
+@model Hospital.Web.ViewModels.Departments.DepartmentIndexViewModel
+@{
+    ViewData["Title"] = "Departments";
+    Layout = "_PublicLayout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/departments.css" asp-append-version="true" />
+}
+
+<header class="departments-hero">
+    <div class="shell departments-hero__content">
+        <p class="eyebrow">Specialist care, centred on you</p>
+        <h1>Hospital departments</h1>
+        <p>Explore our clinical specialties and find the team best placed to support your health.</p>
+    </div>
+</header>
+
+<section class="shell departments-section" aria-labelledby="departments-heading">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Our specialties</p>
+            <h2 id="departments-heading">Care for every stage of life</h2>
+        </div>
+        <p>Each department brings together experienced clinicians, thoughtful support, and modern care.</p>
+    </div>
+
+    @if (Model.Departments.Count == 0)
+    {
+        <div class="department-empty" role="status">
+            <h3>Department information is being updated</h3>
+            <p>Please check again soon or contact the hospital for help finding the right care.</p>
+        </div>
+    }
+    else
+    {
+        <div class="department-grid">
+            @foreach (var department in Model.Departments)
+            {
+                <article class="department-card">
+                    <a class="department-card__media" href="/departments/@department.Slug" tabindex="-1" aria-hidden="true">
+                        <img src="@department.ImagePath" alt="" width="640" height="420" loading="lazy" />
+                    </a>
+                    <div class="department-card__body">
+                        <h3><a href="/departments/@department.Slug">@department.Name</a></h3>
+                        <p>@department.Description</p>
+                        <a class="text-link" href="/departments/@department.Slug" aria-label="Learn more about @department.Name">
+                            Explore department <span aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</section>

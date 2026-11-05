@@ -1,0 +1,84 @@
+@model Hospital.Web.ViewModels.Departments.DepartmentDetailsViewModel
+@{
+    ViewData["Title"] = Model.Name;
+    Layout = "_PublicLayout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/departments.css" asp-append-version="true" />
+}
+
+<nav class="shell breadcrumbs" aria-label="Breadcrumb">
+    <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/departments">Departments</a></li>
+        <li aria-current="page">@Model.Name</li>
+    </ol>
+</nav>
+
+<article>
+    <header class="shell department-identity">
+        <div class="department-identity__content">
+            <p class="eyebrow">Clinical department</p>
+            <h1>@Model.Name</h1>
+            <p class="department-identity__lead">@Model.Description</p>
+            <div class="department-actions">
+                <a class="button button--primary" href="/appointments/book?department=@Model.Slug">Book an Appointment</a>
+                <a class="button button--secondary" href="/doctors?department=@Model.Slug">View our doctors</a>
+            </div>
+        </div>
+        <div class="department-identity__media">
+            <img src="@Model.ImagePath" alt="@Model.Name care at Meridian Hospital" width="760" height="560" />
+        </div>
+    </header>
+
+    <section class="shell department-overview" aria-labelledby="about-department">
+        <div>
+            <p class="eyebrow">How we can help</p>
+            <h2 id="about-department">About @Model.Name</h2>
+        </div>
+        <p class="department-overview__copy">@Model.Details</p>
+    </section>
+
+    <section class="department-doctors" aria-labelledby="department-doctors-heading">
+        <div class="shell">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Meet the team</p>
+                    <h2 id="department-doctors-heading">Doctors in @Model.Name</h2>
+                </div>
+                <a class="text-link" href="/doctors?department=@Model.Slug">View all department doctors <span aria-hidden="true">→</span></a>
+            </div>
+
+            @if (Model.Doctors.Count == 0)
+            {
+                <p class="department-empty">Published doctor profiles for this department will be available soon.</p>
+            }
+            else
+            {
+                <div class="doctor-grid">
+                    @foreach (var doctor in Model.Doctors)
+                    {
+                        <article class="doctor-card">
+                            <img src="@doctor.PhotoPath" alt="Portrait of @doctor.Name" width="360" height="360" loading="lazy" />
+                            <div class="doctor-card__body">
+                                <p class="doctor-card__specialty">@doctor.Specialization</p>
+                                <h3><a href="/doctors/@doctor.Slug">@doctor.Name</a></h3>
+                                <p>@doctor.Qualifications</p>
+                            </div>
+                        </article>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
+    <aside class="shell department-booking" aria-labelledby="department-booking-heading">
+        <div>
+            <p class="eyebrow">Ready for the next step?</p>
+            <h2 id="department-booking-heading">Plan your visit with @Model.Name</h2>
+            <p>Start with your department already selected and choose the doctor and time that work for you.</p>
+        </div>
+        <a class="button button--primary" href="/appointments/book?department=@Model.Slug">Book an Appointment</a>
+    </aside>
+</article>

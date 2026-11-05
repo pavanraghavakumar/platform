@@ -18,6 +18,9 @@ public static class ServiceCollectionExtensions
             ?? "Data Source=App_Data/hospital.db";
 
         services.AddDbContext<HospitalDbContext>(options => options.UseSqlite(connectionString));
+        services.AddScoped<
+            Hospital.Application.Features.Departments.IPublicDepartmentQuery,
+            Hospital.Infrastructure.PublicContent.Departments.PublicDepartmentQuery>();
         services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 12;
