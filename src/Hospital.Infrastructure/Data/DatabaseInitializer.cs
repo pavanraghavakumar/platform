@@ -32,6 +32,8 @@ public static class DatabaseInitializer
             await database.Database.EnsureCreatedAsync();
         }
 
+        await EnsurePublicDepartmentSchemaAsync(database);
+
         if (!isProduction)
         {
             await SeedDevelopmentAccountsIfEmptyAsync(scope.ServiceProvider, database);
@@ -40,6 +42,45 @@ public static class DatabaseInitializer
         {
             await SeedFirstProductionAdminIfEmptyAsync(scope.ServiceProvider, database, configuration);
         }
+    }
+
+    private static async Task EnsurePublicDepartmentSchemaAsync(HospitalDbContext database)
+    {
+        await database.Database.ExecuteSqlRawAsync(
+            """
+            CREATE TABLE IF NOT EXISTS "PublicDepartments" (
+                "Id" INTEGER NOT NULL CONSTRAINT "PK_PublicDepartments" PRIMARY KEY AUTOINCREMENT,
+                "Name" TEXT NOT NULL,
+                "Slug" TEXT NOT NULL,
+                "ImagePath" TEXT NOT NULL,
+                "Description" TEXT NOT NULL,
+                "Details" TEXT NOT NULL,
+                "PublicationState" TEXT NOT NULL,
+                "PublishedAt" TEXT NULL,
+                "ArchivedAt" TEXT NULL
+            );
+            CREATE UNIQUE INDEX IF NOT EXISTS "IX_PublicDepartments_Slug"
+                ON "PublicDepartments" ("Slug");
+            CREATE INDEX IF NOT EXISTS "IX_PublicDepartments_PublicationState"
+                ON "PublicDepartments" ("PublicationState");
+
+            CREATE TABLE IF NOT EXISTS "PublicDepartmentDoctors" (
+                "Id" INTEGER NOT NULL CONSTRAINT "PK_PublicDepartmentDoctors" PRIMARY KEY AUTOINCREMENT,
+                "DepartmentId" INTEGER NOT NULL,
+                "Name" TEXT NOT NULL,
+                "Slug" TEXT NOT NULL,
+                "PhotoPath" TEXT NOT NULL,
+                "Qualifications" TEXT NOT NULL,
+                "Specialization" TEXT NOT NULL,
+                "PublicationState" TEXT NOT NULL,
+                CONSTRAINT "FK_PublicDepartmentDoctors_PublicDepartments_DepartmentId"
+                    FOREIGN KEY ("DepartmentId") REFERENCES "PublicDepartments" ("Id") ON DELETE RESTRICT
+            );
+            CREATE UNIQUE INDEX IF NOT EXISTS "IX_PublicDepartmentDoctors_Slug"
+                ON "PublicDepartmentDoctors" ("Slug");
+            CREATE INDEX IF NOT EXISTS "IX_PublicDepartmentDoctors_DepartmentId_PublicationState"
+                ON "PublicDepartmentDoctors" ("DepartmentId", "PublicationState");
+            """);
     }
 
     private static void EnsureDatabaseDirectoryExists(HospitalDbContext database)

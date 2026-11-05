@@ -1,0 +1,16 @@
+@{
+    ViewData["Title"] = "Department not found";
+    Layout = "_PublicLayout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/departments.css" asp-append-version="true" />
+}
+
+<section class="shell department-not-found" aria-labelledby="department-not-found-heading">
+    <div class="department-not-found__mark" aria-hidden="true">404</div>
+    <p class="eyebrow">We could not find that department</p>
+    <h1 id="department-not-found-heading">This department is not available</h1>
+    <p>It may have moved, no longer be published, or the address may be incorrect. Explore our current departments to find the care you need.</p>
+    <a class="button button--primary" href="/departments">Back to Departments</a>
+</section>
