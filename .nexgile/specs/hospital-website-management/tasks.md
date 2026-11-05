@@ -33,7 +33,7 @@
   - _Area: ui_
   - _Issue: #50_
 
-- [ ] 4. Departments and Department Details
+- [x] 4. Departments and Department Details
   - Build `/departments` as an image-led responsive card grid and `/departments/{slug}` as a polished detail screen with related published Doctors and a Department-preselected Book an Appointment route.
   - Integrate publication changes through the existing data boundary, return the branded public not-found state for unavailable records, and test lists, details, links, filtering of publication states, and update visibility.
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
