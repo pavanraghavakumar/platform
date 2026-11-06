@@ -66,7 +66,7 @@
   - _Area: ui_
   - _Issue: #53_
 
-- [ ] 7. Health Packages information screens
+- [x] 7. Health Packages information screens
   - Build `/health-packages` and `/health-packages/{slug}` as polished, responsive information-only card and detail screens with no booking, checkout, purchase, payment, card, charge, tax, refund, or invoice controls.
   - Apply publication-state changes and branded not-found handling, and test both rendered controls and public contracts to preserve the existing billing boundary.
   - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6_
