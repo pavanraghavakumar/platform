@@ -21,6 +21,12 @@ public static class ServiceCollectionExtensions
 
         services.AddDbContext<HospitalDbContext>(options => options.UseSqlite(connectionString));
         services.AddScoped<
+            Hospital.Application.Features.MedicalServices.IMedicalServicesQuery,
+            Hospital.Application.Features.MedicalServices.MedicalServicesQuery>();
+        services.AddScoped<
+            Hospital.Application.Features.MedicalServices.IMedicalServicePublicStore,
+            Hospital.Infrastructure.PublicContent.MedicalServices.SqliteMedicalServicePublicStore>();
+        services.AddScoped<
             Hospital.Application.Features.Departments.IPublicDepartmentQuery,
             Hospital.Infrastructure.PublicContent.Departments.PublicDepartmentQuery>();
         services.AddIdentity<ApplicationUser, IdentityRole>(options =>

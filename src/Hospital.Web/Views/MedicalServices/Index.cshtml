@@ -1,0 +1,66 @@
+@model Hospital.Web.ViewModels.MedicalServices.MedicalServicesIndexViewModel
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Medical Services";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/medical-services.css" asp-append-version="true" />
+}
+
+<section class="services-intro">
+    <div class="shell services-intro__content">
+        <p class="services-eyebrow">Care built around you</p>
+        <h1>Medical Services</h1>
+        <p>Explore coordinated, compassionate care supported by experienced clinical teams and modern facilities.</p>
+    </div>
+</section>
+
+<section class="shell services-section" aria-labelledby="services-heading">
+    <div class="services-section__heading">
+        <div>
+            <p class="services-eyebrow">Our expertise</p>
+            <h2 id="services-heading">Find the care you need</h2>
+        </div>
+        <p>Each service connects you with the right specialists, clear guidance, and a straightforward route to an appointment.</p>
+    </div>
+
+    @if (Model.Services.Count == 0)
+    {
+        <div class="services-empty" role="status">
+            <h2>Service information is being updated</h2>
+            <p>Please contact the hospital or return soon for our current medical services.</p>
+        </div>
+    }
+    else
+    {
+        <div class="services-grid">
+            @foreach (var service in Model.Services)
+            {
+                <article class="service-card">
+                    @if (service.ImageSourceSet is not null)
+                    {
+                        <img src="@service.ImageSource"
+                             srcset="@service.ImageSourceSet"
+                             sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1199px) calc(50vw - 36px), 368px"
+                             alt="@service.ImageAlt"
+                             width="960"
+                             height="640"
+                             loading="lazy" />
+                    }
+                    else
+                    {
+                        <img src="@service.ImageSource" alt="@service.ImageAlt" width="960" height="640" loading="lazy" />
+                    }
+                    <div class="service-card__body">
+                        <h2>@service.Name</h2>
+                        <p>@service.Description</p>
+                        <a class="service-card__link" href="/medical-services/@Uri.EscapeDataString(service.Slug)">
+                            Explore this service <span aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</section>
+

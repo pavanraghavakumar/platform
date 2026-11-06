@@ -1,4 +1,5 @@
 using Hospital.Infrastructure.Identity;
+using Hospital.Infrastructure.PublicContent.MedicalServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -33,7 +34,7 @@ public static class DatabaseInitializer
         }
 
         await EnsurePublicDepartmentSchemaAsync(database);
-
+        await MedicalServicePublicContentInitializer.InitializeAsync(database, !isProduction);
         if (!isProduction)
         {
             await SeedDevelopmentAccountsIfEmptyAsync(scope.ServiceProvider, database);

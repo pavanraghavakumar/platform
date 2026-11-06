@@ -1,0 +1,60 @@
+@model Hospital.Web.ViewModels.MedicalServices.MedicalServiceDetailsViewModel
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = Model.Name;
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/medical-services.css" asp-append-version="true" />
+}
+
+<article>
+    <header class="service-hero">
+        <div class="shell service-hero__grid">
+            <div class="service-hero__content">
+                <a class="service-back" href="/medical-services">← All Medical Services</a>
+                <p class="services-eyebrow">Medical service</p>
+                <h1>@Model.Name</h1>
+                <p class="service-hero__summary">@Model.Description</p>
+                <a class="button button--primary service-appointment" href="/appointments/book?service=@Uri.EscapeDataString(Model.Slug)">Book an Appointment</a>
+            </div>
+            @if (Model.ImageSourceSet is not null)
+            {
+                <img src="@Model.ImageSource"
+                     srcset="@Model.ImageSourceSet"
+                     sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1199px) calc(50vw - 48px), 540px"
+                     alt="@Model.ImageAlt"
+                     width="960"
+                     height="640"
+                     loading="eager"
+                     fetchpriority="high" />
+            }
+            else
+            {
+                <img src="@Model.ImageSource" alt="@Model.ImageAlt" width="960" height="640" loading="eager" fetchpriority="high" />
+            }
+        </div>
+    </header>
+
+    <div class="shell service-editorial">
+        <section aria-labelledby="about-service">
+            <p class="services-eyebrow">How we can help</p>
+            <h2 id="about-service">Care with clarity at every step</h2>
+            <p class="service-editorial__lead">@Model.Details</p>
+        </section>
+
+        <aside class="care-panel" aria-labelledby="care-information">
+            <p class="services-eyebrow">Plan your visit</p>
+            <h2 id="care-information">Relevant care information</h2>
+            @if (!string.IsNullOrWhiteSpace(Model.CareInformation))
+            {
+                <p>@Model.CareInformation</p>
+            }
+            else
+            {
+                <p>Our care team will explain how to prepare and what to expect before your visit.</p>
+            }
+            <a href="/appointments/book?service=@Uri.EscapeDataString(Model.Slug)">Choose an appointment time <span aria-hidden="true">→</span></a>
+        </aside>
+    </div>
+</article>
+
