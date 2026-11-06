@@ -1,9 +1,12 @@
 using Hospital.Infrastructure.Data;
 using Hospital.Web.Configuration;
 using Hospital.Web.Middleware;
+using Hospital.Web.ViewModels.MedicalServices;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -48,6 +51,37 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseExceptionHandler("/error");
+
+app.MapGet("/media/responsive/{width:int}.webp", async (
+    int width,
+    string source,
+    IWebHostEnvironment environment,
+    HttpContext context) =>
+{
+    if (!MedicalServiceImages.IsSupportedWidth(width) || !MedicalServiceImages.IsLocalImagePath(source))
+    {
+        return Results.NotFound();
+    }
+
+    var file = environment.WebRootFileProvider.GetFileInfo(source.TrimStart('/'));
+    if (!file.Exists)
+    {
+        return Results.NotFound();
+    }
+
+    await using var input = file.CreateReadStream();
+    using var image = await Image.LoadAsync(input, context.RequestAborted);
+    image.Mutate(operation => operation.Resize(new ResizeOptions
+    {
+        Mode = ResizeMode.Max,
+        Size = new Size(width, 0)
+    }));
+
+    context.Response.ContentType = "image/webp";
+    context.Response.Headers.CacheControl = "public,max-age=86400";
+    await image.SaveAsWebpAsync(context.Response.Body, context.RequestAborted);
+    return Results.Empty;
+}).AllowAnonymous();
 
 app.MapHealthChecks("/health", new HealthCheckOptions
 {

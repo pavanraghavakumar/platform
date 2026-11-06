@@ -1,0 +1,17 @@
+@model string
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Service not found";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/medical-services.css" asp-append-version="true" />
+}
+
+<section class="shell service-not-found" aria-labelledby="not-found-title">
+    <div aria-hidden="true" class="service-not-found__mark">+</div>
+    <p class="services-eyebrow">Medical Services</p>
+    <h1 id="not-found-title">This service is not available</h1>
+    <p>The service may have moved, is being updated, or is no longer publicly available.</p>
+    <a class="button button--primary" href="/medical-services">Back to Medical Services</a>
+</section>
+
