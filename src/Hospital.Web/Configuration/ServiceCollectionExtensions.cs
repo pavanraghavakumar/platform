@@ -1,5 +1,6 @@
 using Hospital.Application.Contracts;
 using Hospital.Application.Features.About;
+using Hospital.Application.Features.HealthPackages;
 using Hospital.Application.Features.PatientAuthentication;
 using Hospital.Infrastructure.Data;
 using Hospital.Infrastructure.Identity;
@@ -7,6 +8,7 @@ using Hospital.Infrastructure.Identity.PatientAuthentication;
 using Hospital.Infrastructure.Messaging;
 using Hospital.Infrastructure.Monitoring;
 using Hospital.Infrastructure.PublicContent.About;
+using Hospital.Infrastructure.PublicContent.HealthPackages;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -66,6 +68,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IEmailSender, DevelopmentEmailSender>();
         services.AddScoped<IOperationalMonitor, OperationalMonitor>();
         services.AddSingleton<IAboutContentQuery, StaticAboutContentQuery>();
+        services.AddScoped<IHealthPackageContentSource, SqliteHealthPackageContentSource>();
+        services.AddScoped<IPublicHealthPackagesQuery, PublicHealthPackagesQuery>();
         return services;
     }
 }

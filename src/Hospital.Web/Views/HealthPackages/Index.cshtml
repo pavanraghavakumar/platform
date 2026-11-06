@@ -1,0 +1,56 @@
+@model Hospital.Web.ViewModels.HealthPackages.HealthPackagesIndexViewModel
+@{
+    ViewData["Title"] = "Health Packages";
+}
+
+<section class="health-packages-hero" aria-labelledby="health-packages-title">
+    <div class="shell health-packages-hero__content">
+        <p class="health-packages-eyebrow">Preventive care, clearly explained</p>
+        <h1 id="health-packages-title">Health Packages</h1>
+        <p class="health-packages-lead">Explore our health checkup options and understand what each package includes before speaking with your care team.</p>
+        <div class="information-notice" role="note">
+            <span class="information-notice__icon" aria-hidden="true">i</span>
+            <p>These packages are provided for information only. Your doctor can help determine which health checks are appropriate for you.</p>
+        </div>
+    </div>
+</section>
+
+<section class="shell health-packages-section" aria-labelledby="available-packages-title">
+    <div class="section-heading">
+        <p class="health-packages-eyebrow">Health checkup options</p>
+        <h2 id="available-packages-title">Find the right information for your needs</h2>
+    </div>
+
+    @if (Model.Packages.Count == 0)
+    {
+        <div class="health-packages-empty">
+            <h3>Package information is being updated</h3>
+            <p>Please check again later for our currently available health packages.</p>
+        </div>
+    }
+    else
+    {
+        <div class="health-package-grid">
+            @foreach (var package in Model.Packages)
+            {
+                <article class="health-package-card">
+                    <div class="health-package-card__mark" aria-hidden="true">+</div>
+                    <div class="health-package-card__body">
+                        <h3><a href="/health-packages/@package.Slug">@package.Name</a></h3>
+                        <p>@package.Description</p>
+                        <h4>Package details</h4>
+                        <ul>
+                            @foreach (var detail in package.Details)
+                            {
+                                <li>@detail</li>
+                            }
+                        </ul>
+                    </div>
+                    <a class="health-package-card__link" href="/health-packages/@package.Slug" aria-label="View package details for @package.Name">
+                        View package details <span aria-hidden="true">→</span>
+                    </a>
+                </article>
+            }
+        </div>
+    }
+</section>
