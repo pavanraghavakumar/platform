@@ -1,4 +1,7 @@
+using System.Text.Json;
+using Hospital.Application.Features.HealthPackages;
 using Hospital.Infrastructure.Identity;
+using Hospital.Infrastructure.PublicContent.HealthPackages;
 using Hospital.Infrastructure.PublicContent.MedicalServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -34,9 +37,11 @@ public static class DatabaseInitializer
         }
 
         await EnsurePublicDepartmentSchemaAsync(database);
+        await EnsureHealthPackageSchemaAsync(database);
         await MedicalServicePublicContentInitializer.InitializeAsync(database, !isProduction);
         if (!isProduction)
         {
+            await SeedHealthPackagesIfEmptyAsync(database);
             await SeedDevelopmentAccountsIfEmptyAsync(scope.ServiceProvider, database);
         }
         else
@@ -83,6 +88,72 @@ public static class DatabaseInitializer
                 ON "PublicDepartmentDoctors" ("DepartmentId", "PublicationState");
             """);
     }
+
+    private static async Task EnsureHealthPackageSchemaAsync(HospitalDbContext database)
+    {
+        await database.Database.ExecuteSqlRawAsync(
+            """
+            CREATE TABLE IF NOT EXISTS "HealthPackages" (
+                "Id" INTEGER NOT NULL CONSTRAINT "PK_HealthPackages" PRIMARY KEY AUTOINCREMENT,
+                "Slug" TEXT NOT NULL,
+                "Name" TEXT NOT NULL,
+                "Description" TEXT NOT NULL,
+                "Details" TEXT NOT NULL,
+                "PublicationState" TEXT NOT NULL
+            );
+            CREATE UNIQUE INDEX IF NOT EXISTS "IX_HealthPackages_Slug" ON "HealthPackages" ("Slug");
+            CREATE INDEX IF NOT EXISTS "IX_HealthPackages_PublicationState" ON "HealthPackages" ("PublicationState");
+            """);
+    }
+
+    private static async Task SeedHealthPackagesIfEmptyAsync(HospitalDbContext database)
+    {
+        if (await database.HealthPackages.AnyAsync())
+        {
+            return;
+        }
+
+        database.HealthPackages.AddRange(
+            HealthPackage(
+                "essential-health-check",
+                "Essential Health Check",
+                "A practical preventive screening package designed to establish a clear picture of your everyday health.",
+                "Complete blood count and blood sugar screening",
+                "Kidney and liver function profile",
+                "Cholesterol and thyroid screening",
+                "General physician review of your results"),
+            HealthPackage(
+                "heart-wellness-profile",
+                "Heart Wellness Profile",
+                "Focused cardiovascular screening that helps you understand common heart-health risk indicators.",
+                "Blood pressure and cardiovascular risk assessment",
+                "Lipid profile and blood sugar screening",
+                "Resting electrocardiogram",
+                "Physician consultation with preventive guidance"),
+            HealthPackage(
+                "womens-wellness-check",
+                "Women's Wellness Check",
+                "A considerate health review covering important routine screening needs for adult women.",
+                "Complete blood count and metabolic screening",
+                "Thyroid and vitamin profile",
+                "Women's health consultation",
+                "Personalized preventive-care guidance"));
+        await database.SaveChangesAsync();
+    }
+
+    private static HealthPackageRecord HealthPackage(
+        string slug,
+        string name,
+        string description,
+        params string[] details) =>
+        new()
+        {
+            Slug = slug,
+            Name = name,
+            Description = description,
+            Details = JsonSerializer.Serialize(details),
+            PublicationState = HealthPackagePublicationState.Published
+        };
 
     private static void EnsureDatabaseDirectoryExists(HospitalDbContext database)
     {

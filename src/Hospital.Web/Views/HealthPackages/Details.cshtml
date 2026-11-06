@@ -1,0 +1,46 @@
+@model Hospital.Web.ViewModels.HealthPackages.HealthPackageDetailsViewModel
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<nav class="shell health-package-breadcrumb" aria-label="Breadcrumb">
+    <ol>
+        <li><a href="/health-packages">Health Packages</a></li>
+        <li aria-current="page">@Model.Name</li>
+    </ol>
+</nav>
+
+<article class="shell health-package-detail" aria-labelledby="package-title">
+    <header class="health-package-detail__hero">
+        <div>
+            <p class="health-packages-eyebrow">Health checkup information</p>
+            <h1 id="package-title">@Model.Name</h1>
+            <p class="health-packages-lead">@Model.Description</p>
+        </div>
+        <div class="health-package-detail__emblem" aria-hidden="true"><span>+</span></div>
+    </header>
+
+    <div class="health-package-detail__content">
+        <section class="health-package-detail__panel" aria-labelledby="included-title">
+            <p class="health-packages-eyebrow">Package details</p>
+            <h2 id="included-title">What this package includes</h2>
+            <ul class="health-package-detail__list">
+                @foreach (var detail in Model.Details)
+                {
+                    <li><span aria-hidden="true">✓</span> @detail</li>
+                }
+            </ul>
+        </section>
+
+        <aside class="health-package-guidance" aria-labelledby="guidance-title">
+            <h2 id="guidance-title">Before your health check</h2>
+            <p>Screening needs vary from person to person. Discuss this information with a qualified healthcare professional, especially if you have symptoms or an existing condition.</p>
+            <p>Preparation instructions, if needed, will be explained by the hospital team before your visit.</p>
+        </aside>
+    </div>
+
+    <footer class="health-package-detail__footer">
+        <a class="health-package-back-link" href="/health-packages"><span aria-hidden="true">←</span> Back to Health Packages</a>
+        <p>Package information may change as clinical guidance is updated.</p>
+    </footer>
+</article>

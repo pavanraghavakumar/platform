@@ -1,5 +1,6 @@
 using Hospital.Infrastructure.Identity;
 using Hospital.Infrastructure.PublicContent.Departments;
+using Hospital.Infrastructure.PublicContent.HealthPackages;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +16,8 @@ public sealed class HospitalDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<DepartmentRecord> Departments => Set<DepartmentRecord>();
 
     public DbSet<DepartmentDoctorRecord> DepartmentDoctors => Set<DepartmentDoctorRecord>();
+
+    public DbSet<HealthPackageRecord> HealthPackages => Set<HealthPackageRecord>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -50,6 +53,19 @@ public sealed class HospitalDbContext : IdentityDbContext<ApplicationUser>
                 .WithMany(item => item.Doctors)
                 .HasForeignKey(item => item.DepartmentId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<HealthPackageRecord>(package =>
+        {
+            package.ToTable("HealthPackages");
+            package.HasKey(item => item.Id);
+            package.Property(item => item.Slug).HasMaxLength(180).IsRequired();
+            package.Property(item => item.Name).HasMaxLength(160).IsRequired();
+            package.Property(item => item.Description).HasMaxLength(1000).IsRequired();
+            package.Property(item => item.Details).HasMaxLength(8000).IsRequired();
+            package.Property(item => item.PublicationState).HasConversion<string>().HasMaxLength(24);
+            package.HasIndex(item => item.Slug).IsUnique();
+            package.HasIndex(item => item.PublicationState);
         });
     }
 }
