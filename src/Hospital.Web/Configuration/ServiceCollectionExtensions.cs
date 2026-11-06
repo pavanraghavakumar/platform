@@ -1,8 +1,10 @@
 using Hospital.Application.Contracts;
+using Hospital.Application.Features.About;
 using Hospital.Infrastructure.Data;
 using Hospital.Infrastructure.Identity;
 using Hospital.Infrastructure.Messaging;
 using Hospital.Infrastructure.Monitoring;
+using Hospital.Infrastructure.PublicContent.About;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -52,6 +54,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IClock, SystemClock>();
         services.AddScoped<IEmailSender, DevelopmentEmailSender>();
         services.AddScoped<IOperationalMonitor, OperationalMonitor>();
+        services.AddSingleton<IAboutContentQuery, StaticAboutContentQuery>();
         return services;
     }
 }

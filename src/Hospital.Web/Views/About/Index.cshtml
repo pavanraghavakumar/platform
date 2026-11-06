@@ -1,0 +1,114 @@
+@model Hospital.Web.ViewModels.About.AboutViewModel
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "About Us";
+}
+
+@section Scripts {
+    <link rel="stylesheet" href="~/css/pages/about.css" asp-append-version="true" />
+}
+
+<article class="about-page">
+    <section class="about-hero" aria-labelledby="about-title">
+        <div class="shell about-hero__grid">
+            <div class="about-hero__copy">
+                @if (!string.IsNullOrWhiteSpace(Model.Eyebrow))
+                {
+                    <p class="about-eyebrow">@Model.Eyebrow</p>
+                }
+                <h1 id="about-title">@Model.Title</h1>
+                <p class="about-hero__lead">@Model.Introduction</p>
+                <div class="about-actions" aria-label="Explore hospital care">
+                    <a class="button button--primary" href="/appointments/book">Book an Appointment</a>
+                    <a class="about-text-link" href="/departments">Explore Departments <span aria-hidden="true">→</span></a>
+                </div>
+            </div>
+            @if (Model.HeroImage is not null)
+            {
+                <figure class="about-media about-media--hero">
+                    <img src="@Model.HeroImage.Source"
+                         srcset="@Model.HeroImage.SourceSet"
+                         sizes="(max-width: 767px) 100vw, 50vw"
+                         width="@Model.HeroImage.Width"
+                         height="@Model.HeroImage.Height"
+                         alt="@Model.HeroImage.AlternativeText"
+                         fetchpriority="high" />
+                </figure>
+            }
+        </div>
+    </section>
+
+    @if (Model.Statistics.Count > 0)
+    {
+        <section class="about-section about-section--stats" aria-labelledby="experience-heading">
+            <div class="shell">
+                <div class="about-section__heading">
+                    <p class="about-eyebrow">Our experience and achievements</p>
+                    <h2 id="experience-heading">A legacy of care, built every day</h2>
+                </div>
+                <dl class="about-stats">
+                    @foreach (var statistic in Model.Statistics)
+                    {
+                        <div class="about-stat">
+                            <dt>@statistic.Label</dt>
+                            <dd>@statistic.Value</dd>
+                        </div>
+                    }
+                </dl>
+            </div>
+        </section>
+    }
+
+    <section class="about-section about-quality" aria-labelledby="quality-heading">
+        <div class="shell about-quality__grid">
+            @if (Model.QualityImage is not null)
+            {
+                <figure class="about-media about-quality__media">
+                    <img src="@Model.QualityImage.Source"
+                         srcset="@Model.QualityImage.SourceSet"
+                         sizes="(max-width: 767px) 100vw, 50vw"
+                         width="@Model.QualityImage.Width"
+                         height="@Model.QualityImage.Height"
+                         alt="@Model.QualityImage.AlternativeText"
+                         loading="lazy" />
+                </figure>
+            }
+            <div class="about-quality__copy">
+                <p class="about-eyebrow">Quality of care</p>
+                <h2 id="quality-heading">@Model.QualityTitle</h2>
+                @foreach (var paragraph in Model.QualityParagraphs)
+                {
+                    <p>@paragraph</p>
+                }
+                @if (Model.QualityHighlights.Count > 0)
+                {
+                    <ul class="about-highlights" aria-label="Our quality commitments">
+                        @foreach (var highlight in Model.QualityHighlights)
+                        {
+                            <li>
+                                <h3>@highlight.Title</h3>
+                                <p>@highlight.Description</p>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </section>
+
+    <nav class="about-section about-explore" aria-labelledby="explore-heading">
+        <div class="shell">
+            <div class="about-explore__intro">
+                <p class="about-eyebrow">Find your next step</p>
+                <h2 id="explore-heading">Explore care at Meridian</h2>
+                <p>Meet our teams, understand your care options, or begin an appointment request.</p>
+            </div>
+            <ul class="about-route-grid">
+                <li><a href="/departments"><strong>Departments</strong><span>Find specialist hospital departments</span></a></li>
+                <li><a href="/doctors"><strong>Our Doctors</strong><span>Meet our experienced clinicians</span></a></li>
+                <li><a href="/medical-services"><strong>Medical Services</strong><span>Explore diagnostics and treatments</span></a></li>
+                <li><a href="/appointments/book"><strong>Book an Appointment</strong><span>Start your care journey</span></a></li>
+            </ul>
+        </div>
+    </nav>
+</article>
