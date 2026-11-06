@@ -55,7 +55,7 @@
   - _Area: ui_
   - _Issue: #52_
 
-- [ ] 6. Medical Services and Service Details
+- [x] 6. Medical Services and Service Details
   - Build `/medical-services` with healthcare image cards and `/medical-services/{slug}` with an editorial service presentation, relevant care information, and a prominent Book an Appointment route.
   - Apply publication-state projections, branded not-found handling, responsive page-specific styling, and tests proving public updates flow through while unavailable records remain hidden.
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
