@@ -1,4 +1,34 @@
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="validation-summary" role="alert" tabindex="-1" data-validation-summary="true" asp-validation-summary="All"></div>
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    var hasErrors = !ViewData.ModelState.IsValid;
 }
+<div class="validation-summary" role="alert" tabindex="-1" data-validation-summary="true" hidden="@(!hasErrors)">
+    <p id="validation-summary-heading">Please correct the following errors:</p>
+    <ul aria-labelledby="validation-summary-heading">
+        @if (hasErrors)
+        {
+            @foreach (var entry in ViewData.ModelState)
+            {
+                var fieldId = string.IsNullOrWhiteSpace(entry.Key)
+                    ? null
+                    : TagBuilder.CreateSanitizedId(entry.Key, "_");
+                foreach (var error in entry.Value.Errors)
+                {
+                    var message = string.IsNullOrWhiteSpace(error.ErrorMessage)
+                        ? "The submitted value is invalid."
+                        : error.ErrorMessage;
+                    <li>
+                        @if (fieldId is null)
+                        {
+                            @message
+                        }
+                        else
+                        {
+                            <a href="#@fieldId">@message</a>
+                        }
+                    </li>
+                }
+            }
+        }
+    </ul>
+</div>
