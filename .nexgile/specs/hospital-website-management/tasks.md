@@ -22,7 +22,7 @@
   - _Area: ui_
   - _Issue: #49_
 
-- [ ] 3. About Hospital page
+- [x] 3. About Hospital page
   - Build the `/about` editorial screen with hospital introduction, professional imagery, experience and achievement cards, quality-of-care content, safe omission of missing optional items, and visible routes to Departments, Our Doctors, Medical Services, and Book an Appointment.
   - Include finished phone, tablet, and desktop styling and rendering tests for content, links, missing optional data, semantics, and responsive media behavior.
   - _Requirements: 2.1, 2.2, 2.3_
