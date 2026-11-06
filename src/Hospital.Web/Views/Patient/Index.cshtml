@@ -1,0 +1,14 @@
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Patient Area";
+}
+<link rel="stylesheet" href="~/css/pages/patient-authentication.css" asp-append-version="true" />
+
+<section class="patient-auth" aria-labelledby="patient-area-title">
+    <div class="patient-auth__card patient-area">
+        <p class="patient-auth__eyebrow">Secured patient area</p>
+        <h1 id="patient-area-title">Welcome, @User.Identity?.Name</h1>
+        <p>Your patient account is securely signed in.</p>
+        <a class="button button--primary" href="/appointments/book">Book an Appointment</a>
+    </div>
+</section>

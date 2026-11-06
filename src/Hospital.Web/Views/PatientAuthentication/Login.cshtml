@@ -1,0 +1,50 @@
+@model Hospital.Web.ViewModels.PatientAuthentication.PatientLoginViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Patient Login";
+}
+@section Scripts {
+    <script src="~/js/pages/patient-authentication.js" asp-append-version="true"></script>
+}
+<link rel="stylesheet" href="~/css/pages/patient-authentication.css" asp-append-version="true" />
+
+<section class="patient-auth" aria-labelledby="patient-login-title">
+    <div class="patient-auth__card">
+        <p class="patient-auth__eyebrow">Secure patient access</p>
+        <h1 id="patient-login-title">Patient Login</h1>
+        <p class="patient-auth__intro">Sign in to continue to your secured patient area.</p>
+
+        @if (Model.RegistrationCompleted)
+        {
+            <div class="validation-summary validation-summary--notice" role="status">
+                <p>Your account was created, but we could not sign you in. Please sign in to continue.</p>
+            </div>
+        }
+
+        <partial name="_ValidationSummary" />
+        <form method="post" action="/patient/login" novalidate data-auth-form="true">
+            @Html.AntiForgeryToken()
+            <input asp-for="ReturnToken" type="hidden" />
+            <div class="form-field">
+                <label asp-for="Identifier"></label>
+                <input asp-for="Identifier" autocomplete="username" aria-describedby="Identifier-error" />
+                <span asp-validation-for="Identifier" id="Identifier-error" class="field-error"></span>
+            </div>
+            <div class="form-field">
+                <label asp-for="Password"></label>
+                <div class="password-field">
+                    <input asp-for="Password" value="" autocomplete="current-password" aria-describedby="Password-error" />
+                    <button type="button" class="password-toggle" data-password-toggle="Password" aria-controls="Password" aria-label="Show password">Show</button>
+                </div>
+                <span asp-validation-for="Password" id="Password-error" class="field-error"></span>
+            </div>
+            <div class="check-field">
+                <input asp-for="RememberMe" />
+                <label asp-for="RememberMe"></label>
+            </div>
+            <button class="button button--primary patient-auth__submit" type="submit">Sign in</button>
+        </form>
+        <p class="patient-auth__alternate">New patient? <a href="/patient/register@(string.IsNullOrWhiteSpace(Model.ReturnToken) ? "" : $"?returnToken={Uri.EscapeDataString(Model.ReturnToken)}")">Create an account</a>.</p>
+    </div>
+</section>

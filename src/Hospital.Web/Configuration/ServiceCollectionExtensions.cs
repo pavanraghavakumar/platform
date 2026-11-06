@@ -1,7 +1,9 @@
 using Hospital.Application.Contracts;
 using Hospital.Application.Features.About;
+using Hospital.Application.Features.PatientAuthentication;
 using Hospital.Infrastructure.Data;
 using Hospital.Infrastructure.Identity;
+using Hospital.Infrastructure.Identity.PatientAuthentication;
 using Hospital.Infrastructure.Messaging;
 using Hospital.Infrastructure.Monitoring;
 using Hospital.Infrastructure.PublicContent.About;
@@ -56,8 +58,11 @@ public static class ServiceCollectionExtensions
         });
         services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
         services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
+        services.AddMemoryCache();
         services.AddHealthChecks().AddDbContextCheck<HospitalDbContext>();
         services.AddSingleton<IClock, SystemClock>();
+        services.AddSingleton<IPatientContinuationService, PatientContinuationService>();
+        services.AddScoped<IPatientAuthenticationService, IdentityPatientAuthenticationService>();
         services.AddScoped<IEmailSender, DevelopmentEmailSender>();
         services.AddScoped<IOperationalMonitor, OperationalMonitor>();
         services.AddSingleton<IAboutContentQuery, StaticAboutContentQuery>();

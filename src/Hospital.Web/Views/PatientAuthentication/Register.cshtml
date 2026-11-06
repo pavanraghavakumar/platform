@@ -1,0 +1,79 @@
+@model Hospital.Web.ViewModels.PatientAuthentication.PatientRegistrationViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Patient Registration";
+}
+@section Scripts {
+    <script src="~/js/pages/patient-authentication.js" asp-append-version="true"></script>
+}
+<link rel="stylesheet" href="~/css/pages/patient-authentication.css" asp-append-version="true" />
+
+<section class="patient-auth" aria-labelledby="patient-register-title">
+    <div class="patient-auth__card patient-auth__card--wide">
+        <p class="patient-auth__eyebrow">Join Meridian Hospital</p>
+        <h1 id="patient-register-title">Patient Registration</h1>
+        <p class="patient-auth__intro">Create your account using your account and personal information.</p>
+
+        <partial name="_ValidationSummary" />
+        <form method="post" action="/patient/register" data-auth-form="true" novalidate>
+            @Html.AntiForgeryToken()
+            <input asp-for="ReturnToken" type="hidden" />
+            <fieldset>
+                <legend>Account information</legend>
+                <div class="patient-auth__grid">
+                    <div class="form-field">
+                        <label asp-for="Email"></label>
+                        <input asp-for="Email" autocomplete="email" required aria-describedby="Email-error" />
+                        <span asp-validation-for="Email" id="Email-error" class="field-error"></span>
+                    </div>
+                    <div class="form-field">
+                        <label asp-for="PatientIdentifier"></label>
+                        <input asp-for="PatientIdentifier" autocomplete="username" required pattern="[A-Za-z0-9\-]{4,32}" aria-describedby="PatientIdentifier-help PatientIdentifier-error" />
+                        <span id="PatientIdentifier-help" class="field-help">Use the identifier you will enter when signing in.</span>
+                        <span asp-validation-for="PatientIdentifier" id="PatientIdentifier-error" class="field-error"></span>
+                    </div>
+                    <div class="form-field">
+                        <label asp-for="Password"></label>
+                        <div class="password-field">
+                            <input asp-for="Password" value="" autocomplete="new-password" required minlength="12" aria-describedby="Password-help Password-error" />
+                            <button type="button" class="password-toggle" data-password-toggle="Password" aria-controls="Password" aria-label="Show password">Show</button>
+                        </div>
+                        <span id="Password-help" class="field-help">Use at least 12 characters.</span>
+                        <span asp-validation-for="Password" id="Password-error" class="field-error"></span>
+                    </div>
+                    <div class="form-field">
+                        <label asp-for="ConfirmPassword"></label>
+                        <div class="password-field">
+                            <input asp-for="ConfirmPassword" value="" autocomplete="new-password" required aria-describedby="ConfirmPassword-error" />
+                            <button type="button" class="password-toggle" data-password-toggle="ConfirmPassword" aria-controls="ConfirmPassword" aria-label="Show confirm password">Show</button>
+                        </div>
+                        <span asp-validation-for="ConfirmPassword" id="ConfirmPassword-error" class="field-error"></span>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Personal information</legend>
+                <div class="patient-auth__grid">
+                    <div class="form-field">
+                        <label asp-for="FullName"></label>
+                        <input asp-for="FullName" autocomplete="name" required maxlength="120" aria-describedby="FullName-error" />
+                        <span asp-validation-for="FullName" id="FullName-error" class="field-error"></span>
+                    </div>
+                    <div class="form-field">
+                        <label asp-for="DateOfBirth"></label>
+                        <input asp-for="DateOfBirth" autocomplete="bday" aria-describedby="DateOfBirth-error" />
+                        <span asp-validation-for="DateOfBirth" id="DateOfBirth-error" class="field-error"></span>
+                    </div>
+                    <div class="form-field">
+                        <label asp-for="Phone"></label>
+                        <input asp-for="Phone" autocomplete="tel" required aria-describedby="Phone-error" />
+                        <span asp-validation-for="Phone" id="Phone-error" class="field-error"></span>
+                    </div>
+                </div>
+            </fieldset>
+            <button class="button button--primary patient-auth__submit" type="submit">Create patient account</button>
+        </form>
+        <p class="patient-auth__alternate">Already registered? <a href="/patient/login@(string.IsNullOrWhiteSpace(Model.ReturnToken) ? "" : $"?returnToken={Uri.EscapeDataString(Model.ReturnToken)}")">Sign in</a>.</p>
+    </div>
+</section>
