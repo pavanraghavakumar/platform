@@ -99,7 +99,7 @@
   - _Area: ui_
   - _Issue: #56_
 
-- [ ] 10. Patient Registration, Patient Login, and secured patient landing
+- [x] 10. Patient Registration, Patient Login, and secured patient landing
   - Build focused public-layout Registration and Patient Login cards with the exact authentication fields, password reveal behavior, linked validation summaries, generic credential errors, safe value redisplay, and links between journeys.
   - Adapt the existing authentication service for account creation and sign-in, protect `/patient`, validate local continuation tokens, resume Appointment Booking at the stored step, and test existing-account, invalid-credential, unavailable-service, and safe redirect outcomes.
   - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8, 9.9_
